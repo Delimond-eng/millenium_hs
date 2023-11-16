@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->integer('prescreption_id', true);
-            $table->string('prescription_libelle', 50);
+            $table->string('prescription_libelle');
             $table->timestamp('prescription_create_At')->useCurrent();
             $table->string('prescrption_status', 10)->default('actif');
         });

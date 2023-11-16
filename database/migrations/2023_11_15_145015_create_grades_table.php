@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('grades', function (Blueprint $table) {
             $table->integer('grade_id', true);
-            $table->string('grade_libelle', 50);
+            $table->string('grade_libelle');
             $table->timestamp('grade_create_At')->useCurrent();
-            $table->string('grade_status', 10)->default('actif');
+            $table->string('grade_status')->default('actif');
         });
     }
 

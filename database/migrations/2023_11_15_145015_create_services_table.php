@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->integer('service_id', true);
-            $table->string('service_libelle', 50);
+            $table->string('service_libelle');
             $table->timestamp('service_create_At')->useCurrentOnUpdate()->useCurrent();
-            $table->string('service_status', 10)->default('actif');
+            $table->string('service_status')->default('actif');
         });
     }
 
