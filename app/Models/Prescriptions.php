@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string $prescription_libelle
@@ -40,7 +42,7 @@ class Prescriptions extends Model
      * @var array
      */
     protected $hidden = [
-        
+
     ];
 
     /**
@@ -73,4 +75,29 @@ class Prescriptions extends Model
     // Functions ...
 
     // Relations ...
+
+    /**
+     * Summary of agent
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function agent(): BelongsTo{
+        return $this->belongsTo(Agents::class);
+    }
+
+    /**
+     * Summary of patient
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function patient(): BelongsTo{
+        return $this->belongsTo(Patients::class);
+    }
+
+    /**
+     * prescription details
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function details(): HasMany
+    {
+        return $this->hasMany(PrescriptionDetails::class);
+    }
 }

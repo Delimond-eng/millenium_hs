@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $consult_detail_libelle
@@ -75,4 +76,7 @@ class ConsultationDetails extends Model
     // Functions ...
 
     // Relations ...
+    public function consultation():BelongsTo{
+        return $this->belongsTo(Consultations::class);
+    }
 }

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int    $agent_id
@@ -93,18 +92,44 @@ class Agents extends Model
 
     // Relations ...
 
+
+    /**
+     * Summary of grade
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function grade(): BelongsTo
     {
         return $this->belongsTo(Grades::class);
     }
+
+    /**
+     * Summary of fonction
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function fonction(): BelongsTo
     {
         return $this->belongsTo(Fonctions::class);
     }
+
+    /**
+     * Summary of service
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function service(): BelongsTo{
         return $this->belongsTo(Services::class);
     }
+
+    /**
+     * Summary of patients
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function patients(): HasMany{
         return $this->hasMany(Patients::class);
+    }
+
+
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescriptions::class);
     }
 }

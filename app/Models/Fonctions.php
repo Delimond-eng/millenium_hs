@@ -80,6 +80,11 @@ class Fonctions extends Model
     // Functions ...
 
     // Relations ...
+
+    /**
+     * Summary of agent
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function agent():HasMany{
         return $this->hasMany(Agents::class);
     }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $consult_libelle
@@ -41,7 +42,7 @@ class Consultations extends Model
      * @var array
      */
     protected $hidden = [
-        
+
     ];
 
     /**
@@ -74,4 +75,22 @@ class Consultations extends Model
     // Functions ...
 
     // Relations ...
+
+     /**
+     * Summary of agent
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function agent(): BelongsTo{
+        return $this->belongsTo(Agents::class);
+    }
+
+    /**
+     * Summary of patient
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function patient(): BelongsTo{
+        return $this->belongsTo(Patients::class);
+    }
+
+
 }

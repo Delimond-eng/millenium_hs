@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * @property string $prescription_detail_libelle
@@ -42,7 +43,7 @@ class PrescriptionDetails extends Model
      * @var array
      */
     protected $hidden = [
-        
+
     ];
 
     /**
@@ -75,4 +76,12 @@ class PrescriptionDetails extends Model
     // Functions ...
 
     // Relations ...
+
+    /**
+     * Summary of prescriptions
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function prescriptions():BelongsTo{
+        return $this->belongsTo(Prescriptions::class);
+    }
 }

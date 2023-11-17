@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -83,7 +84,20 @@ class Patients extends Model
 
     // Relations ...
 
+
+    /**
+     * Summary of agent
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function agent(): BelongsTo{
         return $this->belongsTo(Agents::class);
+    }
+
+    /**
+     * Summary of prescriptions
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function prescriptions():HasMany{
+        return $this->hasMany(Prescriptions::class);
     }
 }
