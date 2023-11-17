@@ -5,13 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int    $prescreption_detail_id
- * @property int    $prescription_id
- * @property int    $prescription_detail_create_At
  * @property string $prescription_detail_libelle
  * @property string $prescription_detail_valeur
  * @property string $prescrption_detail_obs
  * @property string $prescription_detail_status
+ * @property int    $prescription_detail_create_At
  */
 class PrescriptionDetails extends Model
 {
@@ -27,7 +25,7 @@ class PrescriptionDetails extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'prescreption_detail_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -35,7 +33,7 @@ class PrescriptionDetails extends Model
      * @var array
      */
     protected $fillable = [
-        'prescription_detail_libelle', 'prescription_detail_valeur', 'prescrption_detail_obs', 'prescription_id', 'prescription_detail_create_At', 'prescription_detail_status'
+        'prescription_detail_libelle', 'prescription_detail_valeur', 'prescrption_detail_obs', 'prescription_detail_create_At', 'prescription_detail_status', 'prescription_id'
     ];
 
     /**
@@ -53,7 +51,7 @@ class PrescriptionDetails extends Model
      * @var array
      */
     protected $casts = [
-        'prescreption_detail_id' => 'int', 'prescription_detail_libelle' => 'string', 'prescription_detail_valeur' => 'string', 'prescrption_detail_obs' => 'string', 'prescription_id' => 'int', 'prescription_detail_create_At' => 'timestamp', 'prescription_detail_status' => 'string'
+        'prescription_detail_libelle' => 'string', 'prescription_detail_valeur' => 'string', 'prescrption_detail_obs' => 'string', 'prescription_detail_create_At' => 'timestamp', 'prescription_detail_status' => 'string'
     ];
 
     /**

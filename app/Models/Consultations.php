@@ -5,13 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int    $consut_id
- * @property int    $consult_agent_id
- * @property int    $consult_patient_id
- * @property int    $consult_create_At
  * @property string $consult_libelle
  * @property string $consult_obs
  * @property string $consult_status
+ * @property int    $consult_create_At
  */
 class Consultations extends Model
 {
@@ -27,7 +24,7 @@ class Consultations extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'consut_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -35,7 +32,7 @@ class Consultations extends Model
      * @var array
      */
     protected $fillable = [
-        'consult_libelle', 'consult_obs', 'consult_agent_id', 'consult_patient_id', 'consult_create_At', 'consult_status'
+        'consult_libelle', 'consult_obs', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id'
     ];
 
     /**
@@ -53,7 +50,7 @@ class Consultations extends Model
      * @var array
      */
     protected $casts = [
-        'consut_id' => 'int', 'consult_libelle' => 'string', 'consult_obs' => 'string', 'consult_agent_id' => 'int', 'consult_patient_id' => 'int', 'consult_create_At' => 'timestamp', 'consult_status' => 'string'
+        'consult_libelle' => 'string', 'consult_obs' => 'string', 'consult_create_At' => 'timestamp', 'consult_status' => 'string'
     ];
 
     /**

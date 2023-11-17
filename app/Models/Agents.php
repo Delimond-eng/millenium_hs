@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -10,9 +12,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int    $adresse_id
  * @property int    $agence_affectation_id
  * @property int    $nbre_enfant
- * @property int    $agent_service_id
- * @property int    $agent_grade_id
- * @property int    $agent_fontion_id
  * @property int    $agent_create_At
  * @property string $nom
  * @property string $postnom
@@ -26,6 +25,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $agent_nom
  * @property string $agent_prenom
  * @property string $agent_telephone
+ * @property string $agent_adresse
  * @property string $agent_status
  */
 class Agents extends Model
@@ -42,7 +42,7 @@ class Agents extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'agent_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -50,7 +50,7 @@ class Agents extends Model
      * @var array
      */
     protected $fillable = [
-        'nom', 'postnom', 'prenom', 'matricule', 'nationalite', 'date_naissance', 'adresse_id', 'sexe', 'etat_civil', 'date_engagement', 'agence_affectation_id', 'nbre_enfant', 'agent_status', 'date_enregistrement', 'agent_matricule', 'agent_nom', 'agent_prenom', 'agent_sexe', 'agent_telephone', 'agent_service_id', 'agent_grade_id', 'agent_fontion_id', 'agent_create_At', 'agent_status'
+         'agent_matricule', 'agent_nom', 'agent_prenom', 'agent_sexe', 'agent_telephone', 'agent_adresse', 'grade_id', 'service_id', 'fonction_id'
     ];
 
     /**
@@ -68,7 +68,7 @@ class Agents extends Model
      * @var array
      */
     protected $casts = [
-        'agent_id' => 'int', 'nom' => 'string', 'postnom' => 'string', 'prenom' => 'string', 'matricule' => 'string', 'nationalite' => 'string', 'adresse_id' => 'int', 'sexe' => 'string', 'etat_civil' => 'string', 'agence_affectation_id' => 'int', 'nbre_enfant' => 'int', 'agent_status' => 'string', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_service_id' => 'int', 'agent_grade_id' => 'int', 'agent_fontion_id' => 'int', 'agent_create_At' => 'timestamp'
+        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int'
     ];
 
     /**
@@ -92,7 +92,19 @@ class Agents extends Model
     // Functions ...
 
     // Relations ...
-    public function grade(): HasOne{
-        return $this->hasOne(Grades::class, 'agent_grade_id', $this->primaryKey);
+
+    public function grade(): BelongsTo
+    {
+        return $this->belongsTo(Grades::class);
+    }
+    public function fonction(): BelongsTo
+    {
+        return $this->belongsTo(Fonctions::class);
+    }
+    public function service(): BelongsTo{
+        return $this->belongsTo(Services::class);
+    }
+    public function patients(): HasMany{
+        return $this->hasMany(Patients::class);
     }
 }

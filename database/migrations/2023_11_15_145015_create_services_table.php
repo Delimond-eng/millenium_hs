@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('services', function (Blueprint $table) {
-            $table->integer('service_id', true);
+            $table->id();
             $table->string('service_libelle');
             $table->timestamp('service_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('service_status')->default('actif');

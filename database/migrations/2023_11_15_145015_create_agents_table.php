@@ -13,23 +13,28 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('agents', function (Blueprint $table) {
-            $table->integer('agent_id', true);
-            $table->string('agent_matricule')->unique();
-            $table->string('agent_nom');
-            $table->string('agent_prenom');
-            $table->char('agent_sexe');
-            $table->string('agent_telephone');
-            $table->integer('agent_service_id');
-            $table->integer('agent_grade_id');
-            $table->integer('agent_fontion_id');
-            $table->timestamp('agent_create_At')->useCurrentOnUpdate()->useCurrent();
-            $table->string('agent_status')->default('actif');
+        if(!Schema::hasTable("agents")){
+            Schema::create('agents', function (Blueprint $table) {
+                $table->id();
+                $table->string('agent_matricule')->unique();
+                $table->string('agent_nom');
+                $table->string('agent_prenom');
+                $table->char('agent_sexe');
+                $table->string('agent_telephone');
+                $table->text('agent_adresse');
+                $table->timestamp('agent_create_At')->useCurrentOnUpdate()->useCurrent();
+                $table->string('agent_status')->default('actif');
+                $table->unsignedBigInteger('grade_id');
+                $table->unsignedBigInteger('service_id');
+                $table->unsignedBigInteger('fonction_id');
+            });
+        }
 
-            $table->foreign('agent_service_id')->references('service_id')->on('services')->onDelete('cascade');
-            $table->foreign('agent_grade_id')->references('grade_id')->on('grades')->onDelete('cascade');
-            $table->foreign('agent_fontion_id')->references('fonction_id')->on('fonctions')->onDelete('cascade');
-        });
+        /* Schema::table('agents', function (Blueprint $table) {
+            $table->foreignId('grade_id')->constrained('grades')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('service_id')->constrained('services')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('fonction_id')->constrained('fonctions')->cascadeOnDelete()->cascadeOnUpdate();
+        }); */
     }
 
     /**

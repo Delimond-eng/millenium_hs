@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int    $fonction_id
  * @property int    $fonction_id
  * @property int    $biotime_fonction_id
  * @property int    $user_id
@@ -29,7 +30,7 @@ class Fonctions extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'fonction_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -37,7 +38,7 @@ class Fonctions extends Model
      * @var array
      */
     protected $fillable = [
-        'biotime_fonction_id', 'user_id', 'libelle', 'fonction_statut', 'date_enregisrrement', 'fonction_libelle', 'fonction_create_At', 'fonction_status'
+        'fonction_libelle'
     ];
 
     /**
@@ -46,7 +47,7 @@ class Fonctions extends Model
      * @var array
      */
     protected $hidden = [
-        
+
     ];
 
     /**
@@ -55,7 +56,7 @@ class Fonctions extends Model
      * @var array
      */
     protected $casts = [
-        'fonction_id' => 'int', 'fonction_id' => 'int', 'biotime_fonction_id' => 'int', 'user_id' => 'int', 'libelle' => 'string', 'fonction_statut' => 'string', 'fonction_libelle' => 'string', 'fonction_create_At' => 'timestamp', 'fonction_status' => 'string'
+       'id' => 'int', 'fonction_libelle' => 'string', 'fonction_create_At' => 'timestamp', 'fonction_status' => 'string'
     ];
 
     /**
@@ -79,4 +80,7 @@ class Fonctions extends Model
     // Functions ...
 
     // Relations ...
+    public function agent():HasMany{
+        return $this->hasMany(Agents::class);
+    }
 }

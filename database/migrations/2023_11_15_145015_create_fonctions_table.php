@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('fonctions', function (Blueprint $table) {
-            $table->integer('fonction_id', true);
+            $table->id();
             $table->string('fonction_libelle');
             $table->timestamp('fonction_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('fonction_status')->default('actif');

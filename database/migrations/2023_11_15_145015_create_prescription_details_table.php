@@ -14,15 +14,18 @@ return new class extends Migration
     public function up()
     {
         Schema::create('prescription_details', function (Blueprint $table) {
-            $table->integer('prescreption_detail_id', true);
+            $table->id();
             $table->string('prescription_detail_libelle');
             $table->string('prescription_detail_valeur');
             $table->text('prescrption_detail_obs');
-            $table->integer('prescription_id');
             $table->timestamp('prescription_detail_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('prescription_detail_status')->default('actif');
-            $table->foreign('prescription_id')->references('prescription_id')->on('prescriptions')->onDelete('cascade');
+            $table->unsignedBigInteger('prescription_id');
         });
+
+        /* Schema::table('prescription_details', function (Blueprint $table) {
+            $table->foreignId('prescription_id')->constrained('prescriptions')->cascadeOnDelete()->cascadeOnUpdate();
+        }); */
     }
 
     /**

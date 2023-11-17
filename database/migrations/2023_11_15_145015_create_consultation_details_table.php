@@ -13,17 +13,21 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consultation_details', function (Blueprint $table) {
-            $table->integer('consult_detail_id', true);
-            $table->string('consult_detail_libelle');
-            $table->string('consult_detail_valeur');
-            $table->text('consult_detail_obs');
-            $table->timestamp('consult_detail_create_At')->useCurrent();
-            $table->string('consult_detail_status', 10)->default('actif');
-            $table->integer('consult_id');
+        if(! Schema::hasTable("consultation_details")){
+            Schema::create('consultation_details', function (Blueprint $table) {
+                $table->id();
+                $table->string('consult_detail_libelle');
+                $table->string('consult_detail_valeur');
+                $table->text('consult_detail_obs');
+                $table->timestamp('consult_detail_create_At')->useCurrent();
+                $table->string('consult_detail_status', 10)->default('actif');
+                $table->unsignedBigInteger('consult_id');
+            });
+        }
 
-            $table->foreign('consult_id')->references('consut_id')->on('consultations')->onDelete('cascade');
-        });
+        /* Schema::table('consultation_details', function (Blueprint $table) {
+            $table->foreignId('consult_id')->constrained('consultations')->cascadeOnDelete()->cascadeOnUpdate();
+        }); */
     }
 
     /**

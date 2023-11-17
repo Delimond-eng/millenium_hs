@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('grades', function (Blueprint $table) {
-            $table->integer('grade_id', true);
+            $table->id();
             $table->string('grade_libelle');
             $table->timestamp('grade_create_At')->useCurrent();
             $table->string('grade_status')->default('actif');

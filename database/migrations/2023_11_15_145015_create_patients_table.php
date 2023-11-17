@@ -13,21 +13,28 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('patients', function (Blueprint $table) {
-            $table->integer('patient_id', true);
-            $table->string('patient_code')->unique('patient_code');
-            $table->string('patient_nom');
-            $table->string('patient_prenom');
-            $table->char('patient_sexe', 1);
-            $table->float('patient_poids', 10, 0);
-            $table->float('patient_temperature', 10, 0);
-            $table->integer('patient_age');
-            $table->text('patient_adresse');
-            $table->string('patient_telephone');
-            $table->decimal('patient_taille', 10, 0);
-            $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
-            $table->string('patient_status', 10)->default('actif');
-        });
+        if(!Schema::hasTable("patients")){
+            Schema::create('patients', function (Blueprint $table) {
+                $table->id();
+                $table->string('patient_code')->unique('patient_code');
+                $table->string('patient_nom');
+                $table->string('patient_prenom');
+                $table->char('patient_sexe', 1);
+                $table->float('patient_poids', 10, 0);
+                $table->float('patient_temperature', 10, 0);
+                $table->integer('patient_age');
+                $table->text('patient_adresse');
+                $table->string('patient_telephone');
+                $table->decimal('patient_taille', 10, 0);
+                $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
+                $table->string('patient_status', 10)->default('actif');
+                $table->unsignedBigInteger('agent_id');
+            });
+        }
+
+        /* Schema::table('patients', function (Blueprint $table) {
+             $table->foreignId('agent_id')->constrained('agents')->cascadeOnDelete()->cascadeOnUpdate();
+         }); */
     }
 
     /**

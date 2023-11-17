@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int    $grade_id
- * @property int    $grade_create_At
  * @property string $grade_libelle
  * @property string $grade_status
+ * @property int    $grade_create_At
  */
 class Grades extends Model
 {
@@ -25,7 +25,7 @@ class Grades extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'grade_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -33,7 +33,7 @@ class Grades extends Model
      * @var array
      */
     protected $fillable = [
-        'grade_libelle', 'grade_create_At', 'grade_status'
+        'grade_libelle'
     ];
 
     /**
@@ -51,7 +51,7 @@ class Grades extends Model
      * @var array
      */
     protected $casts = [
-        'grade_id' => 'int', 'grade_libelle' => 'string', 'grade_create_At' => 'timestamp', 'grade_status' => 'string'
+        'grade_libelle' => 'string', 'grade_create_At' => 'timestamp', 'grade_status' => 'string'
     ];
 
     /**
@@ -75,7 +75,7 @@ class Grades extends Model
     // Functions ...
 
     // Relations ...
-    public function agent(): BelongsTo{
-        return $this->belongsTo(Agents::class, 'agent_grade_id', 'grade_id');
+    public function agent():HasMany{
+        return $this->hasMany(Agents::class);
     }
 }

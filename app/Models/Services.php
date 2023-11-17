@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property int    $service_id
  * @property int    $service_id
  * @property int    $biotime_service_id
  * @property int    $service_create_At
@@ -31,7 +31,7 @@ class Services extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'service_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -39,7 +39,7 @@ class Services extends Model
      * @var array
      */
     protected $fillable = [
-        'biotime_service_id', 'user_id', 'nom', 'libelle', 'service_statut', 'date_enregistrement', 'service_libelle', 'service_create_At', 'service_status'
+     'service_libelle'
     ];
 
     /**
@@ -48,7 +48,7 @@ class Services extends Model
      * @var array
      */
     protected $hidden = [
-        
+
     ];
 
     /**
@@ -57,7 +57,7 @@ class Services extends Model
      * @var array
      */
     protected $casts = [
-        'service_id' => 'int', 'service_id' => 'int', 'biotime_service_id' => 'int', 'user_id' => 'string', 'nom' => 'string', 'libelle' => 'string', 'service_statut' => 'string', 'date_enregistrement' => 'string', 'service_libelle' => 'string', 'service_create_At' => 'timestamp', 'service_status' => 'string'
+        'service_id' => 'int', 'biotime_service_id' => 'int', 'user_id' => 'string', 'nom' => 'string', 'libelle' => 'string', 'service_statut' => 'string', 'date_enregistrement' => 'string', 'service_libelle' => 'string', 'service_create_At' => 'timestamp', 'service_status' => 'string'
     ];
 
     /**
@@ -81,4 +81,7 @@ class Services extends Model
     // Functions ...
 
     // Relations ...
-}
+    public function agents(): HasMany{
+        return $this->hasMany(Agents::class);
+    }
+} 

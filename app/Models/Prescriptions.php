@@ -5,10 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property int    $prescreption_id
- * @property int    $prescription_create_At
  * @property string $prescription_libelle
  * @property string $prescrption_status
+ * @property int    $prescription_create_At
  */
 class Prescriptions extends Model
 {
@@ -24,7 +23,7 @@ class Prescriptions extends Model
      *
      * @var string
      */
-    protected $primaryKey = 'prescreption_id';
+    protected $primaryKey = 'id';
 
     /**
      * Attributes that should be mass-assignable.
@@ -32,7 +31,7 @@ class Prescriptions extends Model
      * @var array
      */
     protected $fillable = [
-        'prescription_libelle', 'prescription_create_At', 'prescrption_status'
+        'prescription_libelle', 'prescription_create_At', 'prescrption_status', 'patient_id', 'agent_id'
     ];
 
     /**
@@ -50,7 +49,7 @@ class Prescriptions extends Model
      * @var array
      */
     protected $casts = [
-        'prescreption_id' => 'int', 'prescription_libelle' => 'string', 'prescription_create_At' => 'timestamp', 'prescrption_status' => 'string'
+        'prescription_libelle' => 'string', 'prescription_create_At' => 'timestamp', 'prescrption_status' => 'string'
     ];
 
     /**
