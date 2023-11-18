@@ -100,4 +100,13 @@ class Patients extends Model
     public function prescriptions():HasMany{
         return $this->hasMany(Prescriptions::class);
     }
+
+    /**
+     * Summary of assignments
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assign::class);  
+    }
 }
