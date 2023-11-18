@@ -19,6 +19,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get("/agents",[ AgentController::class, 'all']);
 
+Route::middleware(['cors'])->group(function () {
+    Route::post('/hogehoge', 'Controller@hogehoge');
+});
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
