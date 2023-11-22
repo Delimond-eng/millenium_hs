@@ -35,9 +35,12 @@ class AgentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        return response()->json([
+            "status"=>"success",
+            "datas"=>$request
+        ]);
     }
 
     /**
