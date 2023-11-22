@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int    $agent_id
@@ -49,7 +50,7 @@ class Agents extends Model
      * @var array
      */
     protected $fillable = [
-         'agent_matricule', 'agent_nom', 'agent_prenom', 'agent_sexe', 'agent_telephone', 'agent_adresse', 'grade_id', 'service_id', 'fonction_id'
+         'agent_matricule', 'agent_nom', 'agent_prenom', 'agent_sexe', 'agent_telephone', 'agent_adresse', 'grade_id', 'service_id', 'fonction_id', 'user_id'
     ];
 
     /**
@@ -143,5 +144,13 @@ class Agents extends Model
     public function assignments(): HasMany
     {
         return $this->hasMany(Assign::class);
+    }
+
+    /**
+     * Summary of user
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user():HasOne{
+        return $this->hasOne(User::class);
     }
 }

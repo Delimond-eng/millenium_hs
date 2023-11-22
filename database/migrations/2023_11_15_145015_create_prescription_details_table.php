@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('prescription_detail_libelle');
             $table->string('prescription_detail_valeur');
-            $table->text('prescrption_detail_obs');
             $table->timestamp('prescription_detail_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('prescription_detail_status')->default('actif');
             $table->unsignedBigInteger('prescription_id');

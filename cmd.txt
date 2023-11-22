@@ -4,3 +4,9 @@ FOREIGN KEY (assign_agent_id) REFERENCES agents(id);
 ALTER TABLE assigns
 ADD CONSTRAINT FK_assign_patient
 FOREIGN KEY (assign_patient_id) REFERENCES patients(id);
+
+//Create migration
+
+php artisan make:migration create_flights_table
+
+

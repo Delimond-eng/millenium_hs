@@ -20,12 +20,8 @@ return new class extends Migration
                 $table->string('patient_nom');
                 $table->string('patient_prenom');
                 $table->char('patient_sexe', 1);
-                $table->float('patient_poids', 10, 0);
-                $table->float('patient_temperature', 10, 0);
-                $table->integer('patient_age');
                 $table->text('patient_adresse');
                 $table->string('patient_telephone');
-                $table->decimal('patient_taille', 10, 0);
                 $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
                 $table->string('patient_status', 10)->default('actif');
                 $table->unsignedBigInteger('agent_id');

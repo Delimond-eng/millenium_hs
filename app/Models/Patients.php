@@ -107,6 +107,10 @@ class Patients extends Model
      */
     public function assignments(): HasMany
     {
-        return $this->hasMany(Assign::class);  
+        return $this->hasMany(Assign::class);
+    }
+
+    public function details(): HasMany{
+        return $this->hasMany(PatientDetail::class);
     }
 }
