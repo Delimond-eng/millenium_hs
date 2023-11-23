@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int    $service_id
@@ -19,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Services extends Model
 {
+    use HasApiTokens, HasFactory, Notifiable;
     /**
      * The database table used by the model.
      *
@@ -39,7 +43,8 @@ class Services extends Model
      * @var array
      */
     protected $fillable = [
-     'service_libelle'
+     'service_libelle',
+     'created_by',
     ];
 
     /**
@@ -57,7 +62,7 @@ class Services extends Model
      * @var array
      */
     protected $casts = [
-        'service_id' => 'int', 'biotime_service_id' => 'int', 'user_id' => 'string', 'nom' => 'string', 'libelle' => 'string', 'service_statut' => 'string', 'date_enregistrement' => 'string', 'service_libelle' => 'string', 'service_create_At' => 'timestamp', 'service_status' => 'string'
+        'service_id' => 'int', 'service_libelle' => 'string','created_by'=>'int', 'service_create_At' => 'timestamp', 'service_status' => 'string'
     ];
 
     /**
@@ -84,4 +89,4 @@ class Services extends Model
     public function agents(): HasMany{
         return $this->hasMany(Agents::class);
     }
-} 
+}

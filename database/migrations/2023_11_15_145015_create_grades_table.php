@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('grade_libelle');
             $table->timestamp('grade_create_At')->useCurrent();
+            $table->unsignedBigInteger('created_by');
             $table->string('grade_status')->default('actif');
         });
     }

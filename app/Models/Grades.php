@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property string $grade_libelle
@@ -13,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Grades extends Model
 {
+    use HasApiTokens, HasFactory, Notifiable;
     /**
      * The database table used by the model.
      *
@@ -33,7 +37,8 @@ class Grades extends Model
      * @var array
      */
     protected $fillable = [
-        'grade_libelle'
+        'grade_libelle',
+        'created_by',
     ];
 
     /**
@@ -51,7 +56,7 @@ class Grades extends Model
      * @var array
      */
     protected $casts = [
-        'grade_libelle' => 'string', 'grade_create_At' => 'timestamp', 'grade_status' => 'string'
+        'grade_libelle' => 'string', 'created_by'=>'int', 'grade_create_At' => 'timestamp', 'grade_status' => 'string'
     ];
 
     /**

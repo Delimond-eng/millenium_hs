@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property int    $fonction_id
@@ -18,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Fonctions extends Model
 {
+    use HasApiTokens, HasFactory, Notifiable;
     /**
      * The database table used by the model.
      *
@@ -38,7 +42,8 @@ class Fonctions extends Model
      * @var array
      */
     protected $fillable = [
-        'fonction_libelle'
+        'fonction_libelle',
+        'created_by',
     ];
 
     /**
@@ -56,7 +61,7 @@ class Fonctions extends Model
      * @var array
      */
     protected $casts = [
-       'id' => 'int', 'fonction_libelle' => 'string', 'fonction_create_At' => 'timestamp', 'fonction_status' => 'string'
+       'id' => 'int', 'fonction_libelle' => 'string', 'created_by'=>'int', 'fonction_create_At' => 'timestamp', 'fonction_status' => 'string'
     ];
 
     /**

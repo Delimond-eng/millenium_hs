@@ -3,27 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agents;
+use App\Models\Services;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AgentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index():JsonResponse
-    {
-        echo "Hello world";
-        return response()->json([
-            "message"=> "test ok index"
-        ]);
-    }
 
+    /**
+     * all agents
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function all(): JsonResponse
     {
-        $agents = Agents::with('fonction')->with('service')->with('grade')->get();
+        $agents = Agents::with('fonction')
+                ->with('service')
+                ->with('grade')
+                ->with('user')
+                ->get();
         return response()->json([
             "status"=>"success",
             "datas"=>$agents
@@ -31,39 +28,41 @@ class AgentController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * create new agent
      *
      * @return \Illuminate\Http\Response
      */
     public function create(Request $request)
     {
+        $data = $request->validate([
+            'matricule' => 'required|string',
+            'nom' => 'required|string',
+            'sexe' => 'required|string|max:1',
+            'telephone' => 'required|string|min:10',
+            'adresse' => 'required|string',
+            'fonction_id'=>'required|int',
+            'service_id'=>'required|int',
+            'grade_id'=>'required|int',
+            'created_by'=> 'required|int',
+        ]);
+        $agent = Agents::create([
+            'agent_matricule' => $data['matricule'],
+            'agent_nom' => $data['nom'],
+            'agent_sexe' => $data['sexe'],
+            'agent_telephone' => $data['telephone'],
+            'agent_adresse' => $data['adresse'],
+            'fonction_id'=>$data['fonction_id'],
+            'grade_id'=>$data['grade_id'],
+            'service_id'=>$data['service_id'],
+            'created_by'=>$data['created_by'],
+        ]);
+
         return response()->json([
             "status"=>"success",
-            "datas"=>$request
+            "datas"=>$agent
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Agents  $agents
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Agents $agents)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -94,8 +93,12 @@ class AgentController extends Controller
      * @param  \App\Models\Agents  $agents
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Agents $agents)
+    public function delete(int $id)
     {
         //
     }
+
+
+
+   
 }

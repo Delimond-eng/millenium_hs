@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('service_libelle');
             $table->timestamp('service_create_At')->useCurrentOnUpdate()->useCurrent();
+            $table->unsignedBigInteger('created_by');
             $table->string('service_status')->default('actif');
         });
     }

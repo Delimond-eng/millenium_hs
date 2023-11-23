@@ -5,6 +5,11 @@ ALTER TABLE assigns
 ADD CONSTRAINT FK_assign_patient
 FOREIGN KEY (assign_patient_id) REFERENCES patients(id);
 
+
+//delete foreign KEY CONSTRAINT
+ALTER TABLE `table_name`
+	DROP FOREIGN KEY `id_name_fk`;
+
 //Create migration
 
 php artisan make:migration create_flights_table

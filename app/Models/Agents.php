@@ -50,7 +50,16 @@ class Agents extends Model
      * @var array
      */
     protected $fillable = [
-         'agent_matricule', 'agent_nom', 'agent_prenom', 'agent_sexe', 'agent_telephone', 'agent_adresse', 'grade_id', 'service_id', 'fonction_id', 'user_id'
+        'agent_matricule',
+        'agent_nom',
+        'agent_prenom',
+        'agent_sexe',
+        'agent_telephone',
+        'agent_adresse',
+        'grade_id',
+        'service_id',
+        'fonction_id',
+        'user_id'
     ];
 
     /**
@@ -68,7 +77,7 @@ class Agents extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int'
+        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int', 'user_id'=>'int'
     ];
 
     /**
