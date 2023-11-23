@@ -21,16 +21,20 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['cors'])->group(function () {
 
     Route::post("/login",[ UserController::class, 'login']);
-    Route::post("/user",[ UserController::class, 'store']);
+    Route::post("/users.store",[ UserController::class, 'store']);
 
-    Route::post('/service',[ ConfigController::class,'saveService']);
-    Route::get('/services',[ ConfigController::class,'allServices']);
+    Route::post('/services.create',[ ConfigController::class,'saveService']);
+    Route::get('/services.all',[ ConfigController::class,'allServices']);
 
-    Route::post('/fonction',[ ConfigController::class,'saveFonction']);
-    Route::get('/fonctions',[ ConfigController::class,'allFonctions']);
+    Route::post('/fonctions.create',[ ConfigController::class,'saveFonction']);
+    Route::get('/fonctions.all',[ ConfigController::class,'allFonctions']);
 
-    Route::post('/grade',[ ConfigController::class,'saveGrade']);
-    Route::get('/grades',[ ConfigController::class,'allGrades']);
+    Route::post('/grades.create',[ ConfigController::class,'saveGrade']);
+    Route::get('/grades.all',[ ConfigController::class,'allGrades']);
+
+    Route::post('/agents.create',[ AgentController::class,'create']);
+    Route::get('/agents.all',[ AgentController::class,'all']);
+    Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

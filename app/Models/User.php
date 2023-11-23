@@ -23,7 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'agent_id'
+        'agent_id',
+        'user_role_id',
     ];
 
     /**
@@ -53,6 +54,11 @@ class User extends Authenticatable
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function agent():BelongsTo{
-        return $this->belongsTo(Agents::class, 'agent_id');
+        return $this->belongsTo(Agents::class,foreignKey:'agent_id');
+    }
+
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(UserRole::class,foreignKey:'user_role_id');
     }
 }

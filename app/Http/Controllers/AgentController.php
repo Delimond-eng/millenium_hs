@@ -21,7 +21,6 @@ class AgentController extends Controller
         $agents = Agents::with('fonction')
                 ->with('service')
                 ->with('grade')
-                ->with('user')
                 ->get();
         return response()->json([
             "status"=>"success",
@@ -41,6 +40,7 @@ class AgentController extends Controller
              $data = $request->validate([
                 'matricule' => 'required|string',
                 'nom' => 'required|string',
+                'prenom' => 'required|string',
                 'sexe' => 'required|string|max:1',
                 'telephone' => 'required|string|min:10',
                 'adresse' => 'required|string',
@@ -52,6 +52,7 @@ class AgentController extends Controller
             $agent = Agents::create([
                 'agent_matricule' => $data['matricule'],
                 'agent_nom' => $data['nom'],
+                'agent_prenom' => $data['prenom'],
                 'agent_sexe' => $data['sexe'],
                 'agent_telephone' => $data['telephone'],
                 'agent_adresse' => $data['adresse'],
@@ -78,7 +79,8 @@ class AgentController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return JsonResponse|mixed
      */
-    public function assignAccount(Request $request){
+    public function assignAccount(Request $request)
+    {
         try{
             $data = $request->validate([
                 'agent_id'=>'required|int|exists:agents,id',
@@ -90,7 +92,7 @@ class AgentController extends Controller
             $user->update([
                 'agent_id'=> $data['agent_id'],
             ]);
-            return response()->json(['user' => $user], 200);
+            return response()->json(['user' => $user]);
         }
         catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();

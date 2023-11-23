@@ -59,7 +59,8 @@ class Agents extends Model
         'grade_id',
         'service_id',
         'fonction_id',
-        'user_id'
+        'user_id',
+        'created_by',
     ];
 
     /**
@@ -77,7 +78,7 @@ class Agents extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int', 'user_id'=>'int'
+        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int', 'created_id'=>'int'
     ];
 
     /**
@@ -160,6 +161,6 @@ class Agents extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user():HasOne{
-        return $this->hasOne(User::class);
+        return $this->hasOne(User::class, localKey:'id');
     }
 }
