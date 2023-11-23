@@ -32,7 +32,6 @@ class ConfigController extends Controller
                 "status"=>"success",
                 "datas"=>$service
             ]);
-                // Si la validation réussit, procédez à la logique de création de l'utilisateur ici
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ], 422);
