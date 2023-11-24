@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -19,6 +20,8 @@ class UserController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('user-token')->plainTextToken;
+            $role = UserRole::where('id', $user->user_role_id)->first();
+            $user['role'] = $role;
             return response()->json([
                 'user' => $user,
                 'token' => $token,
