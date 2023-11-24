@@ -41,7 +41,7 @@ class Patients extends Model
      * @var array
      */
     protected $fillable = [
-        'patient_code', 'patient_nom', 'patient_prenom', 'patient_sexe', 'patient_poids', 'patient_temperature', 'patient_age', 'patient_adresse', 'patient_telephone', 'patient_taille', 'patient_create_At', 'patient_status', 'agent_id'
+        'patient_code', 'patient_nom', 'patient_prenom', 'patient_sexe', 'patient_adresse', 'patient_telephone','patient_datenais', 'patient_create_At', 'patient_status', 'created_by'
     ];
 
     /**
@@ -59,7 +59,7 @@ class Patients extends Model
      * @var array
      */
     protected $casts = [
-        'patient_code' => 'string', 'patient_nom' => 'string', 'patient_prenom' => 'string', 'patient_poids' => 'double', 'patient_temperature' => 'double', 'patient_age' => 'int', 'patient_adresse' => 'string', 'patient_telephone' => 'string', 'patient_create_At' => 'timestamp', 'patient_status' => 'string'
+        'patient_code' => 'string', 'patient_nom' => 'string', 'patient_prenom' => 'string', 'patient_adresse' => 'string', 'patient_telephone' => 'string', 'patient_create_At' => 'timestamp', 'patient_status' => 'string', 'created_by'=>'int'
     ];
 
     /**
@@ -90,7 +90,7 @@ class Patients extends Model
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function agent(): BelongsTo{
-        return $this->belongsTo(Agents::class);
+        return $this->belongsTo(Agents::class, foreignKey:'created_by');
     }
 
     /**
@@ -111,6 +111,6 @@ class Patients extends Model
     }
 
     public function details(): HasMany{
-        return $this->hasMany(PatientDetail::class);
+        return $this->hasMany(PatientDetail::class, localKey:'id', foreignKey:'patient_id');
     }
 }

@@ -137,7 +137,7 @@ class Agents extends Model
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function patients(): HasMany{
-        return $this->hasMany(Patients::class);
+        return $this->hasMany(Patients::class, localKey:'id');
     }
 
     /**

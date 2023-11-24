@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PatientDetail;
+use App\Models\Patients;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class PatientController extends Controller
 {
@@ -11,9 +14,15 @@ class PatientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function all()
     {
-        //
+        $agents = Patients::with('details')
+                ->with('agent')
+                ->get();
+        return response()->json([
+            "status"=>"success",
+            "patients"=>$agents
+        ]);
     }
 
     /**
@@ -21,9 +30,75 @@ class PatientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        try
+        {
+            $patientDetails= $request->patient_details;
+            /**
+             * Verifie si le patient exist
+            */
+            if(!isset($request->patient_id)){
+                /** @var mixed check validate datas */
+                $data = $request->validate([
+                    'nom' => 'required|string',
+                    'prenom' => 'required|string',
+                    'sexe' => 'required|string|max:1',
+                    'datenais' => 'required|date|date_format:Y-m-d',
+                    'telephone' => 'required|string|min:10|unique:patients,patient_telephone',
+                    'adresse' => 'required|string',
+                    'created_by'=> 'required|int|exists:agents,id',
+                ]);
+                /** @var mixed create agent */
+                $patient = Patients::create([
+                    'patient_code' => $request->code,
+                    'patient_nom' => $data['nom'],
+                    'patient_prenom' => $data['prenom'],
+                    'patient_sexe' => $data['sexe'],
+                    'patient_telephone' => $data['telephone'],
+                    'patient_adresse' => $data['adresse'],
+                    'patient_datenais' => $data['datenais'],
+                    'created_by'=>$data['created_by'],
+                ]);
+                if(isset($patient) && (isset($patientDetails) && !empty($patientDetails))){
+                    $details = PatientDetail::create([
+                        "patient_detail_poids"=> $patientDetails['poids'],
+                        "patient_detail_taille"=> $patientDetails['taille'],
+                        "patient_detail_temperature"=> $patientDetails['temperature'],
+                        "patient_detail_age"=> $patientDetails['age'],
+                        "patient_tension_art"=> $patientDetails['tension_art'],
+                        "patient_id"=> $patient->id,
+                    ]);
+                    $patient['details'] = $details;
+                }
+                return response()->json([
+                    "status"=>"success",
+                    "patient"=>$patient
+                ]);
+            }
+            else{
+                /** @var mixed affiche les infos de l'ancien patient */
+                $oldPatient = Patients::where('id', $request->patient_id)->first();
+                $details = PatientDetail::create([
+                    "patient_detail_poids"=> $patientDetails['poids'],
+                    "patient_detail_taille"=> $patientDetails['taille'],
+                    "patient_detail_temperature"=> $patientDetails['temperature'],
+                    "patient_detail_age"=> $patientDetails['age'],
+                    "patient_tension_art"=> $patientDetails['tension_art'],
+                    "patient_id"=> $request->patient_id,
+                ]);
+                $oldPatient["details"] = $details;
+                return response()->json([
+                    "status"=>"success",
+                    "patient"=>$oldPatient,
+                ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ], 422);
+        }
+
     }
 
     /**

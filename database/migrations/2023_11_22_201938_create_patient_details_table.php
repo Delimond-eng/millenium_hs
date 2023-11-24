@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('patient_detail_poids', 5);
             $table->string('patient_detail_taille', 5);
             $table->string('patient_detail_temperature', 5);
+            $table->string('patient_detail_tension_art', 5);
             $table->string('patient_detail_age', 5);
             $table->unsignedBigInteger('patient_id');
             $table->string('patient_detail_status')->default('actif');
