@@ -56,6 +56,8 @@ class Agents extends Model
         'agent_sexe',
         'agent_telephone',
         'agent_adresse',
+        'agent_specialite',
+        'agent_datenais',
         'grade_id',
         'service_id',
         'fonction_id',
@@ -78,7 +80,7 @@ class Agents extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int', 'created_id'=>'int'
+        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_datenais'=>'string', 'agent_specialite'=>'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int', 'created_id'=>'int'
     ];
 
     /**

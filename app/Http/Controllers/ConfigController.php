@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Fonctions;
 use App\Models\Grades;
 use App\Models\Services;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
@@ -83,19 +84,6 @@ class ConfigController extends Controller
     }
 
     /**
-     * Get All fonctions
-     * @return \Illuminate\Http\JsonResponse|mixed
-     */
-    public function allFonctions()
-    {
-        $fonctions = Fonctions::all();
-        return response()->json([
-            "status"=> "success",
-            "fonctions"=>$fonctions
-        ]);
-    }
-
-    /**
      * Save Grade
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\JsonResponse|mixed
@@ -122,11 +110,21 @@ class ConfigController extends Controller
 
     }
 
-    public function allGrades(){
+
+
+    public function allConfigs(){
         $grades = Grades::all();
+        $fonctions = Fonctions::all();
+        $services = Services::all();
+        $userRoles = UserRole::all();
         return response()->json([
-            "status"=>"success",
-            "grades"=>$grades
+            "status"=> "success",
+            "configs"=>[
+                "grades"=> $grades,
+                "fonctions"=> $fonctions,
+                "services"=>$services,
+                "roles"=> $userRoles
+            ]
         ]);
     }
 }

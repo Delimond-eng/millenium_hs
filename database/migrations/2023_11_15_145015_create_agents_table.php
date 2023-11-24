@@ -22,6 +22,8 @@ return new class extends Migration
                 $table->char('agent_sexe');
                 $table->string('agent_telephone');
                 $table->text('agent_adresse');
+                $table->string('agent_datenais');
+                $table->string('agent_specialite');
                 $table->timestamp('agent_create_At')->useCurrentOnUpdate()->useCurrent();
                 $table->string('agent_status')->default('actif');
                 $table->unsignedBigInteger('grade_id');
