@@ -96,21 +96,11 @@ class PatientController extends Controller
         }
         catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ], 422);
+            return response()->json(['errors' => $errors ]);
         }
 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
     /**
      * Display the specified resource.
@@ -120,7 +110,11 @@ class PatientController extends Controller
      */
     public function show($id)
     {
-        //
+        $agent = Patients::where('id', $id)->first();
+        return response()->json([
+            "status"=>"success",
+            "patient"=>$agent
+        ]);
     }
 
     /**

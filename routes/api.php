@@ -38,6 +38,7 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);
     Route::get('/patients.all',[ PatientController::class,'all']);
+    Route::get('/patient.show/{id}',[ PatientController::class,'show']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
