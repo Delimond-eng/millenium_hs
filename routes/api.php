@@ -30,7 +30,6 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.grades',[ ConfigController::class,'saveGrade']);
     Route::get('/configs.all',[ ConfigController::class,'allConfigs']);
 
-
     Route::post('/agents.create',[ AgentController::class,'create']);
     Route::get('/agents.all',[ AgentController::class,'all']);
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);

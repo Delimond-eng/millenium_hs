@@ -89,7 +89,7 @@ class AgentController extends Controller
         }
         catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ], 422);
+            return response()->json(['errors' => $errors ]);
         }
 
 
