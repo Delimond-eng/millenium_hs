@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string $consult_libelle
@@ -33,7 +34,7 @@ class Consultations extends Model
      * @var array
      */
     protected $fillable = [
-        'consult_libelle', 'consult_obs', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id'
+        'consult_libelle', 'consult_diagnostic', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id'
     ];
 
     /**
@@ -51,7 +52,8 @@ class Consultations extends Model
      * @var array
      */
     protected $casts = [
-        'consult_libelle' => 'string', 'consult_obs' => 'string', 'consult_create_At' => 'timestamp', 'consult_status' => 'string'
+        'consult_libelle' => 'string', 'consult_obs' => 'string', 'consult_create_At' => 'timestamp', 'consult_status' => 'string',
+        'patient_id' => 'int', 'agent_id'=>'int'
     ];
 
     /**
@@ -78,19 +80,21 @@ class Consultations extends Model
 
      /**
      * Summary of agent
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function agent(): BelongsTo{
-        return $this->belongsTo(Agents::class);
+        return $this->belongsTo(Agents::class, foreignKey: 'agent_id');
     }
 
     /**
      * Summary of patient
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function patient(): BelongsTo{
-        return $this->belongsTo(Patients::class);
+        return $this->belongsTo(Patients::class, foreignKey: 'patient_id');
     }
 
-
+    public function prescriptions(): HasMany{
+        return $this->hasMany(Prescriptions::class, foreignKey: 'id');
+    }
 }

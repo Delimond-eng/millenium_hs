@@ -87,7 +87,7 @@ class Patients extends Model
 
     /**
      * Summary of agent
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function agent(): BelongsTo{
         return $this->belongsTo(Agents::class, foreignKey:'created_by');
@@ -95,7 +95,7 @@ class Patients extends Model
 
     /**
      * Summary of prescriptions
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function prescriptions():HasMany{
         return $this->hasMany(Prescriptions::class);
@@ -103,7 +103,7 @@ class Patients extends Model
 
     /**
      * Summary of assignments
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function assignments(): HasMany
     {
@@ -111,6 +111,10 @@ class Patients extends Model
     }
 
     public function details(): HasMany{
-        return $this->hasMany(PatientDetail::class, localKey:'id', foreignKey:'patient_id');
+        return $this->hasMany(PatientDetail::class, foreignKey: 'patient_id', localKey: 'id');
+    }
+
+    public  function  doctors(){
+        return $this->belongsToMany(Agents::class, 'assigns', 'assign_patient_id', 'assign_agent_id');
     }
 }

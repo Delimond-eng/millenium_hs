@@ -4,8 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property int    $agent_id
@@ -26,7 +29,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $agent_prenom
  * @property string $agent_telephone
  * @property string $agent_adresse
- * @property string $agent_status
  */
 class Agents extends Model
 {
@@ -108,7 +110,7 @@ class Agents extends Model
 
     /**
      * Summary of grade
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function grade(): BelongsTo
     {
@@ -117,7 +119,7 @@ class Agents extends Model
 
     /**
      * Summary of fonction
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function fonction(): BelongsTo
     {
@@ -126,7 +128,7 @@ class Agents extends Model
 
     /**
      * Summary of service
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function service(): BelongsTo{
         return $this->belongsTo(Services::class);
@@ -134,15 +136,15 @@ class Agents extends Model
 
     /**
      * Summary of patients
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function patients(): HasMany{
-        return $this->hasMany(Patients::class, localKey:'id');
+        return $this->hasMany(Patients::class, foreignKey: 'patient_id', localKey: 'id');
     }
 
     /**
      * Summary of prescriptions
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function prescriptions(): HasMany
     {
@@ -151,16 +153,16 @@ class Agents extends Model
 
     /**
      * Summary of assignments
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return BelongsToMany
      */
-    public function assignments(): HasMany
+    public function assignPatients() : BelongsToMany
     {
-        return $this->hasMany(Assign::class);
+        return $this->belongsToMany(Patients::class, 'assigns', 'assign_agent_id', 'assign_patient_id');
     }
 
     /**
      * Summary of user
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function user():HasOne{
         return $this->hasOne(User::class, localKey:'id');

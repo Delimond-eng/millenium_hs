@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['cors'])->group(function () {
-
     Route::post("/login",[ UserController::class, 'login']);
     Route::post("/users.store",[ UserController::class, 'store']);
 
@@ -33,11 +32,17 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/agents.create',[ AgentController::class,'create']);
     Route::get('/agents.all',[ AgentController::class,'all']);
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
+    Route::get('/agents.showassigns/{agentId}',[ AgentController::class,'showPendingPatient']);
+
+    Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
+    Route::post('/prescriptions.add',[ AgentController::class,'addPrescriptions']);
+    Route::get('/consultations.all',[ AgentController::class,'viewAllConsultations']);
 
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);
-    Route::get('/patients.all',[ PatientController::class,'all']);
+    Route::get('/patients.all/{order}',[ PatientController::class,'all']);
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
+    Route::post('/patients.assign',[ PatientController::class,'assign']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

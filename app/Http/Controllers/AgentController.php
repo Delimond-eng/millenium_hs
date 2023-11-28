@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agents;
+use App\Models\Consultations;
+use App\Models\Prescriptions;
 use App\Models\Services;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -123,40 +125,116 @@ class AgentController extends Controller
 
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Agents  $agents
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Agents $agents)
-    {
-        //
+     * VOIR LA LISTE DE TOUS LES PATIENTS ASSIGNES A UN MEDECIN
+    */
+    public function showPendingPatient($agentId){
+        //$agent = Agents::find($agentId);
+        $agent = Agents::find($agentId);
+        if(isset($agent)){
+            $patients = $agent->assignPatients;
+            return response()->json([
+                "status"=>"success",
+                "patients"=>$patients
+            ]);
+        }
+        else{
+            return response()->json([
+                "status"=>"failed",
+                "message"=>"agent non reconnu"
+            ], 401);
+        }
     }
+
+
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Agents  $agents
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Agents $agents)
-    {
-        //
+     * CREATION D'UNE NOUVELLE CONSULTATIONS
+    */
+    public function  createConsultations(Request $request): JsonResponse{
+        try
+        {
+            /** @var mixed check validate datas */
+            $data = $request->validate([
+                'libelle' => 'required|string',
+                'diagnostic' => 'required|string|min:10',
+                'patient_id'=>'required|int|exists:patients,id',
+                'agent_id'=>'required|int|exists:agents,id',
+            ]);
+            $consultation = Consultations::create([
+                "consult_libelle" => $data['libelle'],
+                "consult_diagnostic" => $data['diagnostic'],
+                "patient_id" => $data['patient_id'],
+                "agent_id" => $data['agent_id']
+            ]);
+            if(isset($consultation)){
+                return response()->json([
+                    "status"=>"success",
+                    "consultation"=>$consultation
+                ]);
+            }
+            else{
+                return response()->json([
+                    "errors"=>"Echec de l'opération !"
+                ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+
     }
+
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Agents  $agents
-     * @return \Illuminate\Http\Response
-     */
-    public function delete(int $id)
-    {
-        //
+     * CREATION PRESCRIPTION
+    */
+    public function addPrescriptions(Request $request): JsonResponse{
+        try
+        {
+            /** @var mixed check validate datas */
+            $data = $request->validate([
+                'traitement' => 'required|string',
+                'traitement_type' => 'required|string',
+                'posologie'=>'required|string',
+                'consult_id'=> 'required|int|exists:consultations,id',
+            ]);
+            $prescriptions = Prescriptions::create([
+                "prescription_traitement" => $data['traitement'],
+                "prescription_posologie" => $data['posologie'],
+                "prescription_traitement_type" => $data['traitement_type'],
+                "consult_id" => $data['consult_id']
+            ]);
+            if(isset($prescriptions)){
+                return response()->json([
+                    "status"=>"success",
+                    "prescription"=>$prescriptions
+                ]);
+            }
+            else{
+                return response()->json([
+                    "errors"=>"Echec de l'opération !"
+                ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
     }
 
 
-
+    public function viewAllConsultations():JsonResponse
+    {
+        $consultations = Consultations::with('agent')
+                ->with('patient')
+                ->with('prescriptions')
+                ->orderByDesc('id')
+                ->get();
+        return response()->json([
+            "status"=>"success",
+            "consultations"=>$consultations
+        ]);
+    }
 
 }

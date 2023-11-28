@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Assign;
 use App\Models\PatientDetail;
 use App\Models\Patients;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -12,13 +14,13 @@ class PatientController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function all()
+    public function all($order='desc'): JsonResponse
     {
         $agents = Patients::with('details')
-                ->with('agent')
-                ->get();
+            ->with('agent')->orderBy(column: 'id', direction: $order)
+            ->get();
         return response()->json([
             "status"=>"success",
             "patients"=>$agents
@@ -28,9 +30,9 @@ class PatientController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function create(Request $request)
+    public function create(Request $request): JsonResponse
     {
         try
         {
@@ -102,18 +104,43 @@ class PatientController extends Controller
     }
 
 
+
+    public function assign(Request $request): JsonResponse{
+        try
+        {
+            $data = $request->validate([
+                'agent_id' => 'required|int|exists:agents,id',
+                'patient_id' => 'required|int|exists:patients,id',
+            ]);
+            /** @var mixed create agent */
+            $assignDatas = Assign::create([
+                'assign_agent_id' => $data['agent_id'],
+                'assign_patient_id' => $data['patient_id'],
+            ]);
+            return response()->json([
+                "status"=>"success",
+                "patients"=>$assignDatas
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+    }
+
+
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show($id) : JsonResponse
     {
-        $agent = Patients::where('id', $id)->first();
+        $patient = Patients::where('id', $id)->with('details')->first();
         return response()->json([
             "status"=>"success",
-            "patient"=>$agent
+            "patient"=>$patient
         ]);
     }
 
@@ -153,9 +180,9 @@ class PatientController extends Controller
 
     /**
      * Génerer un code unique
-     * @return \Illuminate\Http\JsonResponse|mixed
+     * @return JsonResponse
      */
-    public function getCode(){
+    public function getCode() :JsonResponse{
         $lettreAleatoire = chr(rand(65, 90)); // 65 représente le code ASCII de 'A' et 90 celui de 'Z'
         $chiffresAleatoires = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
         $codeGenerer = $lettreAleatoire . $chiffresAleatoires;

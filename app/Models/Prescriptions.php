@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @property string $prescription_libelle
- * @property string $prescrption_status
+ * @property string $proscription_traitement
+ * @property string $prescription_posologie
+ * @property string $prescription_traitement_type
+ * @property string $prescription_status
  * @property int    $prescription_create_At
+ * @property int    $consult_id
  */
 class Prescriptions extends Model
 {
@@ -33,7 +35,7 @@ class Prescriptions extends Model
      * @var array
      */
     protected $fillable = [
-        'prescription_libelle', 'prescription_create_At', 'prescrption_status', 'patient_id', 'agent_id'
+        'prescription_traitement','prescription_posologie', 'prescription_traitement_type', 'consult_id',
     ];
 
     /**
@@ -51,7 +53,7 @@ class Prescriptions extends Model
      * @var array
      */
     protected $casts = [
-        'prescription_libelle' => 'string', 'prescription_create_At' => 'timestamp', 'prescrption_status' => 'string'
+        'prescription_traitement' => 'string', 'prescription_posologie' => 'string', 'prescription_traitement_type' => 'string', 'prescription_create_At' => 'timestamp', 'prescription_status' => 'string'
     ];
 
     /**
@@ -75,29 +77,12 @@ class Prescriptions extends Model
     // Functions ...
 
     // Relations ...
-
     /**
-     * Summary of agent
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function agent(): BelongsTo{
-        return $this->belongsTo(Agents::class);
+     * Summary of consultations
+     * @return BelongsTo
+    */
+    public function consultation(): BelongsTo{
+        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id');
     }
 
-    /**
-     * Summary of patient
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function patient(): BelongsTo{
-        return $this->belongsTo(Patients::class);
-    }
-
-    /**
-     * prescription details
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
-    public function details(): HasMany
-    {
-        return $this->hasMany(PrescriptionDetails::class);
-    }
 }
