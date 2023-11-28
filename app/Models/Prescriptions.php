@@ -82,7 +82,7 @@ class Prescriptions extends Model
      * @return BelongsTo
     */
     public function consultation(): BelongsTo{
-        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id');
+        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id', relation: 'id');
     }
 
 }

@@ -95,6 +95,6 @@ class Consultations extends Model
     }
 
     public function prescriptions(): HasMany{
-        return $this->hasMany(Prescriptions::class, foreignKey: 'id');
+        return $this->hasMany(Prescriptions::class, foreignKey: 'consult_id', localKey: 'id');
     }
 }

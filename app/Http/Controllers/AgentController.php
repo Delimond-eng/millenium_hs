@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agents;
+use App\Models\ConsultationDetails;
 use App\Models\Consultations;
 use App\Models\Prescriptions;
 use App\Models\Services;
@@ -153,6 +154,7 @@ class AgentController extends Controller
     public function  createConsultations(Request $request): JsonResponse{
         try
         {
+            $details = $request->consult_details;
             /** @var mixed check validate datas */
             $data = $request->validate([
                 'libelle' => 'required|string',
@@ -167,6 +169,15 @@ class AgentController extends Controller
                 "agent_id" => $data['agent_id']
             ]);
             if(isset($consultation)){
+                if(isset($details)){
+                    foreach ($details as $detail){
+                        $consultationDetail = ConsultationDetails::create([
+                            "consult_detail_libelle"=>$detail['detail_libelle'],
+                            "consult_detail_valeur"=>$detail['detail_valeur'],
+                            "consult_id"=>$consultation->id
+                        ]);
+                    }
+                }
                 return response()->json([
                     "status"=>"success",
                     "consultation"=>$consultation
@@ -192,28 +203,24 @@ class AgentController extends Controller
     public function addPrescriptions(Request $request): JsonResponse{
         try
         {
-            /** @var mixed check validate datas */
-            $data = $request->validate([
-                'traitement' => 'required|string',
-                'traitement_type' => 'required|string',
-                'posologie'=>'required|string',
-                'consult_id'=> 'required|int|exists:consultations,id',
-            ]);
-            $prescriptions = Prescriptions::create([
-                "prescription_traitement" => $data['traitement'],
-                "prescription_posologie" => $data['posologie'],
-                "prescription_traitement_type" => $data['traitement_type'],
-                "consult_id" => $data['consult_id']
-            ]);
+            $prescriptions = $request->prescriptions;
             if(isset($prescriptions)){
+                foreach ($prescriptions as $data){
+                    $prescription = Prescriptions::create([
+                        "prescription_traitement" => $data['traitement'],
+                        "prescription_posologie" => $data['posologie'],
+                        "prescription_traitement_type" => $data['traitement_type'],
+                        "consult_id" => $data['consult_id']
+                    ]);
+                }
                 return response()->json([
                     "status"=>"success",
-                    "prescription"=>$prescriptions
+                    "message"=>"Prescriptions ajoutées avec succès !"
                 ]);
             }
             else{
                 return response()->json([
-                    "errors"=>"Echec de l'opération !"
+                    "errors"=>"Prescriptions médicales requises !"
                 ]);
             }
         }
