@@ -52,7 +52,7 @@ class ConsultationDetails extends Model
      * @var array
      */
     protected $casts = [
-        'id'=>'int','consult_detail_libelle' => 'string', 'consult_detail_valeur' => 'string', 'consult_detail_obs' => 'string', 'consult_detail_create_At' => 'timestamp', 'consult_detail_status' => 'string'
+        'id'=>'int','consult_detail_libelle' => 'string', 'consult_detail_valeur' => 'string', 'consult_detail_obs' => 'string', 'consult_detail_create_At' => 'timestamp', 'consult_detail_status' => 'string', 'consult_id'=>'int'
     ];
 
     /**
