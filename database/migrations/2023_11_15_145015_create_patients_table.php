@@ -25,7 +25,9 @@ return new class extends Migration
                 $table->string('patient_telephone');
                 $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
                 $table->string('patient_status', 10)->default('actif');
-                $table->unsignedBigInteger('agent_id');
+                $table->unsignedBigInteger('created_by');
+                $table->unsignedBigInteger('hopital_emplacement_id');
+                $table->unsignedBigInteger('hopital_id');
             });
         }
 

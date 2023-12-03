@@ -43,6 +43,7 @@ class Fonctions extends Model
      */
     protected $fillable = [
         'fonction_libelle',
+        'hopital_id',
         'created_by',
     ];
 

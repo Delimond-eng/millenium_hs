@@ -41,7 +41,8 @@ class Patients extends Model
      * @var array
      */
     protected $fillable = [
-        'patient_code', 'patient_nom', 'patient_prenom', 'patient_sexe', 'patient_adresse', 'patient_telephone','patient_datenais', 'patient_create_At', 'patient_status', 'created_by'
+        'patient_code', 'patient_nom', 'patient_prenom', 'patient_sexe', 'patient_adresse', 'patient_telephone','patient_datenais', 'patient_create_At', 'patient_status', 'created_by','hopital_id',
+        'hopital_emplacement_id'
     ];
 
     /**
@@ -111,7 +112,7 @@ class Patients extends Model
     }
 
     public function details(): HasMany{
-        return $this->hasMany(PatientDetail::class, foreignKey: 'patient_id', localKey: 'id');
+        return $this->hasMany(PatientFiche::class, foreignKey: 'patient_id', localKey: 'id');
     }
 
     public  function  doctors(){

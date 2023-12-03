@@ -36,6 +36,8 @@ class Prescriptions extends Model
      */
     protected $fillable = [
         'prescription_traitement','prescription_posologie', 'prescription_traitement_type', 'consult_id',
+        'hopital_id',
+        'hopital_emplacement_id'
     ];
 
     /**

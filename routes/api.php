@@ -21,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['cors'])->group(function () {
+
+    Route::post("hospitals.create", [\App\Http\Controllers\HospitalController::class, 'createHosto']);
+    Route::post("emplacements.create", [\App\Http\Controllers\HospitalController::class, 'createEmplacement']);
+
     Route::post("/login",[ UserController::class, 'login']);
     Route::post("/users.store",[ UserController::class, 'store']);
 

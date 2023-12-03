@@ -13,13 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('grades', function (Blueprint $table) {
+        Schema::create('hopital_emplacements', function (Blueprint $table) {
             $table->id();
-            $table->string('grade_libelle');
-            $table->timestamp('grade_create_At')->useCurrent();
-            $table->unsignedBigInteger('created_by');
+            $table->string('hopital_emplacement_libelle');
+            $table->string('hopital_emplacement_adresse');
+            $table->timestamp('hopital_emplacement_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->unsignedBigInteger('hopital_id');
-            $table->string('grade_status')->default('actif');
         });
     }
 
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('grades');
+        Schema::dropIfExists('hopital_emplacements');
     }
 };

@@ -17,7 +17,10 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('assign_agent_id');
             $table->unsignedBigInteger('assign_patient_id');
+            $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('hopital_id');
             $table->timestamp('assign_create_At')->useCurrentOnUpdate()->useCurrent();
+
         });
     }
 

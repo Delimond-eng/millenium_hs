@@ -27,7 +27,9 @@ class Assign extends Model
      * @var array
      */
     protected $fillable = [
-        'assign_agent_id', 'assign_patient_id'
+        'assign_agent_id', 'assign_patient_id',
+        'hopital_id',
+        'hopital_emplacement_id'
     ];
 
     /**
@@ -45,7 +47,7 @@ class Assign extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'assign_agent_id'=>'int', 'assign_patient'=>'int', 'assign_create_At'=> 'timestamp'
+        'id' => 'int', 'assign_agent_id'=>'int', 'assign_patient'=>'int', 'assign_create_At'=> 'timestamp', 'hopital_id'=>'int', 'hopital_emplacement_id'=>'int'
     ];
 
     /**

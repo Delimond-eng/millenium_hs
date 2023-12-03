@@ -34,7 +34,11 @@ class ConsultationDetails extends Model
      * @var array
      */
     protected $fillable = [
-        'consult_detail_libelle', 'consult_detail_valeur', 'consult_detail_obs',  'consult_id'
+        'consult_detail_libelle',
+        'consult_detail_valeur',
+        'consult_detail_obs',
+        'consult_id','hopital_id',
+        'hopital_emplacement_id'
     ];
 
     /**

@@ -33,7 +33,7 @@ class UserController extends Controller
     /**
      * User regester
      * @param \Illuminate\Http\Request $request
-     * @return void
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(Request $request)
     {

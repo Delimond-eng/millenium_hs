@@ -17,18 +17,15 @@ return new class extends Migration
             Schema::create('consultations', function (Blueprint $table) {
                 $table->id();
                 $table->string('consult_libelle');
-                $table->text('consult_obs');
+                $table->text('consult_diagnostic');
                 $table->timestamp('consult_create_At')->useCurrent();
                 $table->string('consult_status')->default('actif');
                 $table->unsignedBigInteger('patient_id');
                 $table->unsignedBigInteger('agent_id');
+                $table->unsignedBigInteger('hopital_id');
+                $table->unsignedBigInteger('hopital_emplacement_id');
             });
         }
-
-        /* Schema::create('consultations', function (Blueprint $table) {
-            $table->foreignId('patient_id')->constrained('patients')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('agent_id')->constrained('agents')->cascadeOnDelete()->cascadeOnUpdate();
-         }); */
     }
 
 

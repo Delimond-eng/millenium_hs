@@ -23,20 +23,17 @@ return new class extends Migration
                 $table->string('agent_telephone');
                 $table->text('agent_adresse');
                 $table->string('agent_datenais');
-                $table->string('agent_specialite');
+                $table->string('agent_specialite')->nullable();
                 $table->timestamp('agent_create_At')->useCurrentOnUpdate()->useCurrent();
                 $table->string('agent_status')->default('actif');
                 $table->unsignedBigInteger('grade_id');
                 $table->unsignedBigInteger('service_id');
                 $table->unsignedBigInteger('fonction_id');
+                $table->unsignedBigInteger('create_by');
+                $table->unsignedBigInteger('hopital_emplacement_id');
+                $table->unsignedBigInteger('hopital_id');
             });
         }
-
-        /* Schema::table('agents', function (Blueprint $table) {
-            $table->foreignId('grade_id')->constrained('grades')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('service_id')->constrained('services')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('fonction_id')->constrained('fonctions')->cascadeOnDelete()->cascadeOnUpdate();
-        }); */
     }
 
     /**

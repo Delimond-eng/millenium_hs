@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PatientDetail extends Model
+class PatientFiche extends Model
 {
 
     /**
@@ -29,11 +29,20 @@ class PatientDetail extends Model
      * @var array
      */
 
-    protected $fillable = ["patient_detail_poids","patient_detail_taille", "patient_detail_temperature", "patient_tension_art", "patient_detail_age", "patient_id"];
+    protected $fillable = [
+        "patient_detail_poids",
+        "patient_detail_taille",
+        "patient_detail_temperature",
+        "patient_tension_art",
+        "patient_detail_age",
+        "patient_id",
+        'hopital_id',
+        'hopital_emplacement_id'
+    ];
 
     /**
      * Summary of patient
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
 
 

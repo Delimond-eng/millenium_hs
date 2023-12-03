@@ -43,7 +43,7 @@ class Services extends Model
      * @var array
      */
     protected $fillable = [
-     'service_libelle',
+     'service_libelle','hopital_id',
      'created_by',
     ];
 

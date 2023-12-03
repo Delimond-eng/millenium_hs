@@ -34,7 +34,8 @@ class Consultations extends Model
      * @var array
      */
     protected $fillable = [
-        'consult_libelle', 'consult_diagnostic', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id'
+        'consult_libelle', 'consult_diagnostic', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id', 'hopital_id',
+        'hopital_emplacement_id'
     ];
 
     /**

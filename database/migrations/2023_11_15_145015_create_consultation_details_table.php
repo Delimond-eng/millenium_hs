@@ -22,12 +22,11 @@ return new class extends Migration
                 $table->timestamp('consult_detail_create_At')->useCurrent();
                 $table->string('consult_detail_status', 10)->default('actif');
                 $table->unsignedBigInteger('consult_id');
+                $table->unsignedBigInteger('hopital_id');
+                $table->unsignedBigInteger('hopital_emplacement_id');
             });
         }
 
-        /* Schema::table('consultation_details', function (Blueprint $table) {
-            $table->foreignId('consult_id')->constrained('consultations')->cascadeOnDelete()->cascadeOnUpdate();
-        }); */
     }
 
     /**

@@ -38,6 +38,7 @@ class Grades extends Model
      */
     protected $fillable = [
         'grade_libelle',
+        'hopital_id',
         'created_by',
     ];
 

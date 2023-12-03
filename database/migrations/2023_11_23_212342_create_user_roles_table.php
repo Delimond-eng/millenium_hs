@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('user_roles', function (Blueprint $table) {
             $table->id();
             $table->string('role')->unique();
-            $table->timestamps();
+            $table->unsignedBigInteger('hopital_id')->nullable();
+            $table->timestamp('role_create_At')->useCurrent();
         });
     }
 

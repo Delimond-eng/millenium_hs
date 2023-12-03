@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assign;
-use App\Models\PatientDetail;
+use App\Models\PatientFiche;
 use App\Models\Patients;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -63,7 +63,7 @@ class PatientController extends Controller
                     'created_by'=>$data['created_by'],
                 ]);
                 if(isset($patient) && (isset($patientDetails) && !empty($patientDetails))){
-                    $details = PatientDetail::create([
+                    $details = PatientFiche::create([
                         "patient_detail_poids"=> $patientDetails['poids'],
                         "patient_detail_taille"=> $patientDetails['taille'],
                         "patient_detail_temperature"=> $patientDetails['temperature'],
@@ -81,7 +81,7 @@ class PatientController extends Controller
             else{
                 /** @var mixed affiche les infos de l'ancien patient */
                 $oldPatient = Patients::where('id', $request->patient_id)->first();
-                $details = PatientDetail::create([
+                $details = PatientFiche::create([
                     "patient_detail_poids"=> $patientDetails['poids'],
                     "patient_detail_taille"=> $patientDetails['taille'],
                     "patient_detail_temperature"=> $patientDetails['temperature'],

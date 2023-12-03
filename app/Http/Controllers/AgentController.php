@@ -109,6 +109,8 @@ class AgentController extends Controller
             $data = $request->validate([
                 'agent_id'=>'required|int|exists:agents,id',
                 'user_id'=>'required|int|exists:users,id',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
             ]);
              // Recherche de l'utilisateur à mettre à jour par son ID
             $user = User::findOrFail($data['user_id']);
