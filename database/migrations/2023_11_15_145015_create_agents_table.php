@@ -29,7 +29,7 @@ return new class extends Migration
                 $table->unsignedBigInteger('grade_id');
                 $table->unsignedBigInteger('service_id');
                 $table->unsignedBigInteger('fonction_id');
-                $table->unsignedBigInteger('create_by');
+                $table->unsignedBigInteger('created_by')->default(0);
                 $table->unsignedBigInteger('hopital_emplacement_id');
                 $table->unsignedBigInteger('hopital_id');
             });

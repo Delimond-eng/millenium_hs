@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Hopital extends Model
 {
@@ -45,4 +46,8 @@ class Hopital extends Model
      * @var boolean
      */
     public $timestamps = false;
+
+    public function emplacements():HasMany{
+        return $this->hasMany(HopitalEmplacement::class, foreignKey: 'hopital_id', localKey: $this->primaryKey);
+    }
 }

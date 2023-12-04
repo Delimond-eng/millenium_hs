@@ -18,7 +18,6 @@ return new class extends Migration
                 $table->id();
                 $table->string('consult_detail_libelle');
                 $table->string('consult_detail_valeur');
-                $table->text('consult_detail_obs');
                 $table->timestamp('consult_detail_create_At')->useCurrent();
                 $table->string('consult_detail_status', 10)->default('actif');
                 $table->unsignedBigInteger('consult_id');

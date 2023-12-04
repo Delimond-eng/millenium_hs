@@ -14,7 +14,7 @@ class PatientFiche extends Model
      *
      * @var string
      */
-    protected $table = 'patient_details';
+    protected $table = 'patient_fiches';
 
     /**
      * The primary key for the model.
@@ -30,11 +30,14 @@ class PatientFiche extends Model
      */
 
     protected $fillable = [
-        "patient_detail_poids",
-        "patient_detail_taille",
-        "patient_detail_temperature",
-        "patient_tension_art",
-        "patient_detail_age",
+        "patient_fiche_poids",
+        "patient_fiche_taille",
+        "patient_fiche_taille_unite",
+        "patient_fiche_temperature",
+        "patient_fiche_temperature_unite",
+        "patient_fiche_tension_art",
+        "patient_fiche_tension_art_unite",
+        "patient_fiche_age",
         "patient_id",
         'hopital_id',
         'hopital_emplacement_id'

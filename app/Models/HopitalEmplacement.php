@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class HopitalEmplacement extends Model
 {
@@ -30,7 +31,6 @@ class HopitalEmplacement extends Model
     protected $fillable = [
         "hopital_emplacement_libelle",
         "hopital_emplacement_adresse",
-        "hopital_logo",
         "hopital_id"
     ];
 
@@ -50,4 +50,9 @@ class HopitalEmplacement extends Model
      * @var boolean
      */
     public $timestamps = false;
+
+
+    public function hopital():BelongsTo{
+        return $this->belongsTo(Hopital::class, foreignKey: 'hopital_id');
+    }
 }

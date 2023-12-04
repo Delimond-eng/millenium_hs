@@ -62,7 +62,7 @@ class Fonctions extends Model
      * @var array
      */
     protected $casts = [
-       'id' => 'int', 'fonction_libelle' => 'string', 'created_by'=>'int', 'fonction_create_At' => 'timestamp', 'fonction_status' => 'string'
+        'fonction_libelle' => 'string', 'created_by'=>'int', 'fonction_create_At' => 'timestamp', 'fonction_status' => 'string'
     ];
 
     /**

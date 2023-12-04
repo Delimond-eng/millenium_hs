@@ -22,8 +22,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['cors'])->group(function () {
 
-    Route::post("hospitals.create", [\App\Http\Controllers\HospitalController::class, 'createHosto']);
-    Route::post("emplacements.create", [\App\Http\Controllers\HospitalController::class, 'createEmplacement']);
+    Route::post("/hospitals.create", [\App\Http\Controllers\HospitalController::class, 'createHosto']);
+    Route::post("/emplacements.create", [\App\Http\Controllers\HospitalController::class, 'createEmplacement']);
+    Route::get( '/emplacements.all/{hostoId}', [\App\Http\Controllers\HospitalController::class, 'viewAllEmplacements']);
 
     Route::post("/login",[ UserController::class, 'login']);
     Route::post("/users.store",[ UserController::class, 'store']);
@@ -31,20 +32,21 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.services',[ ConfigController::class,'saveService']);
     Route::post('/configs.fonctions',[ ConfigController::class,'saveFonction']);
     Route::post('/configs.grades',[ ConfigController::class,'saveGrade']);
-    Route::get('/configs.all',[ ConfigController::class,'allConfigs']);
+    Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
+    Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
 
     Route::post('/agents.create',[ AgentController::class,'create']);
-    Route::get('/agents.all',[ AgentController::class,'all']);
+    Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
-    Route::get('/agents.showassigns/{agentId}',[ AgentController::class,'showPendingPatient']);
+    Route::get('/agents.showassigns/{emplacementId}/{agentId}',[ AgentController::class,'showPendingPatient']);
 
     Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
     Route::post('/prescriptions.add',[ AgentController::class,'addPrescriptions']);
-    Route::get('/consultations.all',[ AgentController::class,'viewAllConsultations']);
+    Route::get('/consultations.all/{hostoId}/{locationId}',[ AgentController::class,'viewAllConsultations']);
 
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);
-    Route::get('/patients.all/{order}',[ PatientController::class,'all']);
+    Route::get('/patients.all/{locationId}',[ PatientController::class,'all']);
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
     Route::post('/patients.assign',[ PatientController::class,'assign']);
 });

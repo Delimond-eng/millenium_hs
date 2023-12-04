@@ -22,8 +22,11 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'phone',
         'password',
         'agent_id',
+        'hopital_id',
+        'hopital_emplacement_id',
         'user_role_id',
     ];
 
@@ -36,8 +39,9 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'email_verified_at',
-        'hopital_id',
-        'hopital_emplacement_id'
+        'created_at',
+        'updated_at',
+        'password'
     ];
 
     /**

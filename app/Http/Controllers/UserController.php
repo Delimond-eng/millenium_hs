@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Hopital;
+use App\Models\HopitalEmplacement;
 use App\Models\User;
 use App\Models\UserRole;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,15 +16,19 @@ class UserController extends Controller
     /**
      * User login
      * @param \Illuminate\Http\Request $request
-     * @return void
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function login(Request $request){
+    public function login(Request $request): JsonResponse{
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
             $token = $user->createToken('user-token')->plainTextToken;
             $role = UserRole::where('id', $user->user_role_id)->first();
+            $hosto = Hopital::find($user->hopital_id);
+            $emplacement = HopitalEmplacement::find($user->hopital_emplacement_id);
+            $hosto['emplacement']= $emplacement;
             $user['role'] = $role;
+            $user['hopital'] = $hosto;
             return response()->json([
                 'user' => $user,
                 'token' => $token,

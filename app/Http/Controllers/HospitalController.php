@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Hopital;
 use App\Models\HopitalEmplacement;
 use App\Models\User;
+use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -18,39 +19,37 @@ class HospitalController extends Controller
     public function createHosto(Request $request):JsonResponse{
         try {
             $data = $request->validate([
-                'nom' => 'required|string',
+                'nom' => 'required|string|unique:hopitals,hopital_nom',
                 'adresse' => 'required|string',
-                'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
                 'user_name'=>'required|string',
-                'user_phone'=>'required|string|unique',
-                'user_email'=>'required|email|unique',
+                'user_phone'=>'required|string|unique:users,phone',
+                'user_email'=>'required|email|unique:users,email',
+                'user_password'=>'required|string',
             ]);
 
             if ($request->hasFile('logo')) {
+                $domain = $request->getHttpHost();
                 $image = $request->file('logo');
                 $imageName = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('uploads'), $imageName);
-                $data['logo'] = 'uploads/' . $imageName;
+                $data['logo'] = 'http://'. $domain.'/uploads/' . $imageName;
             }
             $hosto = Hopital::create([
                 "hopital_nom" => $data['nom'],
                 "hopital_adresse"=>$data['adresse'],
-                "hopital_logo" => $data['logo']
+                "hopital_logo" => $data['logo'] ?? null
             ]);
-
             if(isset($hosto)){
-                $admin = User::create([
-                    'name' => $data['user_name'],
-                    'email' => $data['user_email'],
-                    'phone' => $data['user_phone'],
-                    'password' => bcrypt($data['user_password']),
-                    'user_role_id'=> 1,
-                    'agent_id'=> 0,
-                ]);
+                $data['hopital_id']=$hosto->id;
+                $emplacement = $this->createDefaultLocation($data);
+                $data['hopital_emplacement_id'] = $emplacement->id;
+                $hosto['emplacement']= $emplacement;
+                $admin = $this->createDefaultUserAdmin($data);
+                $admin['hopital'] = $hosto;
                 return response()->json([
                     "status"=>"success",
                     "user"=>$admin,
-                    "hopital"=>$hosto
                 ]);
             }
             else{
@@ -64,6 +63,12 @@ class HospitalController extends Controller
             return response()->json(['errors' => $errors ]);
         }
     }
+
+
+    /**
+     * CREATE NEW LOCATION
+     * @param Request $request
+    */
 
     public function createEmplacement(Request $request):JsonResponse{
         try {
@@ -92,5 +97,51 @@ class HospitalController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
+    }
+
+
+
+    /**
+     * VIEW ALL LOCATIONS
+    */
+    public function viewAllEmplacements($hostoId):JsonResponse{
+        $hosto = Hopital::find($hostoId);
+        return response()->json([
+            "status"=>"success",
+            "emplacements"=> $hosto->emplacements ?? [],
+        ]);
+    }
+
+    /**
+     * Permettre de créer un emplacement par defaut pour un hopital
+     * @param $data
+    */
+    private function createDefaultLocation($data){
+        $emplacement = HopitalEmplacement::create([
+            "hopital_emplacement_libelle" => 'Siège social',
+            "hopital_emplacement_adresse"=>$data['adresse'],
+            "hopital_id"=> $data['hopital_id']
+        ]);
+        return $emplacement;
+    }
+
+    /**
+     * Créer un utilisateur par défaut
+     * @param $data
+    */
+    private function createDefaultUserAdmin($data){
+        $admin = User::create([
+            'name' => $data['user_name'],
+            'email' => $data['user_email'],
+            'phone' => $data['user_phone'],
+            'password' => bcrypt($data['user_password']),
+            'hopital_id'=> $data['hopital_id'],
+            'hopital_emplacement_id'=>$data['hopital_emplacement_id'],
+            'user_role_id'=> 1,
+            'agent_id'=> 0,
+        ]);
+        $role = UserRole::where('id', 1)->first();
+        $admin['role'] = $role;
+        return $admin;
     }
 }

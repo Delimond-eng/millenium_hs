@@ -43,7 +43,7 @@ class Services extends Model
      * @var array
      */
     protected $fillable = [
-     'service_libelle','hopital_id',
+     'service_libelle', 'hopital_id',
      'created_by',
     ];
 
@@ -62,7 +62,7 @@ class Services extends Model
      * @var array
      */
     protected $casts = [
-        'service_id' => 'int', 'service_libelle' => 'string','created_by'=>'int', 'service_create_At' => 'timestamp', 'service_status' => 'string'
+      'service_libelle' => 'string','created_by'=>'int', 'service_create_At' => 'timestamp', 'service_status' => 'string'
     ];
 
     /**

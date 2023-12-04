@@ -36,7 +36,6 @@ class ConsultationDetails extends Model
     protected $fillable = [
         'consult_detail_libelle',
         'consult_detail_valeur',
-        'consult_detail_obs',
         'consult_id','hopital_id',
         'hopital_emplacement_id'
     ];
@@ -81,6 +80,6 @@ class ConsultationDetails extends Model
 
     // Relations ...
     public function consultation():BelongsTo{
-        return $this->belongsTo(Consultations::class);
+        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id' );
     }
 }

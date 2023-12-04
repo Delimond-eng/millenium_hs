@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Fonctions;
 use App\Models\Grades;
+use App\Models\HopitalEmplacement;
 use App\Models\Services;
 use App\Models\UserRole;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Validator;
@@ -15,19 +17,21 @@ class ConfigController extends Controller
 {
      /**
       * Create new service
-      * @param \Illuminate\Http\Request $request
-      * @return \Illuminate\Http\JsonResponse|mixed
+      * @param Request $request
+      * @return JsonResponse
       */
-     public function saveService(Request $request)
+     public function saveService(Request $request):JsonResponse
     {
          try {
             $data = $request->validate([
-                "libelle"=>"required|string|unique:services,service_libelle",
-                "created_by"=> "required|int",
+                "libelle"=>"required|string",
+                "created_by"=> "nullable|int",
+                'hopital_id'=> 'required|int|exists:hopitals,id',
             ]);
             $service = Services::create([
                 "service_libelle"=> $data["libelle"],
-                "created_by"=> $data["created_by"],
+                "created_by"=> $data["created_by"]??null,
+                'hopital_id'=>$data['hopital_id'],
             ]);
             return response()->json([
                 "status"=>"success",
@@ -35,17 +39,20 @@ class ConfigController extends Controller
             ]);
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ], 422);
+            return response()->json(['errors' => $errors ]);
         }
+         catch (\Illuminate\Database\QueryException $e){
+             return response()->json(['errors' => $e->getMessage() ], 422);
+         }
 
     }
 
 
     /**
      * Get all Service
-     * @return \Illuminate\Http\JsonResponse|mixed
+     * @return JsonResponse
      */
-    public function allServices()
+    public function allServices():JsonResponse
     {
         $services = Services::all();
         return response()->json([
@@ -56,20 +63,22 @@ class ConfigController extends Controller
 
     /**
      * Save fonction
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse|mixed
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function saveFonction(Request $request)
+    public function saveFonction(Request $request): JsonResponse
     {
 
         try {
            $data = $request->validate([
-                "libelle"=>"required|string|min:4|unique:fonctions,fonction_libelle",
-                "created_by"=>"required|int"
+                "libelle"=>"required|string",
+                "created_by"=>"nullable|int",
+                'hopital_id'=> 'required|int|exists:hopitals,id',
             ]);
             $fonction = Fonctions::create([
                 "fonction_libelle"=> $data["libelle"],
-                "created_by"=>(int)$data["created_by"],
+                "created_by"=>$data["created_by"] ?? 0,
+                "hopital_id"=>$data['hopital_id']
             ]);
             return response()->json([
                 "status"=>"success",
@@ -78,25 +87,30 @@ class ConfigController extends Controller
             // Si la validation réussit, procédez à la logique de création de l'utilisateur ici
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ], 422);
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
         }
 
     }
 
     /**
      * Save Grade
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse|mixed
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function saveGrade(Request $request){
+    public function saveGrade(Request $request):JsonResponse{
         try{
             $data = $request->validate([
-                "libelle"=>"required|string|unique:grades,grade_libelle",
-                "created_by"=> "required|int"
+                "libelle"=>"required|string",
+                "created_by"=> "nullable|int",
+                'hopital_id'=> 'required|int|exists:hopitals,id',
             ]);
             $grade = Grades::create([
                 "grade_libelle"=> $data["libelle"],
-                "created_by"=>$data["created_by"],
+                "created_by"=>$data["created_by"] ?? 0,
+                "hopital_id"=>$data["hopital_id"]
             ]);
             return response()->json([
                 "status"=>"success",
@@ -105,25 +119,65 @@ class ConfigController extends Controller
         }
          catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ], 422);
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
         }
 
     }
 
 
+    /**
+     * Save User roles
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function saveRole(Request $request):JsonResponse{
+        try{
+            $data = $request->validate([
+                "libelle"=>"required|string",
+                'hopital_id'=> 'required|int|exists:hopitals,id',
+            ]);
+            $role = UserRole::create([
+                "role"=> $data["libelle"],
+                "hopital_id"=>$data["hopital_id"]
+            ]);
+            return response()->json([
+                "status"=>"success",
+                "role"=>$role
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ], 422);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
+        }
 
-    public function allConfigs(){
-        $grades = Grades::all();
-        $fonctions = Fonctions::all();
-        $services = Services::all();
-        $userRoles = UserRole::all();
+    }
+
+
+    /**
+     * GET ALL CONFIGS DATA
+     * @param int $hostoId
+     * @return JsonResponse
+     */
+    public function allConfigs(int $hostoId) :JsonResponse{
+        $grades = Grades::all()->where('hopital_id', $hostoId);
+        $fonctions = Fonctions::all()->where('hopital_id', $hostoId);
+        $services = Services::all()->where('hopital_id', $hostoId);
+        $userRoles = UserRole::all()->where('hopital_id', $hostoId);
+        $locations = HopitalEmplacement::all()->where('hopital_id', $hostoId);
         return response()->json([
             "status"=> "success",
             "configs"=>[
                 "grades"=> $grades,
                 "fonctions"=> $fonctions,
                 "services"=>$services,
-                "roles"=> $userRoles
+                "roles"=> $userRoles,
+                "emplacements"=>$locations
             ]
         ]);
     }

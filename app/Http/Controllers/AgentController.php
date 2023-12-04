@@ -19,13 +19,14 @@ class AgentController extends Controller
 
     /**
      * all agents
+     * @param int $hostoId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function all(): JsonResponse
+    public function all(int $hostoId): JsonResponse
     {
         $agents = Agents::with('fonction')
                 ->with('service')
-                ->with('grade')
+                ->with('grade')->where('hopital_id', $hostoId)
                 ->get();
         return response()->json([
             "status"=>"success",
@@ -54,7 +55,9 @@ class AgentController extends Controller
                 'fonction_id'=>'required|int|exists:fonctions,id',
                 'service_id'=>'required|int|exists:services,id',
                 'grade_id'=>'required|int|exists:grades,id',
-                'created_by'=> 'required|int|exists:users,id',
+                'hopital_id'=> 'required|int|exists:hopitals,id',
+                'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
+                'created_by'=> 'nullable|int',
             ]);
 
             /** @var mixed create agent */
@@ -70,7 +73,9 @@ class AgentController extends Controller
                 'fonction_id'=>$data['fonction_id'],
                 'grade_id'=>$data['grade_id'],
                 'service_id'=>$data['service_id'],
-                'created_by'=>$data['created_by'],
+                'hopital_id'=>$data['hopital_id'],
+                'hopital_emplacement_id'=>$data['emplacement_id'],
+                'created_by'=>$data['created_by']?? 0,
             ]);
 
             /** @var mixed check if user account permission isAllowed */
@@ -80,8 +85,11 @@ class AgentController extends Controller
                     "name"=>$data['prenom'],
                     "email"=>$userDatas["email"],
                     "password"=>bcrypt($userDatas["password"]),
+                    "phone"=>$data['telephone'],
                     "agent_id"=>$agent->id,
-                    "user_role_id"=>$userDatas["role_id"]
+                    "user_role_id"=>$userDatas["role_id"],
+                    'hopital_id'=>$data['hopital_id'],
+                    'hopital_emplacement_id'=>$data['emplacement_id'],
                 ]);
                 $agent['user'] = $user;
             }
@@ -124,17 +132,22 @@ class AgentController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ], 422);
         }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
+        }
     }
 
 
     /**
      * VOIR LA LISTE DE TOUS LES PATIENTS ASSIGNES A UN MEDECIN
     */
-    public function showPendingPatient($agentId){
+    public function showPendingPatient($emplacementId, $agentId){
         //$agent = Agents::find($agentId);
-        $agent = Agents::find($agentId);
+        $agent = Agents::where('id', $agentId)
+            ->where('hopital_emplacement_id', $emplacementId)->with('assignPatients')
+            ->first();
         if(isset($agent)){
-            $patients = $agent->assignPatients;
+            $patients = $agent->assignPatients ?? [];
             return response()->json([
                 "status"=>"success",
                 "patients"=>$patients
@@ -163,12 +176,16 @@ class AgentController extends Controller
                 'diagnostic' => 'required|string|min:10',
                 'patient_id'=>'required|int|exists:patients,id',
                 'agent_id'=>'required|int|exists:agents,id',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
             ]);
             $consultation = Consultations::create([
                 "consult_libelle" => $data['libelle'],
                 "consult_diagnostic" => $data['diagnostic'],
                 "patient_id" => $data['patient_id'],
-                "agent_id" => $data['agent_id']
+                "agent_id" => $data['agent_id'],
+                "hopital_id" => $data['hopital_id'],
+                "hopital_emplacement_id" => $data['emplacement_id'],
             ]);
             if(isset($consultation)){
                 if(isset($details)){
@@ -176,7 +193,9 @@ class AgentController extends Controller
                         $consultationDetail = ConsultationDetails::create([
                             "consult_detail_libelle"=>$detail['detail_libelle'],
                             "consult_detail_valeur"=>$detail['detail_valeur'],
-                            "consult_id"=>$consultation->id
+                            "consult_id"=>$consultation->id,
+                            "hopital_id" => $data['hopital_id'],
+                            "hopital_emplacement_id" => $data['emplacement_id'],
                         ]);
                     }
                 }
@@ -195,6 +214,9 @@ class AgentController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
+        }
 
     }
 
@@ -212,7 +234,9 @@ class AgentController extends Controller
                         "prescription_traitement" => $data['traitement'],
                         "prescription_posologie" => $data['posologie'],
                         "prescription_traitement_type" => $data['traitement_type'],
-                        "consult_id" => $data['consult_id']
+                        "consult_id" => $data['consult_id'],
+                        'hopital_emplacement_id' => $data['emplacement_id'],
+                        'hopital_id' => $data['hopital_id'],
                     ]);
                 }
                 return response()->json([
@@ -230,15 +254,21 @@ class AgentController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
+        }
     }
 
 
-    public function viewAllConsultations():JsonResponse
+    public function viewAllConsultations(int $hostoId, int $locationId,):JsonResponse
     {
         $consultations = Consultations::with('agent')
                 ->with('patient')
                 ->with('prescriptions')
+                ->with('details')
                 ->orderByDesc('id')
+                ->where('hopital_id', $hostoId)
+                ->where('hopital_emplacement_id', $locationId)
                 ->get();
         return response()->json([
             "status"=>"success",

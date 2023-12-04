@@ -16,10 +16,11 @@ class PatientController extends Controller
      *
      * @return JsonResponse
      */
-    public function all($order='desc'): JsonResponse
+    public function all($locationId): JsonResponse
     {
         $agents = Patients::with('details')
-            ->with('agent')->orderBy(column: 'id', direction: $order)
+            ->with('agent')->orderBy(column: 'id', direction: 'desc')
+            ->where('hopital_emplacement_id', $locationId)
             ->get();
         return response()->json([
             "status"=>"success",
@@ -49,7 +50,9 @@ class PatientController extends Controller
                     'datenais' => 'required|date|date_format:Y-m-d',
                     'telephone' => 'required|string|min:10|unique:patients,patient_telephone',
                     'adresse' => 'required|string',
-                    'created_by'=> 'required|int|exists:agents,id',
+                    'created_by'=> 'nullable|int',
+                    'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
+                    'hopital_id'=>'required|int|exists:hopitals,id',
                 ]);
                 /** @var mixed create agent */
                 $patient = Patients::create([
@@ -60,15 +63,19 @@ class PatientController extends Controller
                     'patient_telephone' => $data['telephone'],
                     'patient_adresse' => $data['adresse'],
                     'patient_datenais' => $data['datenais'],
+                    'hopital_emplacement_id'=>$data['emplacement_id'],
+                    'hopital_id'=>$data['hopital_id'],
                     'created_by'=>$data['created_by'],
                 ]);
                 if(isset($patient) && (isset($patientDetails) && !empty($patientDetails))){
                     $details = PatientFiche::create([
-                        "patient_detail_poids"=> $patientDetails['poids'],
-                        "patient_detail_taille"=> $patientDetails['taille'],
-                        "patient_detail_temperature"=> $patientDetails['temperature'],
-                        "patient_detail_age"=> $patientDetails['age'],
-                        "patient_tension_art"=> $patientDetails['tension_art'],
+                        "patient_fiche_poids"=> $patientDetails['poids'],
+                        "patient_fiche_taille"=> $patientDetails['taille'],
+                        "patient_fiche_temperature"=> $patientDetails['temperature'],
+                        "patient_fiche_age"=> $patientDetails['age'],
+                        "patient_fiche_tension_art"=> $patientDetails['tension_art'],
+                        'hopital_emplacement_id'=>$data['emplacement_id'],
+                        'hopital_id'=>$data['hopital_id'],
                         "patient_id"=> $patient->id,
                     ]);
                     $patient['details'] = $details;
@@ -111,11 +118,15 @@ class PatientController extends Controller
             $data = $request->validate([
                 'agent_id' => 'required|int|exists:agents,id',
                 'patient_id' => 'required|int|exists:patients,id',
+                'hopital_id' => 'required|int|exists:hopitals,id',
+                'emplacement_id' => 'required|int|exists:hopital_emplacements,id',
             ]);
             /** @var mixed create agent */
             $assignDatas = Assign::create([
                 'assign_agent_id' => $data['agent_id'],
                 'assign_patient_id' => $data['patient_id'],
+                'hopital_id' => $data['hopital_id'],
+                'hopital_emplacement_id' => $data['emplacement_id'],
             ]);
             return response()->json([
                 "status"=>"success",
