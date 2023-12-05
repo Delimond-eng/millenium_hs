@@ -24,7 +24,7 @@ return new class extends Migration
                 $table->text('patient_adresse');
                 $table->string('patient_telephone');
                 $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
-                $table->string('patient_status', 10)->default('actif');
+                $table->string('patient_status', 10)->default('en attente');
                 $table->unsignedBigInteger('created_by')->default(0);
                 $table->unsignedBigInteger('hopital_emplacement_id');
                 $table->unsignedBigInteger('hopital_id');

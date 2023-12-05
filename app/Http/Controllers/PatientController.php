@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Assign;
 use App\Models\PatientFiche;
 use App\Models\Patients;
 use Illuminate\Http\JsonResponse;
@@ -111,34 +109,16 @@ class PatientController extends Controller
     }
 
 
-
-    public function assign(Request $request): JsonResponse{
-        try
-        {
-            $data = $request->validate([
-                'agent_id' => 'required|int|exists:agents,id',
-                'patient_id' => 'required|int|exists:patients,id',
-                'hopital_id' => 'required|int|exists:hopitals,id',
-                'emplacement_id' => 'required|int|exists:hopital_emplacements,id',
-            ]);
-            /** @var mixed create agent */
-            $assignDatas = Assign::create([
-                'assign_agent_id' => $data['agent_id'],
-                'assign_patient_id' => $data['patient_id'],
-                'hopital_id' => $data['hopital_id'],
-                'hopital_emplacement_id' => $data['emplacement_id'],
-            ]);
-            return response()->json([
-                "status"=>"success",
-                "patients"=>$assignDatas
-            ]);
-        }
-        catch (ValidationException $e) {
-            $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ]);
-        }
+    /**
+     * UPDATE PATIENT STATUS
+     * @param $data
+     * @return boolean
+    */
+    private function updateStatus($data):bool{
+        $patient = Patients::findOrFail($data['patient_id']);
+        $patient->patient_status = $data['status'];
+        return $patient->save();
     }
-
 
     /**
      * Display the specified resource.
@@ -156,38 +136,21 @@ class PatientController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * Voir la liste de tous les patients dont leur status est en attente
+     * @param int $emplacementId
+     * @return JsonResponse
      */
-    public function edit($id)
-    {
-        //
+    public function viewAllPendingPatients(int $emplacementId):JsonResponse{
+        $patients = Patients::where('hopital_emplacement_id', $emplacementId)
+            ->where('patient_status', 'en attente')
+            ->get;
+        return response()->json([
+            "status"=>"success",
+            "patients"=>$patients
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 
     /**
      * Génerer un code unique

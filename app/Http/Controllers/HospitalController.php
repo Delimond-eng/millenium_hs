@@ -62,6 +62,10 @@ class HospitalController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+
     }
 
 
@@ -97,8 +101,11 @@ class HospitalController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
-    }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
 
+    }
 
 
     /**
@@ -115,8 +122,9 @@ class HospitalController extends Controller
     /**
      * Permettre de créer un emplacement par defaut pour un hopital
      * @param $data
+     * @return mixed
     */
-    private function createDefaultLocation($data){
+    private function createDefaultLocation($data):mixed{
         $emplacement = HopitalEmplacement::create([
             "hopital_emplacement_libelle" => 'Siège social',
             "hopital_emplacement_adresse"=>$data['adresse'],
@@ -128,8 +136,9 @@ class HospitalController extends Controller
     /**
      * Créer un utilisateur par défaut
      * @param $data
+     * @return  mixed
     */
-    private function createDefaultUserAdmin($data){
+    private function createDefaultUserAdmin($data) : mixed{
         $admin = User::create([
             'name' => $data['user_name'],
             'email' => $data['user_email'],

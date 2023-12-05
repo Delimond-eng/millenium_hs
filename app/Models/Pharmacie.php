@@ -4,19 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Services extends Model
+class Pharmacie extends Model
 {
-    use HasApiTokens, HasFactory, Notifiable;
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'services';
+    protected $table = 'pharmacies';
 
     /**
      * The primary key for the model.
@@ -31,11 +28,11 @@ class Services extends Model
      * @var array
      */
     protected $fillable = [
-        'service_libelle',
-        'service_description',
+        'pharmacie_nom',
+        'pharmacie_telephone',
+        'pharmacie_adresse',
         'hopital_id',
-        'hopital_emplacement_id',
-        'created_by',
+        'hopital_emplacement_id'
     ];
 
     /**
@@ -54,13 +51,12 @@ class Services extends Model
      */
     protected $casts = [
         'id' => 'int',
-        'service_libelle' => 'string',
-        'service_description' => 'string',
-        'created_by'=>'int',
-        'service_create_At' => 'timestamp',
-        'service_status' => 'string',
-        'hopital_id'=>'int',
-        'hopital_emplacement_id'=>'int',
+        'pharmacie_nom' => 'string',
+        'pharmacie_adresse' => 'string',
+        'pharmacie_telephone' => 'string',
+        'hopital_id' => 'int',
+        'hopital_emplacement_id' => 'int',
+        'pharmacie_create_At' => 'timestamp'
     ];
 
     /**
@@ -69,7 +65,7 @@ class Services extends Model
      * @var array
      */
     protected $dates = [
-        'service_create_At'
+        'pharmacie_create_At'
     ];
 
     /**
@@ -79,12 +75,21 @@ class Services extends Model
      */
     public $timestamps = false;
 
-    // Scopes...
 
-    // Functions ...
+    /**
+     * Relation to emplacement
+     * @return BelongsTo
+    */
 
-    // Relations ...
-    public function agents(): HasMany{
-        return $this->hasMany(Agents::class);
+    public  function emplacement():BelongsTo{
+        return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
+    }
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+    */
+    public function hopital():BelongsTo{
+        return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 }

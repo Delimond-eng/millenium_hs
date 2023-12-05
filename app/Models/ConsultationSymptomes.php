@@ -1,18 +1,19 @@
 <?php
 
 namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Assign extends Model
+class ConsultationSymptomes extends Model
 {
-
-     /**
+    /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'assigns';
+    protected $table = 'consultation_symptomes';
 
     /**
      * The primary key for the model.
@@ -27,9 +28,8 @@ class Assign extends Model
      * @var array
      */
     protected $fillable = [
-        'assign_agent_id', 'assign_patient_id',
-        'hopital_id',
-        'hopital_emplacement_id'
+        'consult_symptome_libelle',
+        'consult_id',
     ];
 
     /**
@@ -47,7 +47,7 @@ class Assign extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'assign_agent_id'=>'int', 'assign_patient'=>'int', 'assign_create_At'=> 'timestamp', 'hopital_id'=>'int', 'hopital_emplacement_id'=>'int'
+        'id' => 'int', 'consult_symptome_libelle' => 'string', 'consult_id' => 'int', 'consult_symptome_create_At' => 'timestamp'
     ];
 
     /**
@@ -56,7 +56,7 @@ class Assign extends Model
      * @var array
      */
     protected $dates = [
-        'assign_create_At'
+        'consult_symptome_create_At'
     ];
 
     /**
@@ -66,12 +66,12 @@ class Assign extends Model
      */
     public $timestamps = false;
 
-    public function agent():BelongsTo{
-        return $this->belongsTo(Agents::class);
-    }
 
-    public function patient(): BelongsTo
-    {
-        return $this->belongsTo(Patients::class);
+    /**
+     * Relation pour lier consultation_symptomes à une consultation
+     * @return BelongsTo
+    */
+    public function consultation():BelongsTo{
+        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id');
     }
 }

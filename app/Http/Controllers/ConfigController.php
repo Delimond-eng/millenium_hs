@@ -25,13 +25,17 @@ class ConfigController extends Controller
          try {
             $data = $request->validate([
                 "libelle"=>"required|string",
+                "description"=>"nullable|string",
                 "created_by"=> "nullable|int",
                 'hopital_id'=> 'required|int|exists:hopitals,id',
+                'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
             ]);
             $service = Services::create([
                 "service_libelle"=> $data["libelle"],
+                "service_description"=> $data["description"],
                 "created_by"=> $data["created_by"]??null,
                 'hopital_id'=>$data['hopital_id'],
+                'hopital_emplacement_id'=>$data['emplacement_id'],
             ]);
             return response()->json([
                 "status"=>"success",
@@ -42,7 +46,7 @@ class ConfigController extends Controller
             return response()->json(['errors' => $errors ]);
         }
          catch (\Illuminate\Database\QueryException $e){
-             return response()->json(['errors' => $e->getMessage() ], 422);
+             return response()->json(['errors' => $e->getMessage() ]);
          }
 
     }
@@ -90,7 +94,7 @@ class ConfigController extends Controller
             return response()->json(['errors' => $errors ]);
         }
         catch (\Illuminate\Database\QueryException $e){
-            return response()->json(['errors' => $e->getMessage() ], 422);
+            return response()->json(['errors' => $e->getMessage() ]);
         }
 
     }
@@ -122,7 +126,7 @@ class ConfigController extends Controller
             return response()->json(['errors' => $errors ]);
         }
         catch (\Illuminate\Database\QueryException $e){
-            return response()->json(['errors' => $e->getMessage() ], 422);
+            return response()->json(['errors' => $e->getMessage() ]);
         }
 
     }
@@ -150,10 +154,10 @@ class ConfigController extends Controller
         }
         catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
-            return response()->json(['errors' => $errors ], 422);
+            return response()->json(['errors' => $errors ]);
         }
         catch (\Illuminate\Database\QueryException $e){
-            return response()->json(['errors' => $e->getMessage() ], 422);
+            return response()->json(['errors' => $e->getMessage() ]);
         }
 
     }

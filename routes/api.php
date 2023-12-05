@@ -35,10 +35,13 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
 
+    Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
+    Route::get('/pharmacies.all', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
+    Route::get('/pharmacies.all/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
+
     Route::post('/agents.create',[ AgentController::class,'create']);
     Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
-    Route::get('/agents.showassigns/{emplacementId}/{agentId}',[ AgentController::class,'showPendingPatient']);
 
     Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
     Route::post('/prescriptions.add',[ AgentController::class,'addPrescriptions']);
@@ -47,8 +50,9 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);
     Route::get('/patients.all/{locationId}',[ PatientController::class,'all']);
+    Route::get('/patients.pending/{locationId}',[ PatientController::class,'viewAllPendingPatients']);
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
-    Route::post('/patients.assign',[ PatientController::class,'assign']);
+
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

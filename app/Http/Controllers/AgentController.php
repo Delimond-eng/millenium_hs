@@ -102,8 +102,6 @@ class AgentController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
-
-
     }
 
     /**
@@ -136,31 +134,6 @@ class AgentController extends Controller
             return response()->json(['errors' => $e->getMessage() ], 422);
         }
     }
-
-
-    /**
-     * VOIR LA LISTE DE TOUS LES PATIENTS ASSIGNES A UN MEDECIN
-    */
-    public function showPendingPatient($emplacementId, $agentId){
-        //$agent = Agents::find($agentId);
-        $agent = Agents::where('id', $agentId)
-            ->where('hopital_emplacement_id', $emplacementId)->with('assignPatients')
-            ->first();
-        if(isset($agent)){
-            $patients = $agent->assignPatients ?? [];
-            return response()->json([
-                "status"=>"success",
-                "patients"=>$patients
-            ]);
-        }
-        else{
-            return response()->json([
-                "status"=>"failed",
-                "message"=>"agent non reconnu"
-            ], 401);
-        }
-    }
-
 
 
     /**

@@ -13,14 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('assigns', function (Blueprint $table) {
+        Schema::create('consultation_symptomes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('assign_agent_id');
-            $table->unsignedBigInteger('assign_patient_id');
-            $table->unsignedBigInteger('hopital_emplacement_id');
-            $table->unsignedBigInteger('hopital_id');
-            $table->timestamp('assign_create_At')->useCurrentOnUpdate()->useCurrent();
-
+            $table->string('consult_symptome_libelle');
+            $table->unsignedBigInteger('consult_id');
+            $table->timestamp('consult_symptome_create_At')->useCurrent();
         });
     }
 
@@ -31,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('assigns');
+        Schema::dropIfExists('consultation_symptomes');
     }
 };

@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('patient_fiche_temperature_unite', 5)->default('°c');
             $table->string('patient_fiche_tension_art', 5);
             $table->string('patient_fiche_tension_art_unite', 5)->default('mmHg');
+            $table->string('patient_fiche_freq_cardio', 5);
+            $table->string('patient_fiche_freq_cardio_unite', 5)->default('bpm');
             $table->string('patient_fiche_age', 5);
             $table->unsignedBigInteger('patient_id');
             $table->string('patient_fiche_status')->default('actif');

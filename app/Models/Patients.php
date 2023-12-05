@@ -7,18 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
-/**
- * @property string $patient_code
- * @property string $patient_nom
- * @property string $patient_prenom
- * @property string $patient_adresse
- * @property string $patient_telephone
- * @property string $patient_status
- * @property float  $patient_poids
- * @property float  $patient_temperature
- * @property int    $patient_age
- * @property int    $patient_create_At
- */
 class Patients extends Model
 {
     /**
@@ -41,7 +29,17 @@ class Patients extends Model
      * @var array
      */
     protected $fillable = [
-        'patient_code', 'patient_nom', 'patient_prenom', 'patient_sexe', 'patient_adresse', 'patient_telephone','patient_datenais', 'patient_create_At', 'patient_status', 'created_by','hopital_id',
+        'patient_code',
+        'patient_nom',
+        'patient_prenom',
+        'patient_sexe',
+        'patient_adresse',
+        'patient_telephone',
+        'patient_datenais',
+        'patient_create_At',
+        'patient_status',
+        'created_by',
+        'hopital_id',
         'hopital_emplacement_id'
     ];
 
@@ -102,20 +100,12 @@ class Patients extends Model
         return $this->hasMany(Prescriptions::class);
     }
 
-    /**
-     * Summary of assignments
-     * @return HasMany
-     */
-    public function assignments(): HasMany
-    {
-        return $this->hasMany(Assign::class);
-    }
 
+    /**
+     * Relation To Patient detail
+     * @return HasMany
+    */
     public function details(): HasMany{
         return $this->hasMany(PatientFiche::class, foreignKey: 'patient_id', localKey: 'id');
-    }
-
-    public  function  doctors(){
-        return $this->belongsToMany(Agents::class, 'assigns', 'assign_patient_id', 'assign_agent_id');
     }
 }

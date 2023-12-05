@@ -57,7 +57,7 @@ class User extends Authenticatable
 
     /**
      * Summary of agent
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return BelongsTo
      */
     public function agent():BelongsTo{
         return $this->belongsTo(Agents::class,foreignKey:'agent_id');

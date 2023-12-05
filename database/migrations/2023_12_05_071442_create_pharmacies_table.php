@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('pharmacies', function (Blueprint $table) {
             $table->id();
-            $table->string('service_libelle');
-            $table->string('service_description');
-            $table->timestamp('service_create_At')->useCurrentOnUpdate()->useCurrent();
-            $table->unsignedBigInteger('created_by');
+            $table->string('pharmacie_nom');
+            $table->string('pharmacie_adresse');
+            $table->string('pharmacie_telephone');
+            $table->timestamp('pharmacie_create_At')->useCurrent();
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
-            $table->string('service_status')->default('actif');
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('pharmacies');
     }
 };

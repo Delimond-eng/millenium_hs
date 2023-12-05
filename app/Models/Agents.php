@@ -153,20 +153,12 @@ class Agents extends Model
         return $this->hasMany(Prescriptions::class);
     }
 
-    /**
-     * Summary of assignments
-     * @return BelongsToMany
-     */
-    public function assignPatients() : BelongsToMany
-    {
-        return $this->belongsToMany(Patients::class, 'assigns', 'assign_agent_id', 'assign_patient_id');
-    }
 
     /**
-     * Summary of user
-     * @return BelongsTo
+     * Relation To user
+     * @return HasOne
      */
     public function user():HasOne{
-        return $this->hasOne(User::class, localKey:'id');
+        return $this->hasOne(User::class, foreignKey: 'agent_id', localKey: 'id');
     }
 }
