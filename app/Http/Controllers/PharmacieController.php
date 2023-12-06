@@ -15,7 +15,7 @@ class PharmacieController extends Controller
      * @return JsonResponse
     */
     public function allPharmacies(int $hostoId):JsonResponse{
-        $pharmacies = Pharmacie::all()->where('hopital_id', $hostoId);
+        $pharmacies = Pharmacie::with('emplacement')->where('hopital_id', $hostoId)->get();
         return response()->json([
             "status"=>"success",
             "pharmacies"=>$pharmacies
@@ -53,6 +53,7 @@ class PharmacieController extends Controller
             $service = Pharmacie::create([
                 "pharmacie_nom"=> $data["nom"],
                 "pharmacie_telephone"=> $data["telephone"],
+                "pharmacie_adresse"=> $data["adresse"],
                 "created_by"=> $data["created_by"]??null,
                 'hopital_id'=>$data['hopital_id'],
                 'hopital_emplacement_id'=>$data['emplacement_id'],
@@ -65,7 +66,7 @@ class PharmacieController extends Controller
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
         }
-        catch (\Illuminate\Database\QueryException $e){
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
             return response()->json(['errors' => $e->getMessage() ]);
         }
     }

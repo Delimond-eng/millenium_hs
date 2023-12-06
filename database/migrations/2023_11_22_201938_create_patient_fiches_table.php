@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('patient_fiche_freq_cardio_unite', 5)->default('bpm');
             $table->string('patient_fiche_age', 5);
             $table->unsignedBigInteger('patient_id');
-            $table->string('patient_fiche_status')->default('actif');
+            $table->string('patient_fiche_status')->default('en attente');
             $table->timestamp('patient_fiche_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('hopital_id');

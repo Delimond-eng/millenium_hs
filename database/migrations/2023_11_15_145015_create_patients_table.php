@@ -17,6 +17,7 @@ return new class extends Migration
             Schema::create('patients', function (Blueprint $table) {
                 $table->id();
                 $table->string('patient_code')->unique('patient_code');
+                $table->string('patient_code_appel')->nullable();
                 $table->string('patient_nom');
                 $table->string('patient_prenom');
                 $table->char('patient_sexe', 1);
@@ -24,7 +25,7 @@ return new class extends Migration
                 $table->text('patient_adresse');
                 $table->string('patient_telephone');
                 $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
-                $table->string('patient_status', 10)->default('en attente');
+                $table->string('patient_status', 10)->default('actif');
                 $table->unsignedBigInteger('created_by')->default(0);
                 $table->unsignedBigInteger('hopital_emplacement_id');
                 $table->unsignedBigInteger('hopital_id');

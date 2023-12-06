@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Testing\Fluent\Concerns\Has;
 
 class HopitalEmplacement extends Model
 {
@@ -54,5 +56,13 @@ class HopitalEmplacement extends Model
 
     public function hopital():BelongsTo{
         return $this->belongsTo(Hopital::class, foreignKey: 'hopital_id');
+    }
+
+    /**
+     * relation pour retourner les services pour un emplacement
+     * @return HasMany
+    */
+    public function services():HasMany{
+        return $this->hasMany(Services::class, foreignKey: 'hopital_emplacement_id', localKey: 'id');
     }
 }

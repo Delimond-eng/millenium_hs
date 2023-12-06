@@ -37,6 +37,8 @@ class PatientFiche extends Model
         "patient_fiche_temperature_unite",
         "patient_fiche_tension_art",
         "patient_fiche_tension_art_unite",
+        "patient_fiche_freq_cardio",
+        "patient_fiche_freq_cardio_unite",
         "patient_fiche_age",
         "patient_id",
         'hopital_id',

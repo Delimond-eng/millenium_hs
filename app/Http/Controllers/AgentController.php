@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Agents;
 use App\Models\ConsultationDetails;
 use App\Models\Consultations;
+use App\Models\ConsultationSymptomes;
 use App\Models\Prescriptions;
 use App\Models\Services;
 use App\Models\User;
@@ -135,7 +136,6 @@ class AgentController extends Controller
         }
     }
 
-
     /**
      * CREATION D'UNE NOUVELLE CONSULTATIONS
     */
@@ -143,6 +143,7 @@ class AgentController extends Controller
         try
         {
             $details = $request->consult_details;
+            $symptomes = $request->consult_symptomes;
             /** @var mixed check validate datas */
             $data = $request->validate([
                 'libelle' => 'required|string',
@@ -161,6 +162,16 @@ class AgentController extends Controller
                 "hopital_emplacement_id" => $data['emplacement_id'],
             ]);
             if(isset($consultation)){
+                /**
+                 * Modifie le status du patient
+                */
+                $patient = new PatientController();
+                $currentData['patient_fiche_id'] = $request->patient_fiche_id;
+                $currentData['status'] = "consulté";
+                $patient->updateStatus($currentData);
+                /**
+                 * Créer les détails lié à une consultation
+                */
                 if(isset($details)){
                     foreach ($details as $detail){
                         $consultationDetail = ConsultationDetails::create([
@@ -169,6 +180,18 @@ class AgentController extends Controller
                             "consult_id"=>$consultation->id,
                             "hopital_id" => $data['hopital_id'],
                             "hopital_emplacement_id" => $data['emplacement_id'],
+                        ]);
+                    }
+                }
+
+                /**
+                 * Créer les symptômes recensés
+                */
+                if(isset($symptomes)){
+                    foreach ($symptomes as $symptome){
+                        $consultSymptome = ConsultationSymptomes::create([
+                            'consult_symptome_libelle'=>$symptome['libelle'],
+                            "consult_id"=>$consultation->id,
                         ]);
                     }
                 }
@@ -188,7 +211,10 @@ class AgentController extends Controller
             return response()->json(['errors' => $errors ]);
         }
         catch (\Illuminate\Database\QueryException $e){
-            return response()->json(['errors' => $e->getMessage() ], 422);
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+        catch (\ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
         }
 
     }
@@ -239,6 +265,7 @@ class AgentController extends Controller
                 ->with('patient')
                 ->with('prescriptions')
                 ->with('details')
+                ->with('symptomes')
                 ->orderByDesc('id')
                 ->where('hopital_id', $hostoId)
                 ->where('hopital_emplacement_id', $locationId)

@@ -36,8 +36,8 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
 
     Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
-    Route::get('/pharmacies.all', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
-    Route::get('/pharmacies.all/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
+    Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
+    Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
 
     Route::post('/agents.create',[ AgentController::class,'create']);
     Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);

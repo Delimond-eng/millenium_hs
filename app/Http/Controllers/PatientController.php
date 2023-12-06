@@ -16,13 +16,13 @@ class PatientController extends Controller
      */
     public function all($locationId): JsonResponse
     {
-        $agents = Patients::with('details')
+        $patients = Patients::with('details')
             ->with('agent')->orderBy(column: 'id', direction: 'desc')
             ->where('hopital_emplacement_id', $locationId)
             ->get();
         return response()->json([
             "status"=>"success",
-            "patients"=>$agents
+            "patients"=>$patients
         ]);
     }
 
@@ -43,6 +43,7 @@ class PatientController extends Controller
                 /** @var mixed check validate datas */
                 $data = $request->validate([
                     'nom' => 'required|string',
+                    'code_appel' => 'required|string',
                     'prenom' => 'required|string',
                     'sexe' => 'required|string|max:1',
                     'datenais' => 'required|date|date_format:Y-m-d',
@@ -55,6 +56,7 @@ class PatientController extends Controller
                 /** @var mixed create agent */
                 $patient = Patients::create([
                     'patient_code' => $request->code,
+                    'patient_code_appel'=> $data['code_appel'],
                     'patient_nom' => $data['nom'],
                     'patient_prenom' => $data['prenom'],
                     'patient_sexe' => $data['sexe'],
@@ -72,6 +74,7 @@ class PatientController extends Controller
                         "patient_fiche_temperature"=> $patientDetails['temperature'],
                         "patient_fiche_age"=> $patientDetails['age'],
                         "patient_fiche_tension_art"=> $patientDetails['tension_art'],
+                        "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
                         'hopital_emplacement_id'=>$data['emplacement_id'],
                         'hopital_id'=>$data['hopital_id'],
                         "patient_id"=> $patient->id,
@@ -92,6 +95,9 @@ class PatientController extends Controller
                     "patient_detail_temperature"=> $patientDetails['temperature'],
                     "patient_detail_age"=> $patientDetails['age'],
                     "patient_tension_art"=> $patientDetails['tension_art'],
+                    "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
+                    'hopital_emplacement_id'=>$request->emplacement_id,
+                    "hopital_id"=> $request->hopital_id,
                     "patient_id"=> $request->patient_id,
                 ]);
                 $oldPatient["details"] = $details;
@@ -113,13 +119,13 @@ class PatientController extends Controller
      * UPDATE PATIENT STATUS
      * @param $data
      * @return boolean
-    */
-    private function updateStatus($data):bool{
-        $patient = Patients::findOrFail($data['patient_id']);
-        $patient->patient_status = $data['status'];
-        return $patient->save();
+     */
+    public function updateStatus($data):bool{
+        $fiche = PatientFiche::where('id', $data['patient_fiche_id'])->firstOrFail();
+        $fiche->patient_fiche_status = $data["status"];
+        $result = $fiche->save();
+        return $result;
     }
-
     /**
      * Display the specified resource.
      *
@@ -141,9 +147,16 @@ class PatientController extends Controller
      * @return JsonResponse
      */
     public function viewAllPendingPatients(int $emplacementId):JsonResponse{
-        $patients = Patients::where('hopital_emplacement_id', $emplacementId)
-            ->where('patient_status', 'en attente')
-            ->get;
+        /*$patients = Patients::with('details')->where('hopital_emplacement_id', $emplacementId)
+            ->where('patient_fiche_status', 'en attente')
+            ->get();*/
+        $patients = Patients::join('patient_fiches', 'patients.id', '=', 'patient_fiches.patient_id')
+            ->where('patient_fiches.patient_fiche_status', 'en attente')
+            ->where('patients.hopital_emplacement_id', 2)
+            ->select('patients.*')
+            ->with('details')
+            ->orderBy('patients.id', 'asc')
+            ->get();
         return response()->json([
             "status"=>"success",
             "patients"=>$patients

@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->string('service_libelle');
-            $table->string('service_description');
+            $table->string('service_description')->nullable();
             $table->timestamp('service_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('hopital_id');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -87,4 +88,14 @@ class Services extends Model
     public function agents(): HasMany{
         return $this->hasMany(Agents::class);
     }
+
+    /**
+     * Relation d'appartenance à un emplacement spécifique
+     * @return BelongsTo
+    */
+    public function emplacement(): BelongsTo{
+        return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
+    }
+
+
 }
