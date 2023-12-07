@@ -42,10 +42,40 @@ class PharmacieController extends Controller
     */
     public function createPharmacie(Request $request):JsonResponse{
         try {
+            $pharmacieId = $request->pharmacie_id;
+
+            /**
+             * update exist
+            */
+            if(isset($pharmacieId)){
+                $old = $request->validate([
+                    "nom"=>"required|string",
+                    "adresse"=>"required|string",
+                    "telephone"=>"required|string",
+                    "created_by"=> "nullable|int",
+                    'hopital_id'=> 'required|int|exists:hopitals,id',
+                    'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
+                ]);
+                $pharmacie = Pharmacie::findOrFail($pharmacieId);
+                $pharmacie->pharmacie_nom = $old["nom"];
+                $pharmacie->pharmacie_telephone = $old["telephone"];
+                $pharmacie->pharmacie_adresse = $old["adresse"];
+                $pharmacie->hopital_emplacement_id = $old["emplacement_id"];
+                $result = $pharmacie->save();
+                return response()->json([
+                    "status"=>"success",
+                    "pharmacie"=>$result
+                ]);
+
+            }
+
+            /**
+             * Save new
+            */
             $data = $request->validate([
                 "nom"=>"required|string",
                 "adresse"=>"required|string",
-                "telephone"=>"nullable|string",
+                "telephone"=>"required|string|unique:pharmacies,pharmacie_telephone",
                 "created_by"=> "nullable|int",
                 'hopital_id'=> 'required|int|exists:hopitals,id',
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',

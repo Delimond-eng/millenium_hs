@@ -33,6 +33,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.fonctions',[ ConfigController::class,'saveFonction']);
     Route::post('/configs.grades',[ ConfigController::class,'saveGrade']);
     Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
+    Route::post('/configs.examens',[ ConfigController::class,'saveExamenLabo']);
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
 
     Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);

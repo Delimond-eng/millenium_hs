@@ -6,15 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PatientFiche extends Model
+class ExamenLabo extends Model
 {
-
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'patient_fiches';
+    protected $table = 'examen_labos';
 
     /**
      * The primary key for the model.
@@ -30,26 +29,14 @@ class PatientFiche extends Model
      */
 
     protected $fillable = [
-        "patient_fiche_poids",
-        "patient_fiche_poids_unite",
-        "patient_fiche_taille",
-        "patient_fiche_taille_unite",
-        "patient_fiche_temperature",
-        "patient_fiche_temperature_unite",
-        "patient_fiche_tension_art",
-        "patient_fiche_tension_art_unite",
-        "patient_fiche_freq_cardio",
-        "patient_fiche_freq_cardio_unite",
-        "patient_fiche_age",
-        "patient_id",
-        'hopital_id',
-        'hopital_emplacement_id'
+        "examen_labo_libelle",
+        "examen_labo_prix",
+        "examen_labo_prix_devise",
+        "examen_labo_description",
+        "created_by",
+        "hopital_id",
+        "hopital_emplacement_id",
     ];
-
-    /**
-     * Summary of patient
-     * @return BelongsTo
-     */
 
 
     /**
@@ -58,7 +45,7 @@ class PatientFiche extends Model
      * @var array
      */
     protected $dates = [
-        'patient_detail_create_At'
+        'examen_labo_create_At'
     ];
 
     /**
@@ -67,7 +54,13 @@ class PatientFiche extends Model
      * @var boolean
      */
     public $timestamps = false;
-    public function patient(): BelongsTo{
-        return $this->belongsTo(Patients::class, foreignKey:"patient_id");
+
+
+    /**
+     * Relation d'appartenance à un emplacement spécifique
+     * @return BelongsTo
+     */
+    public function emplacement(): BelongsTo{
+        return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
     }
 }

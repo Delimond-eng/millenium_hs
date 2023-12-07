@@ -78,6 +78,7 @@ class PatientController extends Controller
                         'hopital_emplacement_id'=>$data['emplacement_id'],
                         'hopital_id'=>$data['hopital_id'],
                         "patient_id"=> $patient->id,
+                        'created_by'=>$data['created_by'],
                     ]);
                     $patient['details'] = $details;
                 }
@@ -110,6 +111,9 @@ class PatientController extends Controller
         catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
+        }
+        catch (\ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
         }
 
     }

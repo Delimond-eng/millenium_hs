@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ExamenLabo;
 use App\Models\Fonctions;
 use App\Models\Grades;
 use App\Models\HopitalEmplacement;
@@ -133,6 +134,46 @@ class ConfigController extends Controller
 
 
     /**
+     * Save Grade
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function saveExamenLabo(Request $request):JsonResponse{
+        try{
+            $data = $request->validate([
+                "libelle"=>"required|string",
+                "prix"=> "required|string",
+                "devise"=> "nullable|string",
+                "description"=> "nullable|string",
+                'hopital_id'=> 'required|int|exists:hopitals,id',
+                'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
+                'created_by'=> 'required|int|exists:users,id',
+            ]);
+            $result = ExamenLabo::create([
+                "examen_labo_libelle"=> $data["libelle"],
+                "examen_labo_prix"=> $data["prix"],
+                "examen_labo_prix_devise"=> $data["devise"],
+                "examen_labo_description"=> $data["description"],
+                "created_by"=>$data["created_by"],
+                "hopital_id"=>$data["hopital_id"],
+                "hopital_emplacement_id"=>$data["emplacement_id"],
+            ]);
+            return response()->json([
+                "status"=>"success",
+                "datas"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+
+    }
+
+    /**
      * Save User roles
      * @param Request $request
      * @return JsonResponse
@@ -174,6 +215,7 @@ class ConfigController extends Controller
         $services = Services::with('emplacement')->where('hopital_id', $hostoId)->get();
         $userRoles = UserRole::all()->where('hopital_id', $hostoId);
         $locations = HopitalEmplacement::all()->where('hopital_id', $hostoId);
+        $examens = ExamenLabo::with('emplacement')->where('hopital_id', $hostoId)->get();
         return response()->json([
             "status"=> "success",
             "configs"=>[
@@ -181,7 +223,8 @@ class ConfigController extends Controller
                 "fonctions"=> $fonctions,
                 "services"=>$services,
                 "roles"=> $userRoles,
-                "emplacements"=>$locations
+                "emplacements"=>$locations,
+                "examens"=>$examens
             ]
         ]);
     }
