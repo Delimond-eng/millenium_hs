@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Agents;
 use App\Models\ConsultationDetails;
+use App\Models\ConsultationExamens;
 use App\Models\Consultations;
 use App\Models\ConsultationSymptomes;
 use App\Models\Prescriptions;
@@ -11,6 +12,7 @@ use App\Models\Services;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 use function PHPUnit\Framework\isEmpty;
@@ -258,6 +260,79 @@ class AgentController extends Controller
         }
     }
 
+    /**
+     * Ajoute une prescription des examens à une consultation
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function addExamens(Request $request): JsonResponse{
+        try
+        {
+            $examens = $request->examens;
+            if(isset($examens)){
+                foreach ($examens as $data){
+                    $prescription = ConsultationExamens::create([
+                        "examen_id" => $data['examen_id'],
+                        "agent_id" => $data['agent_id'],
+                        "consult_id" => $data['consult_id'],
+                        "patient_id" => $data['patient_id'],
+                        'hopital_emplacement_id' => $data['emplacement_id'],
+                        'hopital_id' => $data['hopital_id'],
+                    ]);
+                }
+                return response()->json([
+                    "status"=>"success",
+                    "message"=>"Prescription examens effectuées avec succès !"
+                ]);
+            }
+            else{
+                return response()->json([
+                    "errors"=>"Examens médicales requises !"
+                ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
+        }
+    }
+
+    /**
+     * Valide une prescription des examens en attente de validation
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function validateExamens($consultId):JsonResponse
+    {
+        $examen = ConsultationExamens::where('consult_id', $consultId)->get();
+        foreach ($examen as  $e){
+           if($e->consult_examen_status == 'en attente'){
+               $e->consult_examen_status = "validé";
+           }
+           else{
+               $e->consult_examen_status = "en attente";
+           }
+           $e->save();
+        }
+        return response()->json([
+            "status"=>"success",
+            "result"=>$examen
+        ]);
+    }
+
+    public function showDemandExamDetails($consultId){
+        $detail = ConsultationExamens::with('examen')
+            ->where('consult_id', $consultId)->get();
+        return response()->json([
+            "status"=>"success",
+            "detail"=>$detail
+        ]);
+    }
+
+
 
     public function viewAllConsultations(int $hostoId, int $locationId,):JsonResponse
     {
@@ -274,6 +349,52 @@ class AgentController extends Controller
             "status"=>"success",
             "consultations"=>$consultations
         ]);
+    }
+
+    /**
+     * Voir tous les axamens pour chaque consultation
+     * @param int emplacementId
+     * @return JsonResponse
+    */
+    public function allExamens(int $emplacementId):JsonResponse
+    {
+        /*
+         ConsultationExamens::with('emplacement')
+            ->with('agent')
+            ->with('consultation')
+            ->with('examen')
+            ->select(['consultation_examens.consult_id'])
+            ->leftJoin('hopital_emplacements as emplacements', 'emplacements.id', '=', 'consultation_examens.hopital_emplacement_id')
+            ->leftJoin('agents', 'agents.id', '=', 'consultation_examens.agent_id')
+            ->leftJoin('consultations', 'consultations.id', '=', 'consultation_examens.consult_id')
+            ->leftJoin('examen_labos as examens', 'examens.id', '=', 'consultation_examens.examen_id')
+            ->where('consultation_examens.hopital_emplacement_id', $emplacementId)
+            ->groupBy(['consultation_examens.consult_id'])
+            ->get();
+          */
+        $examens = DB::select('
+            SELECT
+                MAX(c.consult_examen_create_At) as consult_examen_create_At,
+                MAX(c.consult_examen_status) as consult_examen_status,
+                MAX(c.patient_id) as patient_id,
+                MAX(c.consult_id) as consult_id,
+                MAX(c.agent_id) as agent_id,
+                MAX(e.hopital_emplacement_libelle) as hopital_emplacement_libelle,
+                MAX(a.agent_nom) as agent_nom,
+                MAX(p.patient_nom) as patient_nom
+            FROM consultation_examens AS c
+            INNER JOIN consultations AS cs ON c.consult_id = cs.id
+            INNER JOIN hopital_emplacements AS e ON c.hopital_emplacement_id = e.id
+            INNER JOIN agents AS a ON c.agent_id = a.id
+            INNER JOIN patients AS p ON c.patient_id = p.id
+            WHERE c.hopital_emplacement_id = ? AND c.consult_examen_status = ?
+            GROUP BY cs.id;
+        ',[$emplacementId, 'en attente']);
+        return response()->json([
+            "status"=>"success",
+            "examens"=>$examens
+        ]);
+
     }
 
 }

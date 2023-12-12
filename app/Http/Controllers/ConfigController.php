@@ -228,4 +228,17 @@ class ConfigController extends Controller
             ]
         ]);
     }
+
+    /**
+     * GET ALL Examens for emplacement
+     * @param int $emplacementId
+     * @return JsonResponse
+     */
+    public function  viewExamens(int $emplacementId):JsonResponse{
+        $examens = ExamenLabo::all()->where('hopital_emplacement_id', $emplacementId);
+        return response()->json([
+            "status"=> "success",
+            "examens"=>$examens
+        ]);
+    }
 }

@@ -114,4 +114,11 @@ class Consultations extends Model
     public function symptomes() : HasMany{
         return $this->hasMany(ConsultationSymptomes::class, foreignKey: 'consult_id', localKey: 'id');
     }
+
+    /**
+     * Relation pour voir tous les examens à une consultation
+     */
+    public function examens():HasMany{
+        return $this->hasMany(ConsultationExamens::class, foreignKey: 'consult_id', localKey: 'id');
+    }
 }
