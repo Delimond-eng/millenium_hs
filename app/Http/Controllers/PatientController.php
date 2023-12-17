@@ -36,6 +36,8 @@ class PatientController extends Controller
         try
         {
             $patientDetails= $request->patient_details;
+
+
             /**
              * Verifie si le patient exist
             */
@@ -91,16 +93,19 @@ class PatientController extends Controller
                 /** @var mixed affiche les infos de l'ancien patient */
                 $oldPatient = Patients::where('id', $request->patient_id)->first();
                 $details = PatientFiche::create([
-                    "patient_detail_poids"=> $patientDetails['poids'],
-                    "patient_detail_taille"=> $patientDetails['taille'],
-                    "patient_detail_temperature"=> $patientDetails['temperature'],
-                    "patient_detail_age"=> $patientDetails['age'],
-                    "patient_tension_art"=> $patientDetails['tension_art'],
+                    "patient_fiche_poids"=> $patientDetails['poids'],
+                    "patient_fiche_taille"=> $patientDetails['taille'],
+                    "patient_fiche_temperature"=> $patientDetails['temperature'],
+                    "patient_fiche_age"=> $patientDetails['age'],
+                    "patient_fiche_tension_art"=> $patientDetails['tension_art'],
                     "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
                     'hopital_emplacement_id'=>$request->emplacement_id,
                     "hopital_id"=> $request->hopital_id,
                     "patient_id"=> $request->patient_id,
+                    'created_by'=> $request->created_by,
                 ]);
+                $oldPatient->patient_code_appel= $request->code_appel;
+                $oldPatient->save();
                 $oldPatient["details"] = $details;
                 return response()->json([
                     "status"=>"success",

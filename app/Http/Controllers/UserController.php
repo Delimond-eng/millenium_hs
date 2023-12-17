@@ -15,13 +15,15 @@ class UserController extends Controller
 
     /**
      * User login
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return JsonResponse
      */
     public function login(Request $request): JsonResponse{
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
+            $user->last_seen = now();
+            $user->save();
             $token = $user->createToken('user-token')->plainTextToken;
             $role = UserRole::where('id', $user->user_role_id)->first();
             $hosto = Hopital::find($user->hopital_id);
@@ -29,6 +31,7 @@ class UserController extends Controller
             $hosto['emplacement']= $emplacement;
             $user['role'] = $role;
             $user['hopital'] = $hosto;
+
             return response()->json([
                 'user' => $user,
                 'token' => $token,
@@ -39,8 +42,8 @@ class UserController extends Controller
 
     /**
      * User regester
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return JsonResponse
      */
     public function store(Request $request)
     {

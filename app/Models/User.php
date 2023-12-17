@@ -28,6 +28,7 @@ class User extends Authenticatable
         'hopital_id',
         'hopital_emplacement_id',
         'user_role_id',
+        'last_seen'
     ];
 
     /**

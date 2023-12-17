@@ -9,6 +9,9 @@ use App\Models\Patients;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\User;
+use Carbon\Carbon;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,13 +24,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['cors'])->group(function () {
-
     Route::post("/hospitals.create", [\App\Http\Controllers\HospitalController::class, 'createHosto']);
     Route::post("/emplacements.create", [\App\Http\Controllers\HospitalController::class, 'createEmplacement']);
     Route::get( '/emplacements.all/{hostoId}', [\App\Http\Controllers\HospitalController::class, 'viewAllEmplacements']);
-
     Route::post("/login",[ UserController::class, 'login']);
     Route::post("/users.store",[ UserController::class, 'store']);
+    Route::get('/users.active', function () {
+        $interval = Carbon::now()->subMinutes(10); // Les utilisateurs vus dans les 10 dernières minutes
+        $activeUsers = User::where('last_seen', '>=', $interval)->get();
+        return response()->json(['active_users' => $activeUsers]);
+    });
 
     Route::post('/configs.services',[ ConfigController::class,'saveService']);
     Route::post('/configs.fonctions',[ ConfigController::class,'saveFonction']);
@@ -59,6 +65,11 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/patients.pending/{locationId}',[ PatientController::class,'viewAllPendingPatients']);
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
 
+
+    /**
+     * Labo module manager
+    */
+    Route::get('/labo.examens/{emplacementId}',[\App\Http\Controllers\LaboController::class, 'viewAllLaboExamens']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
