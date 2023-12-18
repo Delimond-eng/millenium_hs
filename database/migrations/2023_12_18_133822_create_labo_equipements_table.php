@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('labo_equipements', function (Blueprint $table) {
             $table->id();
             $table->string('labo_equipement_nom');
-            $table->text('labo_equipement_description');
+            $table->text('labo_equipement_description')->nullable();
             $table->unsignedBigInteger('labo_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
