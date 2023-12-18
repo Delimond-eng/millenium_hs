@@ -13,17 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('examen_labos', function (Blueprint $table) {
+        Schema::create('labo_equipements', function (Blueprint $table) {
             $table->id();
-            $table->string('examen_labo_libelle');
-            $table->string('examen_labo_description')->nullable()->default('...');
-            $table->string('examen_labo_prix');
-            $table->string('examen_labo_prix_devise')->default('CDF');
+            $table->string('labo_equipement_nom');
+            $table->text('labo_equipement_description');
             $table->unsignedBigInteger('labo_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
-            $table->unsignedBigInteger('created_by');
-            $table->timestamp('examen_labo_create_At')->useCurrent();
+            $table->timestamp('labo_equipement_created_At')->useCurrent();
         });
     }
 
@@ -34,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('examen_labos');
+        Schema::dropIfExists('labo_equipements');
     }
 };
