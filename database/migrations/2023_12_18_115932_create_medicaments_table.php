@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('medicament_libelle');
             $table->string('medicament_code');
             $table->string('medicament_prix_unitaire');
-            $table->timestamp('medicament_date_exp');
-            $table->timestamp('medicament_stock_min');
+            $table->timestamp('medicament_date_exp')->nullable();
+            $table->integer('medicament_stock_min');
             $table->timestamp('medicament_created_At')->useCurrent();
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');

@@ -31,7 +31,6 @@ class Laboratoire extends Model
         'labo_nom',
         'labo_adresse',
         'labo_telephone',
-        'labo_adresse',
         'hopital_id',
         'hopital_emplacement_id',
     ];

@@ -10,9 +10,8 @@ class ExamenEchantillon extends Model
 {
     /**
      * The database table used by the model.
-     *
      * @var string
-     */
+     **/
     protected $table = 'laboratoires';
 
     /**
@@ -36,8 +35,6 @@ class ExamenEchantillon extends Model
         'hopital_id',
         'hopital_emplacement_id',
     ];
-
-
     /**
      * The attributes excluded from the model's JSON form
      * @var array
@@ -45,10 +42,8 @@ class ExamenEchantillon extends Model
     protected $hidden = [
 
     ];
-
     /**
      * The attributes that should be casted to native types.
-     *
      * @var array
      */
     protected $casts = [

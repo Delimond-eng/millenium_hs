@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('laboratoires', function (Blueprint $table) {
             $table->id();
             $table->string('labo_nom');
-            $table->string('labo_adresse');
             $table->string('labo_telephone')->nullable();
             $table->string('labo_adresse')->nullable();
             $table->timestamp('labo_created_At')->useCurrent();
