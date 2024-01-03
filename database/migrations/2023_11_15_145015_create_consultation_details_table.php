@@ -13,18 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        if(! Schema::hasTable("consultation_details")){
-            Schema::create('consultation_details', function (Blueprint $table) {
-                $table->id();
-                $table->string('consult_detail_libelle');
-                $table->string('consult_detail_valeur');
-                $table->timestamp('consult_detail_create_At')->useCurrent();
-                $table->string('consult_detail_status', 10)->default('actif');
-                $table->unsignedBigInteger('consult_id');
-                $table->unsignedBigInteger('hopital_id');
-                $table->unsignedBigInteger('hopital_emplacement_id');
-            });
-        }
+        Schema::create('consultation_details', function (Blueprint $table) {
+            $table->id();
+            $table->string('consult_detail_libelle');
+            $table->string('consult_detail_valeur');
+            $table->timestamp('consult_detail_create_At')->useCurrent();
+            $table->string('consult_detail_status', 10)->default('actif');
+            $table->unsignedBigInteger('consult_id');
+            $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
+        });
 
     }
 

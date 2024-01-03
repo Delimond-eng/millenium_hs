@@ -27,14 +27,15 @@ class ConfigController extends Controller
             $data = $request->validate([
                 "libelle"=>"required|string",
                 "description"=>"nullable|string",
-                "created_by"=> "nullable|int",
+                "created_by"=> "required|int",
                 'hopital_id'=> 'required|int|exists:hopitals,id',
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
+
             ]);
             $service = Services::create([
                 "service_libelle"=> $data["libelle"],
                 "service_description"=> $data["description"],
-                "created_by"=> $data["created_by"]??null,
+                "created_by"=> $data["created_by"],
                 'hopital_id'=>$data['hopital_id'],
                 'hopital_emplacement_id'=>$data['emplacement_id'],
             ]);
@@ -77,19 +78,18 @@ class ConfigController extends Controller
         try {
            $data = $request->validate([
                 "libelle"=>"required|string",
-                "created_by"=>"nullable|int",
+                "created_by"=>"required|int",
                 'hopital_id'=> 'required|int|exists:hopitals,id',
             ]);
             $fonction = Fonctions::create([
                 "fonction_libelle"=> $data["libelle"],
-                "created_by"=>$data["created_by"] ?? 0,
+                "created_by"=>$data["created_by"],
                 "hopital_id"=>$data['hopital_id']
             ]);
             return response()->json([
                 "status"=>"success",
                 "datas"=>$fonction
             ]);
-            // Si la validation réussit, procédez à la logique de création de l'utilisateur ici
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
             return response()->json(['errors' => $errors ]);
@@ -109,12 +109,12 @@ class ConfigController extends Controller
         try{
             $data = $request->validate([
                 "libelle"=>"required|string",
-                "created_by"=> "nullable|int",
+                "created_by"=> "required|int",
                 'hopital_id'=> 'required|int|exists:hopitals,id',
             ]);
             $grade = Grades::create([
                 "grade_libelle"=> $data["libelle"],
-                "created_by"=>$data["created_by"] ?? 0,
+                "created_by"=>$data["created_by"],
                 "hopital_id"=>$data["hopital_id"]
             ]);
             return response()->json([
@@ -148,12 +148,14 @@ class ConfigController extends Controller
                 'hopital_id'=> 'required|int|exists:hopitals,id',
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
                 'created_by'=> 'required|int|exists:users,id',
+                'labo_id'=>'required|int|exists:laboratoires,id'
             ]);
             $result = ExamenLabo::create([
                 "examen_labo_libelle"=> $data["libelle"],
                 "examen_labo_prix"=> $data["prix"],
                 "examen_labo_prix_devise"=> $data["devise"],
                 "examen_labo_description"=> $data["description"],
+                "labo_id"=>$data["labo_id"],
                 "created_by"=>$data["created_by"],
                 "hopital_id"=>$data["hopital_id"],
                 "hopital_emplacement_id"=>$data["emplacement_id"],
@@ -213,7 +215,7 @@ class ConfigController extends Controller
         $grades = Grades::all()->where('hopital_id', $hostoId);
         $fonctions = Fonctions::all()->where('hopital_id', $hostoId);
         $services = Services::with('emplacement')->where('hopital_id', $hostoId)->get();
-        $userRoles = UserRole::all()->where('hopital_id', $hostoId);
+        $userRoles = UserRole::all();
         $locations = HopitalEmplacement::all()->where('hopital_id', $hostoId);
         $examens = ExamenLabo::with('emplacement')->where('hopital_id', $hostoId)->get();
         return response()->json([

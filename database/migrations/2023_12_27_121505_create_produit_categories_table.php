@@ -13,14 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('echographies', function (Blueprint $table) {
+        Schema::create('produit_categories', function (Blueprint $table) {
             $table->id();
-            $table->text("echographie_resultats");
-            $table->unsignedBigInteger("suivi_grossesse_id")->default(0);
-            $table->unsignedBigInteger("patient_id")->default(0);
-            $table->timestamp('echographie_created_At')->useCurrent();
+            $table->string('categorie_libelle');
+            $table->text('categorie_description')->nullable();
+            $table->unsignedBigInteger('pharmacie_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
+            $table->timestamp('categorie_created_At')->useCurrent();
         });
     }
 
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('echographies');
+        Schema::dropIfExists('produit_categories');
     }
 };

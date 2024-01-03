@@ -32,7 +32,8 @@ class Pharmacie extends Model
         'pharmacie_telephone',
         'pharmacie_adresse',
         'hopital_id',
-        'hopital_emplacement_id'
+        'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

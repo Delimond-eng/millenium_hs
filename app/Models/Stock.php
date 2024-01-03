@@ -34,6 +34,7 @@ class Stock extends Model
         'fournisseur_id',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

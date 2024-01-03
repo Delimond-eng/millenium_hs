@@ -33,6 +33,7 @@ class Laboratoire extends Model
         'labo_telephone',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

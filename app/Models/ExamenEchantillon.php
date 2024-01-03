@@ -34,6 +34,7 @@ class ExamenEchantillon extends Model
         'examen_echantillon_date_prelevement',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
     /**
      * The attributes excluded from the model's JSON form

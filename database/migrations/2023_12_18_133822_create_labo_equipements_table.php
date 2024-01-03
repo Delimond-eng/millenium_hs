@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger('labo_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
             $table->timestamp('labo_equipement_created_At')->useCurrent();
         });
     }

@@ -33,7 +33,8 @@ class HopitalEmplacement extends Model
     protected $fillable = [
         "hopital_emplacement_libelle",
         "hopital_emplacement_adresse",
-        "hopital_id"
+        "hopital_id",
+        "created_by"
     ];
 
 

@@ -19,10 +19,10 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('examen_id');
             $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('labo_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
-            $table->timestamp('examen_echantillon_date_prelevement');
-            $table->string('resultat');
             $table->timestamp('examen_echantillon_created_At')->useCurrent();
+            $table->unsignedBigInteger('created_by');
         });
     }
 

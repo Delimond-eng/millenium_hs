@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Medicament extends Model
+class Produit extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'medicaments';
+    protected $table = 'produits';
 
     /**
      * The primary key for the model.
@@ -27,13 +27,16 @@ class Medicament extends Model
      * @var array
      */
     protected $fillable = [
-        'medicament_libelle',
-        'medicament_code',
-        'medicament_prix_unitaire',
-        'medicament_date_exp',
-        'medicament_stock_min',
+        'produit_libelle',
+        'produit_code',
+        'produit_prix_unitaire',
+        'produit_date_exp',
+        'produit_stock_min',
+        'categorie_id',
+        'pharmacie_id',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**
@@ -51,6 +54,6 @@ class Medicament extends Model
      * @var array
      */
     protected $casts = [
-        'medicament_created_At'=>'datetime:d-m-Y H:i:s'
+        'produit_created_At'=>'datetime:d-m-Y H:i:s'
     ];
 }

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->timestamp('accouchement_created_At')->useCurrent();
+            $table->unsignedBigInteger('created_by');
         });
     }
     /**

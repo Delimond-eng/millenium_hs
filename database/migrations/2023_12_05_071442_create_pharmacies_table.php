@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('pharmacie_create_At')->useCurrent();
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
         });
     }
 

@@ -24,6 +24,7 @@ return new class extends Migration
                 $table->unsignedBigInteger('agent_id');
                 $table->unsignedBigInteger('hopital_id');
                 $table->unsignedBigInteger('hopital_emplacement_id');
+                $table->unsignedBigInteger('created_by');
             });
         }
     }

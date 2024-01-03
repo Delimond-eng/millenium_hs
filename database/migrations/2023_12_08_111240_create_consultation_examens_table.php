@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
             $table->timestamp('consult_examen_create_At')->useCurrent();
             $table->string('consult_examen_status')->default('en attente');
         });

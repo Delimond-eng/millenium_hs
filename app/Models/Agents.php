@@ -10,26 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
-/**
- * @property int    $agent_id
- * @property int    $adresse_id
- * @property int    $agence_affectation_id
- * @property int    $nbre_enfant
- * @property int    $agent_create_At
- * @property string $nom
- * @property string $postnom
- * @property string $prenom
- * @property string $matricule
- * @property string $nationalite
- * @property string $sexe
- * @property string $etat_civil
- * @property string $agent_status
- * @property string $agent_matricule
- * @property string $agent_nom
- * @property string $agent_prenom
- * @property string $agent_telephone
- * @property string $agent_adresse
- */
 class Agents extends Model
 {
     /**
@@ -66,7 +46,8 @@ class Agents extends Model
         'user_id',
         'created_by',
         'hopital_id',
-        'hopital_emplacement_id'
+        'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

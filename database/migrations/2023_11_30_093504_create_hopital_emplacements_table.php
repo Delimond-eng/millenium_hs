@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('hopital_emplacement_adresse');
             $table->timestamp('hopital_emplacement_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('created_by')->default(0)->nullable();
         });
     }
 

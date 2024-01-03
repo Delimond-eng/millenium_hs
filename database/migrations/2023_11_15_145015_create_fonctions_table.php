@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('fonction_libelle');
             $table->timestamp('fonction_create_At')->useCurrentOnUpdate()->useCurrent();
-            $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('created_by');
             $table->string('fonction_status')->default('actif');
         });
     }

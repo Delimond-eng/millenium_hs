@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('consultation_symptomes', function (Blueprint $table) {
+        Schema::create('produit_unites', function (Blueprint $table) {
             $table->id();
-            $table->string('consult_symptome_libelle');
-            $table->unsignedBigInteger('consult_id');
-            $table->timestamp('consult_symptome_create_At')->useCurrent();
-            $table->unsignedBigInteger('created_by');
+            $table->timestamps();
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('consultation_symptomes');
+        Schema::dropIfExists('produit_unites');
     }
 };

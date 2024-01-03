@@ -34,6 +34,7 @@ class Fournisseur extends Model
         'fournisseur_telephone',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

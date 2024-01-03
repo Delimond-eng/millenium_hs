@@ -13,16 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('medicaments', function (Blueprint $table) {
+        Schema::create('produits', function (Blueprint $table) {
             $table->id();
-            $table->string('medicament_libelle');
-            $table->string('medicament_code');
-            $table->string('medicament_prix_unitaire');
-            $table->timestamp('medicament_date_exp')->nullable();
-            $table->integer('medicament_stock_min');
-            $table->timestamp('medicament_created_At')->useCurrent();
+            $table->string('produit_libelle')->unique();
+            $table->string('produit_code')->unique();
+            $table->string('produit_prix_unitaire');
+            $table->timestamp('produit_date_exp')->nullable();
+            $table->integer('produit_stock_min');
+            $table->timestamp('produit_created_At')->useCurrent();
+            $table->unsignedBigInteger('categorie_id');
+            $table->unsignedBigInteger('pharmacie_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
         });
     }
 

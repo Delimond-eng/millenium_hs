@@ -13,19 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        if(!Schema::hasTable("prescriptions")){
-            Schema::create('prescriptions', function (Blueprint $table) {
-                $table->id();
-                $table->string('prescription_traitement');
-                $table->string('prescription_posologie');
-                $table->string('prescription_traitement_type');
-                $table->timestamp('prescription_create_At')->useCurrent();
-                $table->string('prescription_status', 10)->default('actif');
-                $table->unsignedBigInteger('consult_id');
-                $table->unsignedBigInteger('hopital_emplacement_id');
-                $table->unsignedBigInteger('hopital_id');
-            });
-        }
+        Schema::create('prescriptions', function (Blueprint $table) {
+            $table->id();
+            $table->string('prescription_traitement');
+            $table->string('prescription_posologie');
+            $table->string('prescription_traitement_type');
+            $table->timestamp('prescription_create_At')->useCurrent();
+            $table->string('prescription_status', 10)->default('actif');
+            $table->unsignedBigInteger('consult_id');
+            $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('created_by');
+        });
     }
 
     /**

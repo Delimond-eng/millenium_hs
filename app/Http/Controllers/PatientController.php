@@ -51,7 +51,7 @@ class PatientController extends Controller
                     'datenais' => 'required|date|date_format:Y-m-d',
                     'telephone' => 'required|string|min:10|unique:patients,patient_telephone',
                     'adresse' => 'required|string',
-                    'created_by'=> 'nullable|int',
+                    'created_by'=> 'required|int',
                     'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
                     'hopital_id'=>'required|int|exists:hopitals,id',
                 ]);
@@ -161,7 +161,7 @@ class PatientController extends Controller
             ->get();*/
         $patients = Patients::join('patient_fiches', 'patients.id', '=', 'patient_fiches.patient_id')
             ->where('patient_fiches.patient_fiche_status', 'en attente')
-            ->where('patients.hopital_emplacement_id', 2)
+            ->where('patients.hopital_emplacement_id', $emplacementId)
             ->select('patients.*')
             ->with('details')
             ->orderBy('patients.id', 'asc')
@@ -171,6 +171,8 @@ class PatientController extends Controller
             "patients"=>$patients
         ]);
     }
+
+
 
 
 

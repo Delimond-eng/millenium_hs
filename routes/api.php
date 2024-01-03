@@ -43,18 +43,14 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
     Route::get('/examens.all/{emplacementId}', [ConfigController::class, 'viewExamens']);
 
-    Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
-    Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
-    Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
-
     Route::post('/agents.create',[ AgentController::class,'create']);
     Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
-
     Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
     Route::post('/prescriptions.add',[ AgentController::class,'addPrescriptions']);
     Route::post('/examens.add',[ AgentController::class,'addExamens']);
     Route::get('/consultations.all/{hostoId}/{locationId}',[ AgentController::class,'viewAllConsultations']);
+    Route::get('/consultations.patient/{patientId}',[ AgentController::class,'viewLastConsults']);
     Route::get('/consult.examens/{locationId}',[ AgentController::class,'allExamens']);
     Route::post('/examen.validate/{consult_id}',[ AgentController::class,'validateExamens']);
     Route::get('/examen.detail/{consult_id}',[ AgentController::class,'showDemandExamDetails']);
@@ -70,6 +66,17 @@ Route::middleware(['cors'])->group(function () {
      * Labo module manager
     */
     Route::get('/labo.examens/{emplacementId}',[\App\Http\Controllers\LaboController::class, 'viewAllLaboExamens']);
+
+
+    /**
+     * Pharmacie module Routes
+    */
+
+    Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
+    Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
+    Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
+    Route::post('/pharmacie.create.product', [\App\Http\Controllers\PharmacieController::class, 'createProduct']);
+    Route::post('/pharmacie.create.category', [\App\Http\Controllers\PharmacieController::class, 'createCategory']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

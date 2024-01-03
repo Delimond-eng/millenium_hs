@@ -13,15 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('suivi_post_natales', function (Blueprint $table) {
+        Schema::create('examen_resultats', function (Blueprint $table) {
             $table->id();
+            $table->string('examen_resultat_libelle');
+            $table->text('examen_resultat_description')->nullable();
+            $table->string('examen_resultat_media')->nullable();
+            $table->unsignedBigInteger('examen_id');
+            $table->unsignedBigInteger('echantillon_id');
+            $table->unsignedBigInteger('labo_id');
             $table->unsignedBigInteger('patient_id');
-            $table->string('suivi_post_natale_etat_sante');
-            $table->string('suivi_post_natale_recommandations');
-            $table->timestamp('suivi_post_natale_created_At')->useCurrent();
+            $table->unsignedBigInteger('suivi_id')->default(0)->nullable();
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('created_by');
+            $table->timestamp("examen_resultat_created_At")->useCurrent();
         });
     }
 
@@ -32,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('suivi_post_natales');
+        Schema::dropIfExists('examen_resultats');
     }
 };

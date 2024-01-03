@@ -31,6 +31,7 @@ return new class extends Migration
             $table->timestamp('patient_fiche_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('created_by');
         });
     }
 

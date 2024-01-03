@@ -60,7 +60,7 @@ class AgentController extends Controller
                 'grade_id'=>'required|int|exists:grades,id',
                 'hopital_id'=> 'required|int|exists:hopitals,id',
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
-                'created_by'=> 'nullable|int',
+                'created_by'=> 'required|int',
             ]);
 
             /** @var mixed create agent */
@@ -78,7 +78,7 @@ class AgentController extends Controller
                 'service_id'=>$data['service_id'],
                 'hopital_id'=>$data['hopital_id'],
                 'hopital_emplacement_id'=>$data['emplacement_id'],
-                'created_by'=>$data['created_by']?? 0,
+                'created_by'=>$data['created_by'],
             ]);
 
             /** @var mixed check if user account permission isAllowed */
@@ -154,6 +154,7 @@ class AgentController extends Controller
                 'agent_id'=>'required|int|exists:agents,id',
                 'hopital_id'=>'required|int|exists:hopitals,id',
                 'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
+                'create_by'=>'required|int|exists:users,id'
             ]);
             $consultation = Consultations::create([
                 "consult_libelle" => $data['libelle'],
@@ -162,6 +163,7 @@ class AgentController extends Controller
                 "agent_id" => $data['agent_id'],
                 "hopital_id" => $data['hopital_id'],
                 "hopital_emplacement_id" => $data['emplacement_id'],
+                'created_by'=>$data['created_by']
             ]);
             if(isset($consultation)){
                 /**
@@ -182,6 +184,7 @@ class AgentController extends Controller
                             "consult_id"=>$consultation->id,
                             "hopital_id" => $data['hopital_id'],
                             "hopital_emplacement_id" => $data['emplacement_id'],
+                            "created_by"=>$data['created_by']
                         ]);
                     }
                 }
@@ -194,6 +197,7 @@ class AgentController extends Controller
                         $consultSymptome = ConsultationSymptomes::create([
                             'consult_symptome_libelle'=>$symptome['libelle'],
                             "consult_id"=>$consultation->id,
+                            "created_by"=>$data['created_by'],
                         ]);
                     }
                 }
@@ -226,8 +230,12 @@ class AgentController extends Controller
      * CREATION PRESCRIPTION
     */
     public function addPrescriptions(Request $request): JsonResponse{
+
         try
         {
+            $validateDatas = $request->validate([
+                'prescriptions'=>'required|array'
+            ]);
             $prescriptions = $request->prescriptions;
             if(isset($prescriptions)){
                 foreach ($prescriptions as $data){
@@ -238,6 +246,7 @@ class AgentController extends Controller
                         "consult_id" => $data['consult_id'],
                         'hopital_emplacement_id' => $data['emplacement_id'],
                         'hopital_id' => $data['hopital_id'],
+                        'created_by'=>$data['created_by']
                     ]);
                 }
                 return response()->json([
@@ -278,6 +287,7 @@ class AgentController extends Controller
                         "patient_id" => $data['patient_id'],
                         'hopital_emplacement_id' => $data['emplacement_id'],
                         'hopital_id' => $data['hopital_id'],
+                        'created_by'=>$data['created_by']
                     ]);
                 }
                 return response()->json([
@@ -395,6 +405,28 @@ class AgentController extends Controller
             "examens"=>$examens
         ]);
 
+    }
+
+
+    /**
+     * Voir les consultations passées du patient
+     * @param int $patientId
+     * @return JsonResponse
+     */
+    public function viewLastConsults(int $patientId): JsonResponse
+    {
+        $consultations = Consultations::with('agent')
+            ->with('patient')
+            ->with('prescriptions')
+            ->with('details')
+            ->with('symptomes')
+            ->orderByDesc('id')
+            ->where('patient_id', $patientId)
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "consultations"=>$consultations
+        ]);
     }
 
 

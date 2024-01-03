@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('role')->unique();
             $table->unsignedBigInteger('hopital_id')->nullable();
             $table->timestamp('role_create_At')->useCurrent();
+            $table->unsignedBigInteger('created_by')->nullable();
         });
     }
 

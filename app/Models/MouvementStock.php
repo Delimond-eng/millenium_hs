@@ -29,8 +29,12 @@ class MouvementStock extends Model
     protected $fillable = [
         'mouvement_stock_type',
         'mouvement_stock_qte',
+        'mouvement_stock_bon_code',
+        'produit_id',
+        'stock_id',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

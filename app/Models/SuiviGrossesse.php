@@ -31,6 +31,7 @@ class SuiviGrossesse extends Model
         'patient_id',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

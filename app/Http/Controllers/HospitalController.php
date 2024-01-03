@@ -80,11 +80,13 @@ class HospitalController extends Controller
                 "emplacement_libelle"=>'required|string',
                 "emplacement_adresse"=>'required|string',
                 "hopital_id"=>'required|int|exists:hopitals,id',
+                "created_by"=>"required|int"
             ]);
             $emplacement = HopitalEmplacement::create([
                 "hopital_emplacement_libelle"=>$data['emplacement_libelle'],
                 "hopital_emplacement_adresse"=>$data['emplacement_adresse'],
-                "hopital_id"=>$data["hopital_id"]
+                "hopital_id"=>$data["hopital_id"],
+                "created_by"=>$data["created_by"]
             ]);
             if (isset($emplacement)){
                 return response()->json([
@@ -128,7 +130,7 @@ class HospitalController extends Controller
         $emplacement = HopitalEmplacement::create([
             "hopital_emplacement_libelle" => 'Siège social',
             "hopital_emplacement_adresse"=>$data['adresse'],
-            "hopital_id"=> $data['hopital_id']
+            "hopital_id"=> $data['hopital_id'],
         ]);
         return $emplacement;
     }

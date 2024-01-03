@@ -33,7 +33,8 @@ class ConsultationExamens extends Model
         "consult_id",
         "patient_id",
         "hopital_emplacement_id",
-        "hopital_id"
+        "hopital_id",
+        "created_by"
     ];
 
     /**

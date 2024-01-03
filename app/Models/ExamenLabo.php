@@ -36,6 +36,7 @@ class ExamenLabo extends Model
         "created_by",
         "hopital_id",
         "hopital_emplacement_id",
+        "created_by"
     ];
 
 

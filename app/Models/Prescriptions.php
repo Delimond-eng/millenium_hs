@@ -5,14 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-/**
- * @property string $proscription_traitement
- * @property string $prescription_posologie
- * @property string $prescription_traitement_type
- * @property string $prescription_status
- * @property int    $prescription_create_At
- * @property int    $consult_id
- */
+
 class Prescriptions extends Model
 {
     /**
@@ -37,7 +30,8 @@ class Prescriptions extends Model
     protected $fillable = [
         'prescription_traitement','prescription_posologie', 'prescription_traitement_type', 'consult_id',
         'hopital_id',
-        'hopital_emplacement_id'
+        'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

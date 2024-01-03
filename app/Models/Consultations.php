@@ -6,12 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/**
- * @property string $consult_libelle
- * @property string $consult_obs
- * @property string $consult_status
- * @property int    $consult_create_At
- */
 class Consultations extends Model
 {
     /**
@@ -35,7 +29,7 @@ class Consultations extends Model
      */
     protected $fillable = [
         'consult_libelle', 'consult_diagnostic', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id', 'hopital_id',
-        'hopital_emplacement_id'
+        'hopital_emplacement_id','created_by'
     ];
 
     /**

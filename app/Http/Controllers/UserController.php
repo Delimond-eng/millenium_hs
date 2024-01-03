@@ -51,16 +51,17 @@ class UserController extends Controller
             'name' => 'required|string',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'agent_id'=>'required|int|exists:agents,id',
+            'created_by'=>'required|int|exists:users,id',
         ]);
 
-        // Création de l'utilisateur
         $user = User::create([
             'name' => $validatedData['name'],
             'email' => $validatedData['email'],
             'password' => bcrypt($validatedData['password']),
-            'agent_id'=> 0, // Assurez-vous de hasher le mot de passe
+            'agent_id'=> $validatedData['agent_id'],
+            'created_by'=> $validatedData['created_by'],
         ]);
-        // Réponse JSON
         return response()->json(['message' => 'Utilisateur créé avec succès', 'user' => $user]);
     }
 }

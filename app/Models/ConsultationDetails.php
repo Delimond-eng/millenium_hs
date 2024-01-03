@@ -37,7 +37,8 @@ class ConsultationDetails extends Model
         'consult_detail_libelle',
         'consult_detail_valeur',
         'consult_id','hopital_id',
-        'hopital_emplacement_id'
+        'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

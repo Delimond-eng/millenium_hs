@@ -19,10 +19,11 @@ return new class extends Migration
             $table->string('taille_bebe');
             $table->string('temperature_bebe');
             $table->string('tension_art_bebe');
-            $table->timestamp('consult_pediatrique_created_At');
             $table->unsignedBigInteger('bebe_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('created_by');
+            $table->timestamp('consult_pediatrique_created_At');
         });
     }
 

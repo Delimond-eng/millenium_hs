@@ -34,6 +34,7 @@ class VisitePrenatale extends Model
         'visite_recommandations',
         'hopital_id',
         'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**

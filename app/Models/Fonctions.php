@@ -9,16 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-/**
- * @property int    $fonction_id
- * @property int    $biotime_fonction_id
- * @property int    $user_id
- * @property int    $fonction_create_At
- * @property string $libelle
- * @property string $fonction_statut
- * @property string $fonction_libelle
- * @property string $fonction_status
- */
 class Fonctions extends Model
 {
     use HasApiTokens, HasFactory, Notifiable;

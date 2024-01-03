@@ -28,7 +28,11 @@ class Hopital extends Model
      * @var array
      */
 
-    protected $fillable = ["hopital_nom","hopital_adresse", "hopital_logo"];
+    protected $fillable = [
+        "hopital_nom",
+        "hopital_adresse",
+        "hopital_logo",
+    ];
 
 
     /**

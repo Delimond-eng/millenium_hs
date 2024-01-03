@@ -30,6 +30,7 @@ class ConsultationSymptomes extends Model
     protected $fillable = [
         'consult_symptome_libelle',
         'consult_id',
+        'created_by'
     ];
 
     /**

@@ -18,10 +18,10 @@ return new class extends Migration
             $table->string('service_libelle');
             $table->string('service_description')->nullable();
             $table->timestamp('service_create_At')->useCurrentOnUpdate()->useCurrent();
-            $table->unsignedBigInteger('created_by');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->string('service_status')->default('actif');
+            $table->unsignedBigInteger('created_by');
         });
     }
 
