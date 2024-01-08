@@ -33,7 +33,7 @@ class ExamenLabo extends Model
         "examen_labo_prix",
         "examen_labo_prix_devise",
         "examen_labo_description",
-        "created_by",
+        "labo_id",
         "hopital_id",
         "hopital_emplacement_id",
         "created_by"

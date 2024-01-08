@@ -13,9 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('produit_unites', function (Blueprint $table) {
+        Schema::create('produit_types', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('produit_type_libelle');
+            $table->string('produit_type_description')->nullable();
+            $table->unsignedBigInteger('pharmacie_id');
+            $table->timestamp('type_created_At')->useCurrent();
         });
     }
 
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('produit_unites');
+        Schema::dropIfExists('produit_types');
     }
 };

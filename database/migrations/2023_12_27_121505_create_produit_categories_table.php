@@ -18,8 +18,6 @@ return new class extends Migration
             $table->string('categorie_libelle');
             $table->text('categorie_description')->nullable();
             $table->unsignedBigInteger('pharmacie_id');
-            $table->unsignedBigInteger('hopital_id');
-            $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('created_by');
             $table->timestamp('categorie_created_At')->useCurrent();
         });

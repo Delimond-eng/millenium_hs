@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Laboratoire;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class LaboController extends Controller
 {
     /**
      * labo voir toutes les demandes des examens labo
+     * @param  $emplacementId
      * @return JsonResponse
     */
     public function viewAllLaboExamens($emplacementId):JsonResponse
@@ -35,6 +38,54 @@ class LaboController extends Controller
         return response()->json([
             "status"=>"success",
             "examens"=>$examens
+        ]);
+    }
+
+    /**
+     * Creer un nouveau laboratoire
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function createLabo(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'labo_nom'=>'required|string',
+                'labo_adresse'=>'required|string',
+                'labo_telephone'=>'nullable|string',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
+                'created_by'=>'required|int|exists:users,id'
+            ]);
+            $result = Laboratoire::create($data);
+            if(isset($result)){
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$result,
+                ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+    /**
+     * Voir tous les laboratoire par Emplacement ou par Hopital
+     * @param null $hopitalId
+     * @return JsonResponse
+     */
+    public function allLabos($hopitalId):JsonResponse
+    {
+        $results = Laboratoire::with('emplacement')->where('hopital_id', $hopitalId)->get();
+        return response()->json([
+            "status"=>"success",
+            "labos"=>$results
         ]);
     }
 }

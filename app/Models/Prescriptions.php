@@ -28,7 +28,10 @@ class Prescriptions extends Model
      * @var array
      */
     protected $fillable = [
-        'prescription_traitement','prescription_posologie', 'prescription_traitement_type', 'consult_id',
+        'prescription_traitement',
+        'prescription_posologie',
+        'prescription_traitement_type',
+        'consult_id',
         'hopital_id',
         'hopital_emplacement_id',
         'created_by'

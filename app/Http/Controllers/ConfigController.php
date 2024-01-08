@@ -134,7 +134,7 @@ class ConfigController extends Controller
 
 
     /**
-     * Save Grade
+     * Examen configuration
      * @param Request $request
      * @return JsonResponse
      */

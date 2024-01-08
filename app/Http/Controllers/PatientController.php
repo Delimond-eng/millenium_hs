@@ -37,7 +37,6 @@ class PatientController extends Controller
         {
             $patientDetails= $request->patient_details;
 
-
             /**
              * Verifie si le patient exist
             */

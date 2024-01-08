@@ -21,6 +21,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->timestamp('last_seen')->nullable();
             $table->string('password');
+            $table->string('menus')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->unsignedBigInteger('agent_id');

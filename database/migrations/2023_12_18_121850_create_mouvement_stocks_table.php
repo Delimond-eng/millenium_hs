@@ -19,9 +19,9 @@ return new class extends Migration
             $table->integer('mouvement_stock_qte');
             $table->string('mouvement_stock_bon_code')->nullable();
             $table->unsignedBigInteger('produit_id');
-            $table->unsignedBigInteger('stock_id');
-            $table->unsignedBigInteger('hopital_id');
-            $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('fournisseur_id')->nullable();
+            $table->unsignedBigInteger('fournisseur_facture_code')->nullable();
+            $table->unsignedBigInteger('pharmacie_id')->nullable();
             $table->timestamp('mouvement_stock_created_At')->useCurrent();
             $table->unsignedBigInteger('created_by');
         });

@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Js;
 use Illuminate\Validation\ValidationException;
 
 use function PHPUnit\Framework\isEmpty;
@@ -88,6 +89,7 @@ class AgentController extends Controller
                     "name"=>$data['prenom'],
                     "email"=>$userDatas["email"],
                     "password"=>bcrypt($userDatas["password"]),
+                    "menus"=>$userDatas['menus'],
                     "phone"=>$data['telephone'],
                     "agent_id"=>$agent->id,
                     "user_role_id"=>$userDatas["role_id"],
@@ -154,7 +156,7 @@ class AgentController extends Controller
                 'agent_id'=>'required|int|exists:agents,id',
                 'hopital_id'=>'required|int|exists:hopitals,id',
                 'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
-                'create_by'=>'required|int|exists:users,id'
+                'created_by'=>'required|int|exists:users,id'
             ]);
             $consultation = Consultations::create([
                 "consult_libelle" => $data['libelle'],
@@ -333,9 +335,41 @@ class AgentController extends Controller
         ]);
     }
 
+
+    /**
+     * Valide une prescription des examens en attente de validation
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function validatePrescriptions($consultId):JsonResponse
+    {
+        $examen =Prescriptions::where('consult_id', $consultId)->get();
+        foreach ($examen as  $e){
+            if($e->prescription_status == 'actif'){
+                $e->prescription_status = "validé";
+            }
+            else{
+                $e->prescription_status = "actif";
+            }
+            $e->save();
+        }
+        return response()->json([
+            "status"=>"success",
+            "result"=>$examen
+        ]);
+    }
+
     public function showDemandExamDetails($consultId){
         $detail = ConsultationExamens::with('examen')
             ->where('consult_id', $consultId)->get();
+        return response()->json([
+            "status"=>"success",
+            "detail"=>$detail
+        ]);
+    }
+
+    public function showPrescriptionDetails($consultId){
+        $detail = Prescriptions::where('consult_id', $consultId)->get();
         return response()->json([
             "status"=>"success",
             "detail"=>$detail
@@ -405,6 +439,38 @@ class AgentController extends Controller
             "examens"=>$examens
         ]);
 
+    }
+
+    /**
+     * Voir toutes les prescriptions pour chaque consultation
+     * @param int emplacementId
+     * @return JsonResponse
+     */
+    public function allPendingPrescription(int $emplacementId):JsonResponse
+    {
+        $prescriptions = DB::select('
+            SELECT
+                MAX(pe.prescription_create_At) as prescription_create_At,
+                MAX(pe.prescription_status) as prescription_status,
+                MAX(pe.prescription_traitement) as prescription_traitement,
+                MAX(pe.prescription_traitement_type) as prescription_traitement_type,
+                MAX(pe.prescription_posologie) as prescription_posologie,
+                MAX(pe.consult_id) as consult_id,
+                MAX(e.hopital_emplacement_libelle) as hopital_emplacement_libelle,
+                MAX(a.agent_nom) as agent_nom,
+                MAX(pa.patient_nom) as patient_nom
+            FROM prescriptions AS pe
+            INNER JOIN consultations AS cs ON pe.consult_id = cs.id
+            INNER JOIN hopital_emplacements AS e ON pe.hopital_emplacement_id = e.id
+            INNER JOIN patients AS pa ON cs.patient_id = pa.id
+            INNER JOIN agents AS a ON cs.agent_id = a.id
+            WHERE pe.hopital_emplacement_id = ? AND pe.prescription_status = ?
+            GROUP BY cs.id;
+        ',[$emplacementId, 'actif']);
+        return response()->json([
+            "status"=>"success",
+            "prescriptions"=>$prescriptions
+        ]);
     }
 
 

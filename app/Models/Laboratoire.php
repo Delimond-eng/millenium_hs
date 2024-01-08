@@ -51,8 +51,15 @@ class Laboratoire extends Model
      * @var array
      */
     protected $casts = [
-        'labo_created_At'=>'datetime:d-m-Y H:i:s'
+        'labo_created_At'=>'date:d-m-Y H:i'
     ];
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 
     /**
      * Relation pour lier à un emplacement

@@ -24,6 +24,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'menus',
         'agent_id',
         'hopital_id',
         'hopital_emplacement_id',

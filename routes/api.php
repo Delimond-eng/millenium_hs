@@ -53,20 +53,22 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/consultations.patient/{patientId}',[ AgentController::class,'viewLastConsults']);
     Route::get('/consult.examens/{locationId}',[ AgentController::class,'allExamens']);
     Route::post('/examen.validate/{consult_id}',[ AgentController::class,'validateExamens']);
+    Route::post('/prescription.validate/{consult_id}',[ AgentController::class,'validatePrescriptions']);
+    Route::get('/prescription.details/{consult_id}',[ AgentController::class,'showPrescriptionDetails']);
     Route::get('/examen.detail/{consult_id}',[ AgentController::class,'showDemandExamDetails']);
+    Route::get('/prescriptions.pending/{locationId}',[ AgentController::class,'allPendingPrescription']);
 
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);
     Route::get('/patients.all/{locationId}',[ PatientController::class,'all']);
     Route::get('/patients.pending/{locationId}',[ PatientController::class,'viewAllPendingPatients']);
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
-
-
     /**
      * Labo module manager
     */
+    Route::get('/labos.all/{hopitalId}',[\App\Http\Controllers\LaboController::class, 'allLabos']);
     Route::get('/labo.examens/{emplacementId}',[\App\Http\Controllers\LaboController::class, 'viewAllLaboExamens']);
-
+    Route::post('/labo.create',[\App\Http\Controllers\LaboController::class, 'createLabo']);
 
     /**
      * Pharmacie module Routes

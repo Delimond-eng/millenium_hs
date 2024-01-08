@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('patient_fiche_poids', 5);
             $table->string('patient_fiche_poids_unite', 5)->default('kg');
-            $table->string('patient_fiche_taille', 5);
+            $table->string('patient_fiche_taille', 5)->nullable();
             $table->string('patient_fiche_taille_unite', 5)->default('cm');
             $table->string('patient_fiche_temperature', 5);
             $table->string('patient_fiche_temperature_unite', 5)->default('°c');
