@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('patient_fiche_tension_art_unite', 5)->default('mmHg');
             $table->string('patient_fiche_freq_cardio', 5);
             $table->string('patient_fiche_freq_cardio_unite', 5)->default('bpm');
+            $table->string('patient_fiche_saturation', 5);
+            $table->string('patient_fiche_saturation_unite', 5)->default('%');
             $table->string('patient_fiche_age', 5);
             $table->unsignedBigInteger('patient_id');
             $table->string('patient_fiche_status')->default('en attente');

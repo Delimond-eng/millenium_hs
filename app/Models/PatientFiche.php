@@ -40,6 +40,8 @@ class PatientFiche extends Model
         "patient_fiche_tension_art_unite",
         "patient_fiche_freq_cardio",
         "patient_fiche_freq_cardio_unite",
+        "patient_fiche_saturation",
+        "patient_fiche_saturation_unite",
         "patient_fiche_age",
         "patient_id",
         'hopital_id',

@@ -36,7 +36,6 @@ class PatientController extends Controller
         try
         {
             $patientDetails= $request->patient_details;
-
             /**
              * Verifie si le patient exist
             */
@@ -48,6 +47,9 @@ class PatientController extends Controller
                     'prenom' => 'required|string',
                     'sexe' => 'required|string|max:1',
                     'datenais' => 'required|date|date_format:Y-m-d',
+                    'groupe_sang' => 'nullable|string',
+                    'etat_civil' => 'nullable|string',
+                    'num_assurance' => 'nullable|string',
                     'telephone' => 'required|string|min:10|unique:patients,patient_telephone',
                     'adresse' => 'required|string',
                     'created_by'=> 'required|int',
@@ -64,11 +66,14 @@ class PatientController extends Controller
                     'patient_telephone' => $data['telephone'],
                     'patient_adresse' => $data['adresse'],
                     'patient_datenais' => $data['datenais'],
+                    'patient_etat_civil' => $data['etat_civil'],
+                    'patient_gs' => $data['groupe_sang'],
+                    'patient_num_assurance' => $data['num_assurance'],
                     'hopital_emplacement_id'=>$data['emplacement_id'],
                     'hopital_id'=>$data['hopital_id'],
                     'created_by'=>$data['created_by'],
                 ]);
-                if(isset($patient) && (isset($patientDetails) && !empty($patientDetails))){
+                if(isset($patient)){
                     $details = PatientFiche::create([
                         "patient_fiche_poids"=> $patientDetails['poids'],
                         "patient_fiche_taille"=> $patientDetails['taille'],
@@ -76,6 +81,7 @@ class PatientController extends Controller
                         "patient_fiche_age"=> $patientDetails['age'],
                         "patient_fiche_tension_art"=> $patientDetails['tension_art'],
                         "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
+                        "patient_fiche_saturation"=> $patientDetails['saturation'],
                         'hopital_emplacement_id'=>$data['emplacement_id'],
                         'hopital_id'=>$data['hopital_id'],
                         "patient_id"=> $patient->id,
@@ -98,6 +104,7 @@ class PatientController extends Controller
                     "patient_fiche_age"=> $patientDetails['age'],
                     "patient_fiche_tension_art"=> $patientDetails['tension_art'],
                     "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
+                    "patient_fiche_saturation"=> $patientDetails['saturation'],
                     'hopital_emplacement_id'=>$request->emplacement_id,
                     "hopital_id"=> $request->hopital_id,
                     "patient_id"=> $request->patient_id,
