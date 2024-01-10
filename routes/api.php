@@ -70,6 +70,16 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/labo.examens/{emplacementId}',[\App\Http\Controllers\LaboController::class, 'viewAllLaboExamens']);
     Route::post('/labo.create',[\App\Http\Controllers\LaboController::class, 'createLabo']);
 
+
+    /**
+     * Hospitalisation manage routes
+    */
+    Route::get('/hospitalisations.all/{emplacementId}', [\App\Http\Controllers\HospitalisationController::class, 'viewAllDatas']);
+    Route::post('/lit.create', [\App\Http\Controllers\HospitalisationController::class, 'createBed']);
+    Route::post('/lit.type.config', [\App\Http\Controllers\HospitalisationController::class, 'createBedType']);
+    Route::post('/hospitalisation.create', [\App\Http\Controllers\HospitalisationController::class, 'createHospitalisation']);
+    Route::post('/hospitalisation.make.transfert', [\App\Http\Controllers\HospitalisationController::class, 'createBedTransfert']);
+
     /**
      * Pharmacie module Routes
     */
