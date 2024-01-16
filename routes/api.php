@@ -41,9 +41,11 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
     Route::post('/configs.examens',[ ConfigController::class,'saveExamenLabo']);
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
+    Route::post('/configs.facturations', [ConfigController::class, 'configurerFacturation']);
+    Route::get('/configs.facturations/{emplacementId}', [ConfigController::class, 'viewAllFacturations']);
     Route::get('/examens.all/{emplacementId}', [ConfigController::class, 'viewExamens']);
 
-    Route::post('/agents.create',[ AgentController::class,'create']);
+    Route::post('/agents.create',[ AgentController::class,'createAgent']);
     Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
     Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
@@ -57,6 +59,7 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/prescription.details/{consult_id}',[ AgentController::class,'showPrescriptionDetails']);
     Route::get('/examen.detail/{consult_id}',[ AgentController::class,'showDemandExamDetails']);
     Route::get('/prescriptions.pending/{locationId}',[ AgentController::class,'allPendingPrescription']);
+    Route::post('/premiersoins.create',[AgentController::class, 'administrerPremierSoins']);
 
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);

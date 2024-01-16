@@ -8,6 +8,8 @@ use App\Models\ConsultationExamens;
 use App\Models\Consultations;
 use App\Models\ConsultationSymptomes;
 use App\Models\MedicalSchedule;
+use App\Models\PremierSoin;
+use App\Models\PremierSoinTraitement;
 use App\Models\Prescriptions;
 use App\Models\Services;
 use App\Models\User;
@@ -44,7 +46,7 @@ class AgentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function createAgent(Request $request)
     {
         try
         {
@@ -141,8 +143,63 @@ class AgentController extends Controller
         }
     }
 
+
+    /**
+     * Permet au medecin de sauvegarder les données des premiers soins administrés à un patient
+     * @param Request $request
+     * @author Gaston Delimond
+     * @DateTime 16/01/2024 13:50
+     * @return JsonResponse
+    */
+    public function administrerPremierSoins(Request $request):JsonResponse
+    {
+        try {
+            $datas = $request->validate([
+                'premier_soin_date_heure'=>'required|date_format:Y-m-d H:i|before_or_equal:now',
+                'premier_soin_motif'=>'required|string',
+                'premier_soin_obs'=>'nullable|string',
+                'patient_id'=>'required|int|exists:patients,id',
+                'agent_id'=>'required|int|exists:agents,id',
+                'created_by'=>'required|int|exists:users,id',
+                'hopital_emplacement_id'=>'required|int|exists:hopitals,id',
+                'traitements'=>'required|array'
+            ]);
+
+            $result = PremierSoin::create($datas);
+            if(isset($result)){
+                $traitements = $datas['traitements'];
+                foreach ($traitements as $data){
+                    PremierSoinTraitement::create([
+                        'ps_traitement_libelle'=>$data['traitement'],
+                        'ps_traitement_type'=>$data['traitement_type'],
+                        'ps_traitement_dosage'=>$data['traitement_dosage'],
+                        'ps_traitement_unite'=>$data['traitement_unite'],
+                        'premier_soin_id'=>$result->id,
+                    ]);
+                }
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$result
+                ]);
+            }
+            else{
+                return response()->json(['errors' => 'Echec de traitement de la requête !' ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ], 422);
+        }
+    }
+
     /**
      * CREATION D'UNE NOUVELLE CONSULTATIONS
+     * @param Request $request
+     * @author Gaston delimond
+     * @return JsonResponse
     */
     public function  createConsultations(Request $request): JsonResponse{
         try
@@ -230,7 +287,10 @@ class AgentController extends Controller
 
 
     /**
-     * CREATION PRESCRIPTION
+     * Ajoute les prescriptions pour une consultations
+     * @param Request $request,
+     * @author Gaston delimond
+     * @return JsonResponse
     */
     public function addPrescriptions(Request $request): JsonResponse{
         try
@@ -278,11 +338,15 @@ class AgentController extends Controller
     /**
      * Ajoute une prescription des examens à une consultation
      * @param Request $request
+     * @author Gaston delimond
      * @return JsonResponse
     */
     public function addExamens(Request $request): JsonResponse{
         try
         {
+            $data = $request->validate([
+                'examens'=>'required|array'
+            ]);
             $examens = $request->examens;
             if(isset($examens)){
                 foreach ($examens as $data){

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ExamenLabo;
+use App\Models\FacturationConfig;
 use App\Models\Fonctions;
 use App\Models\Grades;
 use App\Models\HopitalEmplacement;
@@ -205,6 +206,60 @@ class ConfigController extends Controller
 
     }
 
+
+    /**
+     * Configuration de la facturation
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function configurerFacturation(Request $request):JsonResponse
+    {
+        try{
+            $data = $request->validate([
+                "libelle"=>"required|string",
+                "montant"=>"required|numeric",
+                "montant_devise"=>"required|string",
+                'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
+                'created_by'=> 'required|int|exists:users,id',
+            ]);
+            $result = FacturationConfig::create([
+                "facturation_config_libelle"=> $data["libelle"],
+                "facturation_config_montant"=> $data["montant"],
+                "facturation_config_montant_devise"=> $data["devise"],
+                "hopital_emplacement_id"=>$data["emplacement_id"]
+            ]);
+            return response()->json([
+                "status"=>"success",
+                "result"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+    /**
+     * Affichage de la liste des toutes les configurations de la facturation
+     * @author Gaston Delimond
+     * @param integer $emplacementId
+     * @return JsonResponse
+    */
+    public function viewAllFacturations(int $emplacementId):JsonResponse
+    {
+        $results = FacturationConfig::with('emplacement')
+            ->where('hopital_emplacement_id', $emplacementId)
+            ->get();
+
+        return response()->json([
+            "status"=>"success",
+            "results"=>$results
+        ]);
+    }
 
     /**
      * GET ALL CONFIGS DATA

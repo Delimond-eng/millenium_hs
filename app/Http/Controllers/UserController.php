@@ -9,6 +9,7 @@ use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -63,5 +64,38 @@ class UserController extends Controller
             'created_by'=> $validatedData['created_by'],
         ]);
         return response()->json(['message' => 'Utilisateur créé avec succès', 'user' => $user]);
+    }
+
+
+    /**
+     * SEND OTP
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function sendOtp(Request $request):JsonResponse
+    {
+        $userEmail = $request->input('email');
+        $otp = mt_rand(100000, 999999);
+        $request->session()->put('otp', $otp);
+        Mail::raw("Your OTP is: $otp", function ($message) use ($userEmail) {
+            $message->to($userEmail)->subject('OTP Verification');
+        });
+        return response()->json(['message' => 'OTP sent successfully']);
+    }
+
+    /**
+     * VERIFY OTP
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function verifyOtp(Request $request):JsonResponse
+    {
+        $userEnteredOtp = $request->input('otp');
+        $storedOtp = $request->session()->get('otp');
+        if ($userEnteredOtp == $storedOtp) {
+            return response()->json(['message' => 'OTP verification successful']);
+        } else {
+            return response()->json(['message' => 'OTP verification failed'], 422);
+        }
     }
 }
