@@ -52,7 +52,8 @@ class HospitalisationTransfert extends Model
      * @var array
      */
     protected $casts = [
-        'transfert_created_At'=>'date:d-m-Y H:i'
+        'transfert_created_At'=>'date:d/m/Y',
+        'transfert_date_heure'=>'date:d/m/Y H:i'
     ];
 
     /**

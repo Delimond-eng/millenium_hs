@@ -93,7 +93,10 @@ class HospitalisationController extends Controller
                 'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
                 'created_by'=>'required|int|exists:users,id',
             ]);
-
+            $isValidDates = $this->checkDateSuper($datas['hospitalisation_start_At'], $datas['hospitalisation_end_At']);
+            if(!$isValidDates){
+                return response()->json(['errors' => 'La date et heure fin admission doit être supérieure à la date & heure début admission !' ]);
+            }
             $result = Hospitalisation::create($datas);
             if(isset($result)){
                 $lit = HospitalisationLit::findOrFail($result->lit_id);
@@ -175,6 +178,13 @@ class HospitalisationController extends Controller
             ->with('emplacement.hopital')
             ->where('hopital_emplacement_id', $emplacementId)
             ->get();
+        $litDispos =  HospitalisationLit::with('type')
+            ->with('user')
+            ->with('service')
+            ->with('emplacement.hopital')
+            ->where('hopital_emplacement_id', $emplacementId)
+            ->where('lit_status', 'disponible')
+            ->get();
         $transferts = HospitalisationTransfert::with('hospitalisation.patient')
             ->with('hospitalisation.agent')
             ->with('origine')
@@ -184,17 +194,33 @@ class HospitalisationController extends Controller
             ->where('hopital_emplacement_id', $emplacementId)
             ->get();
         $hospitalisations = Hospitalisation::with('patient')
-            ->with('lit')
+            ->with('lit.type')
+            ->with('lit.service')
             ->with('agent')
             ->with('emplacement.hopital')
             ->with('user')
+            ->where('hospitalisation_status', 'actif')
+            ->orWhere('hospitalisation_status', 'cloturé')
             ->get();
+        foreach ($hospitalisations as $hospitalisation) {
+            $startAt = $hospitalisation->hospitalisation_start_At;
+            $endAt = $hospitalisation->hospitalisation_end_At;
+            $differenceInHours = $startAt->diffInDays($endAt);
+            $hospitalisation->count = $differenceInHours;
+            if ($endAt->isFuture()) {
+                $difference = $endAt->diff(Carbon::now());
+                $daysRemaining = $difference->days;
+                $hospitalisation->count_rest = $daysRemaining;
+            } else {
+                $hospitalisation->count_rest = 0;
+            }
+        }
         return response()->json([
             "types" => $types,
             "lits"=>$lits,
+            "litDispos"=>$litDispos,
             "transferts"=>$transferts,
             "hospitalisations"=>$hospitalisations
-
         ]);
     }
 
@@ -214,6 +240,14 @@ class HospitalisationController extends Controller
             return response()->json(['errors' => 'Echec de traitement de la requête !' ]);
         }
 
+    }
+
+
+    private function checkDateSuper($dateStart, $dateEnd): bool
+    {
+        $dateTimeStart = Carbon::parse($dateStart);
+        $dateTimeEnd = Carbon::parse($dateEnd);
+        return $dateTimeEnd->gt($dateTimeStart);
     }
 
 

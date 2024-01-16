@@ -63,6 +63,7 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/patients.all/{locationId}',[ PatientController::class,'all']);
     Route::get('/patients.pending/{locationId}',[ PatientController::class,'viewAllPendingPatients']);
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
+    Route::get('/patient.story/{patientId}',[PatientController::class, 'viewMedicalStory']);
     /**
      * Labo module manager
     */
@@ -81,9 +82,14 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/hospitalisation.make.transfert', [\App\Http\Controllers\HospitalisationController::class, 'createBedTransfert']);
 
     /**
+     * SCHEDULE MANAGEMENT
+    */
+    Route::post('/schedule.create', [AgentController::class, 'createSchedule']);
+    Route::get('/schedules.all/{emplacementId}', [AgentController::class, 'viewAllSchedules']);
+
+    /**
      * Pharmacie module Routes
     */
-
     Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
     Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
     Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);

@@ -7,6 +7,7 @@ use App\Models\ConsultationDetails;
 use App\Models\ConsultationExamens;
 use App\Models\Consultations;
 use App\Models\ConsultationSymptomes;
+use App\Models\MedicalSchedule;
 use App\Models\Prescriptions;
 use App\Models\Services;
 use App\Models\User;
@@ -495,7 +496,61 @@ class AgentController extends Controller
         ]);
     }
 
+    /**
+     * Schedule create
+     * @author Gaston delimond
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function createSchedule(Request $request):JsonResponse
+    {
+        try{
+            $data = $request->validate([
+                'schedule_date_heure'=>'required|date|after:now',
+                'schedule_duree'=>'nullable|int',
+                'schedule_note'=>'nullable|string',
+                'agent_id'=>'required|int|exists:agents,id',
+                'patient_id'=>'required|int|exists:patients,id',
+                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            $schedule= MedicalSchedule::create($data);
+            if(isset($schedule)){
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$schedule
+                ]);
+            }
+            else{
+                return response()->json(['errors' => "Echec de traitement de la requête" ]);
+            }
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
 
-
+    /**
+     * view all Schedules
+     * @author Gaston delimond
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function viewAllSchedules(int $emplacementId):JsonResponse
+    {
+        $schedules = MedicalSchedule::with('agent')
+            ->with('patient')
+            ->where('hopital_emplacement_id', $emplacementId)
+            ->where('schedule_status', 'actif')
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "schedules"=>$schedules
+        ]);
+    }
 
 }

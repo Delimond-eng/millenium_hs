@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('service_responsable_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('created_by');
+            $table->string('hospitalisation_status')->default('actif');
             $table->timestamp('hospitalisation_created_At')->useCurrent();
         });
     }

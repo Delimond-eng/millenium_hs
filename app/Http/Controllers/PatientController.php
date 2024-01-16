@@ -179,6 +179,27 @@ class PatientController extends Controller
     }
 
 
+    /**
+     * Parcourir le dossier medical du patient
+     * @param int patientId
+     * @return JsonResponse
+    */
+    public function viewMedicalStory(int $patientId):JsonResponse
+    {
+        $results = Patients::with('consultations.prescriptions')
+                        ->with('consultations.details')
+                        ->with('consultations.symptomes')
+                        ->with('consultations.examens')
+                        ->where('id', $patientId)
+                        ->get();
+
+        return response()->json([
+            "status"=>"success",
+            "result"=>$results
+        ]);
+    }
+
+
 
 
 

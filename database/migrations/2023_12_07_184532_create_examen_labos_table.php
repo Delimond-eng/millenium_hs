@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('examen_labo_libelle');
             $table->string('examen_labo_description')->nullable()->default('...');
             $table->string('examen_labo_prix');
+            $table->string('examen_resultat_type')->default('text');
             $table->string('examen_labo_prix_devise')->default('CDF');
             $table->unsignedBigInteger('labo_id');
             $table->unsignedBigInteger('hopital_id');
