@@ -28,18 +28,21 @@ class Prescriptions extends Model
      * @var array
      */
     protected $fillable = [
-        'prescription_traitement',
-        'prescription_posologie',
-        'prescription_traitement_type',
-        'consult_id',
-        'hopital_id',
+        "prescription_traitement" ,
+        "prescription_traitement_type",
+        "prescription_traitement_duree",
+        "prescription_traitement_duree_unite",
+        "prescription_traitement_freq",
+        "prescription_traitement_freq_unite" ,
+        "prescription_posologie",
+        "prescription_posologie_unite" ,
+        "consult_id",
         'hopital_emplacement_id',
-        'created_by'
+        'created_by',
     ];
 
     /**
      * The attributes excluded from the model's JSON form.
-     *
      * @var array
      */
     protected $hidden = [
@@ -71,11 +74,6 @@ class Prescriptions extends Model
      */
     public $timestamps = false;
 
-    // Scopes...
-
-    // Functions ...
-
-    // Relations ...
     /**
      * Summary of consultations
      * @return BelongsTo

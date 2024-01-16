@@ -20,12 +20,12 @@ return new class extends Migration
             $table->string('agent_prenom');
             $table->char('agent_sexe');
             $table->string('agent_telephone');
-            $table->text('agent_adresse');
-            $table->string('agent_datenais');
+            $table->text('agent_adresse')->nullable();
+            $table->string('agent_datenais')->nullable();
             $table->string('agent_specialite')->nullable();
             $table->timestamp('agent_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('agent_status')->default('actif');
-            $table->unsignedBigInteger('grade_id');
+            $table->unsignedBigInteger('grade_id')->nullable();
             $table->unsignedBigInteger('service_id');
             $table->unsignedBigInteger('fonction_id');
             $table->unsignedBigInteger('created_by')->default(0);

@@ -55,11 +55,11 @@ class AgentController extends Controller
                 'prenom' => 'required|string',
                 'sexe' => 'required|string|max:1',
                 'telephone' => 'required|string|min:10|unique:agents,agent_telephone',
-                'adresse' => 'required|string',
-                'datenais' => 'required|date|date_format:Y-m-d',
+                'adresse' => 'nullable|string',
+                'datenais' => 'nullable|date|date_format:Y-m-d',
                 'fonction_id'=>'required|int|exists:fonctions,id',
                 'service_id'=>'required|int|exists:services,id',
-                'grade_id'=>'required|int|exists:grades,id',
+                'grade_id'=>'nullable|int|exists:grades,id',
                 'hopital_id'=> 'required|int|exists:hopitals,id',
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
                 'created_by'=> 'required|int',
@@ -233,7 +233,6 @@ class AgentController extends Controller
      * CREATION PRESCRIPTION
     */
     public function addPrescriptions(Request $request): JsonResponse{
-
         try
         {
             $validateDatas = $request->validate([
@@ -244,11 +243,15 @@ class AgentController extends Controller
                 foreach ($prescriptions as $data){
                     $prescription = Prescriptions::create([
                         "prescription_traitement" => $data['traitement'],
-                        "prescription_posologie" => $data['posologie'],
                         "prescription_traitement_type" => $data['traitement_type'],
+                        "prescription_traitement_duree" => $data['duree'],
+                        "prescription_traitement_duree_unite" => $data['duree_unite'],
+                        "prescription_traitement_freq" => $data['frequence'],
+                        "prescription_traitement_freq_unite" => $data['frequence_unite'],
+                        "prescription_posologie" => $data['dosage'],
+                        "prescription_posologie_unite" => $data['dosage_unite'],
                         "consult_id" => $data['consult_id'],
                         'hopital_emplacement_id' => $data['emplacement_id'],
-                        'hopital_id' => $data['hopital_id'],
                         'created_by'=>$data['created_by']
                     ]);
                 }
