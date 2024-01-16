@@ -78,18 +78,19 @@ class ConfigController extends Controller
 
         try {
            $data = $request->validate([
-                "libelle"=>"required|string",
-                "created_by"=>"required|int",
-                'hopital_id'=> 'required|int|exists:hopitals,id',
+                'fonctions'=>'required|array'
             ]);
-            $fonction = Fonctions::create([
-                "fonction_libelle"=> $data["libelle"],
-                "created_by"=>$data["created_by"],
-                "hopital_id"=>$data['hopital_id']
-            ]);
+            $fonctions = $data['fonctions'];
+            foreach ($fonctions as $fonction){
+                Fonctions::create([
+                    "fonction_libelle"=> $fonction["libelle"],
+                    "created_by"=>$fonction["created_by"],
+                    "hopital_id"=>$fonction['hopital_id']
+                ]);
+            }
             return response()->json([
                 "status"=>"success",
-                "datas"=>$fonction
+                "result"=>"created successfully !"
             ]);
         } catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
@@ -220,13 +221,16 @@ class ConfigController extends Controller
                 "montant"=>"required|numeric",
                 "montant_devise"=>"required|string",
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
+                'hopital_id'=> 'required|int|exists:hopitals,id',
                 'created_by'=> 'required|int|exists:users,id',
             ]);
             $result = FacturationConfig::create([
                 "facturation_config_libelle"=> $data["libelle"],
                 "facturation_config_montant"=> $data["montant"],
-                "facturation_config_montant_devise"=> $data["devise"],
-                "hopital_emplacement_id"=>$data["emplacement_id"]
+                "facturation_config_montant_devise"=> $data["montant_devise"],
+                "hopital_emplacement_id"=>$data["emplacement_id"],
+                "hopital_id"=>$data["hopital_id"],
+                "created_by"=>$data["created_by"],
             ]);
             return response()->json([
                 "status"=>"success",
@@ -246,14 +250,21 @@ class ConfigController extends Controller
     /**
      * Affichage de la liste des toutes les configurations de la facturation
      * @author Gaston Delimond
-     * @param integer $emplacementId
+     * @param integer $keyId
+     * @param string $key
      * @return JsonResponse
     */
-    public function viewAllFacturations(int $emplacementId):JsonResponse
+    public function viewAllFacturations(string $key, int $keyId):JsonResponse
     {
-        $results = FacturationConfig::with('emplacement')
-            ->where('hopital_emplacement_id', $emplacementId)
-            ->get();
+        $results = null;
+        if($key=="all"){
+            $results= FacturationConfig::with('emplacement')
+                ->where('hopital_id', $keyId)
+                ->get();
+        }else{
+            $results = FacturationConfig::with('emplacement')
+                ->where('hopital_emplacement_id', $keyId)->get();
+        }
 
         return response()->json([
             "status"=>"success",

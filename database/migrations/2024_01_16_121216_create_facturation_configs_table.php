@@ -19,6 +19,7 @@ return new class extends Migration
             $table->decimal('facturation_config_montant');
             $table->string('facturation_config_montant_devise');
             $table->unsignedBigInteger('created_by');
+            $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->timestamp('facturation_config_created_At')->useCurrent();
         });

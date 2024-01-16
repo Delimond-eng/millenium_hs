@@ -33,6 +33,7 @@ class FacturationConfig extends Model
         'facturation_config_montant_devise',
         'created_by',
         'hopital_emplacement_id',
+        'hopital_id',
     ];
 
     /**

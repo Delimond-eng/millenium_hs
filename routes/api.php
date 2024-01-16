@@ -41,8 +41,8 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
     Route::post('/configs.examens',[ ConfigController::class,'saveExamenLabo']);
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
-    Route::post('/configs.facturations', [ConfigController::class, 'configurerFacturation']);
-    Route::get('/configs.facturations/{emplacementId}', [ConfigController::class, 'viewAllFacturations']);
+        Route::post('/configs.facturations', [ConfigController::class, 'configurerFacturation']);
+    Route::get('/configs.facturations/{key}/{keyId}', [ConfigController::class, 'viewAllFacturations']);
     Route::get('/examens.all/{emplacementId}', [ConfigController::class, 'viewExamens']);
 
     Route::post('/agents.create',[ AgentController::class,'createAgent']);
