@@ -191,7 +191,7 @@ class PatientController extends Controller
                         ->with('consultations.symptomes')
                         ->with('consultations.examens')
                         ->where('id', $patientId)
-                        ->get();
+                        ->first();
 
         return response()->json([
             "status"=>"success",

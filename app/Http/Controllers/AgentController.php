@@ -161,7 +161,7 @@ class AgentController extends Controller
                 'patient_id'=>'required|int|exists:patients,id',
                 'agent_id'=>'required|int|exists:agents,id',
                 'created_by'=>'required|int|exists:users,id',
-                'hopital_emplacement_id'=>'required|int|exists:hopitals,id',
+                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
                 'traitements'=>'required|array'
             ]);
 
@@ -170,10 +170,10 @@ class AgentController extends Controller
                 $traitements = $datas['traitements'];
                 foreach ($traitements as $data){
                     PremierSoinTraitement::create([
-                        'ps_traitement_libelle'=>$data['traitement'],
-                        'ps_traitement_type'=>$data['traitement_type'],
-                        'ps_traitement_dosage'=>$data['traitement_dosage'],
-                        'ps_traitement_unite'=>$data['traitement_unite'],
+                        'ps_traitement_libelle'=>$data['ps_traitement_libelle'],
+                        'ps_traitement_type'=>$data['ps_traitement_type'],
+                        'ps_traitement_dosage'=>$data['ps_traitement_dosage'],
+                        'ps_traitement_unite'=>$data['ps_traitement_unite'],
                         'premier_soin_id'=>$result->id,
                     ]);
                 }
@@ -191,7 +191,7 @@ class AgentController extends Controller
             return response()->json(['errors' => $errors ]);
         }
         catch (\Illuminate\Database\QueryException $e){
-            return response()->json(['errors' => $e->getMessage() ], 422);
+            return response()->json(['errors' => $e->getMessage() ]);
         }
     }
 
