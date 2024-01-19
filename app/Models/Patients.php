@@ -62,7 +62,7 @@ class Patients extends Model
      * @var array
      */
     protected $casts = [
-        'patient_code' => 'string', 'patient_nom' => 'string', 'patient_prenom' => 'string', 'patient_adresse' => 'string', 'patient_telephone' => 'string', 'patient_create_At' => 'timestamp', 'patient_status' => 'string', 'created_by'=>'int'
+        'patient_create_At' => 'date:d/m/Y H:i'
     ];
 
     /**

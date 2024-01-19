@@ -28,8 +28,15 @@ class Consultations extends Model
      * @var array
      */
     protected $fillable = [
-        'consult_libelle', 'consult_diagnostic', 'consult_create_At', 'consult_status', 'patient_id', 'agent_id', 'hopital_id',
-        'hopital_emplacement_id','created_by'
+        'consult_libelle',
+        'consult_diagnostic',
+        'consult_create_At',
+        'consult_status',
+        'patient_id',
+        'agent_id',
+        'hopital_id',
+        'hopital_emplacement_id',
+        'created_by'
     ];
 
     /**
@@ -47,8 +54,7 @@ class Consultations extends Model
      * @var array
      */
     protected $casts = [
-        'consult_libelle' => 'string', 'consult_obs' => 'string', 'consult_create_At' => 'timestamp', 'consult_status' => 'string',
-        'patient_id' => 'int', 'agent_id'=>'int'
+        'consult_create_At' => 'date:d/m/Y H:i',
     ];
 
     /**

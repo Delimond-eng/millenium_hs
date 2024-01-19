@@ -48,7 +48,7 @@ class ConsultationSymptomes extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'consult_symptome_libelle' => 'string', 'consult_id' => 'int', 'consult_symptome_create_At' => 'timestamp'
+         'consult_symptome_create_At' => 'date:d/m/Y H:i'
     ];
 
     /**

@@ -147,6 +147,7 @@ class ConfigController extends Controller
                 "prix"=> "required|string",
                 "devise"=> "nullable|string",
                 "description"=> "nullable|string",
+                "resultat_type"=> "nullable|string",
                 'hopital_id'=> 'required|int|exists:hopitals,id',
                 'emplacement_id'=> 'required|int|exists:hopital_emplacements,id',
                 'created_by'=> 'required|int|exists:users,id',
@@ -157,6 +158,7 @@ class ConfigController extends Controller
                 "examen_labo_prix"=> $data["prix"],
                 "examen_labo_prix_devise"=> $data["devise"],
                 "examen_labo_description"=> $data["description"],
+                "examen_resultat_type"=> $data["resultat_type"],
                 "labo_id"=>$data["labo_id"],
                 "created_by"=>$data["created_by"],
                 "hopital_id"=>$data["hopital_id"],
@@ -282,8 +284,10 @@ class ConfigController extends Controller
         $fonctions = Fonctions::all()->where('hopital_id', $hostoId);
         $services = Services::with('emplacement')->where('hopital_id', $hostoId)->get();
         $userRoles = UserRole::all();
-        $locations = HopitalEmplacement::all()->where('hopital_id', $hostoId);
-        $examens = ExamenLabo::with('emplacement')->where('hopital_id', $hostoId)->get();
+        $locations = HopitalEmplacement::with('labos')->where('hopital_id', $hostoId)->get();
+        $examens = ExamenLabo::with('emplacement')
+            ->with('labo')
+            ->where('hopital_id', $hostoId)->get();
         return response()->json([
             "status"=> "success",
             "configs"=>[

@@ -66,4 +66,14 @@ class HopitalEmplacement extends Model
     public function services():HasMany{
         return $this->hasMany(Services::class, foreignKey: 'hopital_emplacement_id', localKey: 'id');
     }
+
+
+    /**
+     * Relation pour voir les labos d'un emplacement
+     * @return HasMany
+    */
+    public function labos():HasMany
+    {
+        return $this->hasMany(Laboratoire::class, foreignKey: 'hopital_emplacement_id', localKey: 'id');
+    }
 }

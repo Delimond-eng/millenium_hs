@@ -64,6 +64,16 @@ class PatientFiche extends Model
         'patient_detail_create_At'
     ];
 
+
+    /**
+     * The attributes that should be mutated to casts
+     *
+     * @var $casts
+     */
+    protected $casts = [
+        'patient_detail_create_At' => 'date:d/m/Y H:i'
+    ];
+
     /**
      * Indicates if the model should be timestamped.
      *

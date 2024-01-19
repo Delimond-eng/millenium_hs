@@ -33,6 +33,7 @@ class AgentController extends Controller
     {
         $agents = Agents::with('fonction')
                 ->with('service')
+                ->with('emplacement')
                 ->with('grade')->where('hopital_id', $hostoId)
                 ->get();
         return response()->json([
@@ -155,7 +156,7 @@ class AgentController extends Controller
     {
         try {
             $datas = $request->validate([
-                'premier_soin_date_heure'=>'required|date_format:Y-m-d H:i|before_or_equal:now',
+                'premier_soin_date_heure'=>'required|date_format:Y-m-d H:i',
                 'premier_soin_motif'=>'required|string',
                 'premier_soin_obs'=>'nullable|string',
                 'patient_id'=>'required|int|exists:patients,id',
@@ -204,8 +205,6 @@ class AgentController extends Controller
     public function  createConsultations(Request $request): JsonResponse{
         try
         {
-            $details = $request->consult_details;
-            $symptomes = $request->consult_symptomes;
             /** @var mixed check validate datas */
             $data = $request->validate([
                 'libelle' => 'required|string',
@@ -214,51 +213,55 @@ class AgentController extends Controller
                 'agent_id'=>'required|int|exists:agents,id',
                 'hopital_id'=>'required|int|exists:hopitals,id',
                 'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
-                'created_by'=>'required|int|exists:users,id'
+                'created_by'=>'required|int|exists:users,id',
+                "consult_details"=>"nullable|array",
+                "consult_symptomes"=>"required|array",
+                "consult_id"=>"nullable|int"
             ]);
-            $consultation = Consultations::create([
-                "consult_libelle" => $data['libelle'],
-                "consult_diagnostic" => $data['diagnostic'],
-                "patient_id" => $data['patient_id'],
-                "agent_id" => $data['agent_id'],
-                "hopital_id" => $data['hopital_id'],
-                "hopital_emplacement_id" => $data['emplacement_id'],
-                'created_by'=>$data['created_by']
-            ]);
+
+            $consultation = Consultations::updateOrCreate(
+                ['id'=>$data['consult_id']],
+                [
+                    "consult_libelle" => $data['libelle'],
+                    "consult_diagnostic" => $data['diagnostic'],
+                    "patient_id" => $data['patient_id'],
+                    "agent_id" => $data['agent_id'],
+                    "hopital_id" => $data['hopital_id'],
+                    "hopital_emplacement_id" => $data['emplacement_id'],
+                    'created_by'=>$data['created_by'],
+                ]
+            );
             if(isset($consultation)){
-                /**
-                 * Modifie le status du patient
-                */
-                $patient = new PatientController();
-                $currentData['patient_fiche_id'] = $request->patient_fiche_id;
-                $currentData['status'] = "consulté";
-                $patient->updateStatus($currentData);
-                /**
-                 * Créer les détails lié à une consultation
-                */
+                $details = $data['consult_details'];
                 if(isset($details)){
                     foreach ($details as $detail){
-                        $consultationDetail = ConsultationDetails::create([
-                            "consult_detail_libelle"=>$detail['detail_libelle'],
-                            "consult_detail_valeur"=>$detail['detail_valeur'],
-                            "consult_id"=>$consultation->id,
-                            "hopital_id" => $data['hopital_id'],
-                            "hopital_emplacement_id" => $data['emplacement_id'],
-                            "created_by"=>$data['created_by']
-                        ]);
+                        $consultationDetail = ConsultationDetails::updateOrCreate(
+                            ["id"=>$detail['id']],
+                            [
+                                "consult_detail_libelle"=>$detail['detail_libelle'],
+                                "consult_detail_valeur"=>$detail['detail_valeur'],
+                                "consult_id"=>$data['consult_id'],
+                                "hopital_id" => $data['hopital_id'],
+                                "hopital_emplacement_id" => $data['emplacement_id'],
+                                "created_by"=>$data['created_by'],
+                            ]
+                        );
                     }
                 }
-
                 /**
                  * Créer les symptômes recensés
-                */
+                 */
+                $symptomes = $data['consult_symptomes'];
                 if(isset($symptomes)){
                     foreach ($symptomes as $symptome){
-                        $consultSymptome = ConsultationSymptomes::create([
-                            'consult_symptome_libelle'=>$symptome['libelle'],
-                            "consult_id"=>$consultation->id,
-                            "created_by"=>$data['created_by'],
-                        ]);
+                        $consultSymptome = ConsultationSymptomes::updateOrCreate(
+                            ["id"=>$symptome['id']],
+                            [
+                                'consult_symptome_libelle'=>$symptome['libelle'],
+                                "consult_id"=>$data['consult_id'],
+                                "created_by"=>$data['created_by']
+                            ]
+                        );
                     }
                 }
                 return response()->json([
@@ -267,9 +270,7 @@ class AgentController extends Controller
                 ]);
             }
             else{
-                return response()->json([
-                    "errors"=>"Echec de l'opération !"
-                ]);
+                return response()->json(['errors' => 'Echec de traitement de la requête !']);
             }
         }
         catch (ValidationException $e) {
@@ -446,7 +447,7 @@ class AgentController extends Controller
 
 
 
-    public function viewAllConsultations(int $hostoId, int $locationId,):JsonResponse
+    public function viewAllConsultations( int $locationId):JsonResponse
     {
         $consultations = Consultations::with('agent')
                 ->with('patient')
@@ -454,7 +455,6 @@ class AgentController extends Controller
                 ->with('details')
                 ->with('symptomes')
                 ->orderByDesc('id')
-                ->where('hopital_id', $hostoId)
                 ->where('hopital_emplacement_id', $locationId)
                 ->get();
         return response()->json([

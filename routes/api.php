@@ -51,7 +51,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
     Route::post('/prescriptions.add',[ AgentController::class,'addPrescriptions']);
     Route::post('/examens.add',[ AgentController::class,'addExamens']);
-    Route::get('/consultations.all/{hostoId}/{locationId}',[ AgentController::class,'viewAllConsultations']);
+    Route::get('/consultations.all/{locationId}',[ AgentController::class,'viewAllConsultations']);
     Route::get('/consultations.patient/{patientId}',[ AgentController::class,'viewLastConsults']);
     Route::get('/consult.examens/{locationId}',[ AgentController::class,'allExamens']);
     Route::post('/examen.validate/{consult_id}',[ AgentController::class,'validateExamens']);

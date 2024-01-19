@@ -65,7 +65,7 @@ class Agents extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int', 'agent_matricule' => 'string', 'agent_nom' => 'string', 'agent_prenom' => 'string', 'agent_telephone' => 'string', 'agent_datenais'=>'string', 'agent_specialite'=>'string', 'agent_adresse' => 'string', 'agent_create_At' => 'timestamp', 'agent_status' => 'string', 'grade_id'=>'int', 'service_id'=>'int', 'fonction_id'=>'int', 'created_id'=>'int', 'hopital_id'=>'int', 'hopital_emplacement_id'
+        'agent_create_At'=>'datetime:d/m/Y H:i'
     ];
 
     /**
@@ -141,5 +141,14 @@ class Agents extends Model
      */
     public function user():HasOne{
         return $this->hasOne(User::class, foreignKey: 'agent_id', localKey: 'id');
+    }
+
+    /**
+     * Voir l'emplacement de l'agent
+     * @return BelongsTo
+    */
+    public function emplacement():BelongsTo
+    {
+        return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
     }
 }

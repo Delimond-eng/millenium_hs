@@ -55,7 +55,7 @@ class Prescriptions extends Model
      * @var array
      */
     protected $casts = [
-        'prescription_traitement' => 'string', 'prescription_posologie' => 'string', 'prescription_traitement_type' => 'string', 'prescription_create_At' => 'timestamp', 'prescription_status' => 'string'
+         'prescription_create_At' => 'date:d/m/Y H:i',
     ];
 
     /**

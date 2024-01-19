@@ -33,6 +33,7 @@ class ExamenLabo extends Model
         "examen_labo_prix",
         "examen_labo_prix_devise",
         "examen_labo_description",
+        "examen_resultat_type",
         "labo_id",
         "hopital_id",
         "hopital_emplacement_id",
@@ -63,5 +64,14 @@ class ExamenLabo extends Model
      */
     public function emplacement(): BelongsTo{
         return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
+    }
+
+    /**
+     * Relation pour lier à un labo
+     * @return BelongsTo
+    */
+    public function labo():BelongsTo
+    {
+        return $this->belongsTo(Laboratoire::class, foreignKey: 'labo_id');
     }
 }

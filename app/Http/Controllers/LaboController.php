@@ -50,7 +50,7 @@ class LaboController extends Controller
     {
         try {
             $data = $request->validate([
-                'labo_nom'=>'required|string',
+                'labo_nom'=>'required|string|unique:laboratoires,labo_nom',
                 'labo_adresse'=>'required|string',
                 'labo_telephone'=>'nullable|string',
                 'hopital_id'=>'required|int|exists:hopitals,id',
