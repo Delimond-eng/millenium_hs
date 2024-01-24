@@ -36,6 +36,7 @@ class Patients extends Model
         'patient_sexe',
         'patient_adresse',
         'patient_telephone',
+        'patient_contact_urgence',
         'patient_datenais',
         'patient_etat_civil',
         'patient_gs',
@@ -112,6 +113,7 @@ class Patients extends Model
     public function details(): HasMany{
         return $this->hasMany(PatientFiche::class, foreignKey: 'patient_id', localKey: 'id');
     }
+
 
     /**
      * Relation pour voir les consultations du patient

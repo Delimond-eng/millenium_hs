@@ -196,6 +196,25 @@ class AgentController extends Controller
         }
     }
 
+
+    /**
+     * Renvoie une liste des premiers soins
+     * @return JsonResponse
+    */
+    public function allPremierSoins(int $locationId):JsonResponse
+    {
+        $results = PremierSoin::with('traitements')
+            ->with('emplacement')
+            ->with('agent')
+            ->with('patient')
+            ->where('hopital_emplacement_id', $locationId)
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "results"=>$results
+        ]);
+    }
+
     /**
      * CREATION D'UNE NOUVELLE CONSULTATIONS
      * @param Request $request
@@ -220,7 +239,7 @@ class AgentController extends Controller
             ]);
 
             $consultation = Consultations::updateOrCreate(
-                ['id'=>$data['consult_id']],
+                ['id'=>$data['consult_id'] ?? null],
                 [
                     "consult_libelle" => $data['libelle'],
                     "consult_diagnostic" => $data['diagnostic'],
@@ -233,10 +252,11 @@ class AgentController extends Controller
             );
             if(isset($consultation)){
                 $details = $data['consult_details'];
+                $data['consult_id'] = $consultation->id;
                 if(isset($details)){
                     foreach ($details as $detail){
                         $consultationDetail = ConsultationDetails::updateOrCreate(
-                            ["id"=>$detail['id']],
+                            ["id"=>$detail['id'] ?? null],
                             [
                                 "consult_detail_libelle"=>$detail['detail_libelle'],
                                 "consult_detail_valeur"=>$detail['detail_valeur'],
@@ -255,7 +275,7 @@ class AgentController extends Controller
                 if(isset($symptomes)){
                     foreach ($symptomes as $symptome){
                         $consultSymptome = ConsultationSymptomes::updateOrCreate(
-                            ["id"=>$symptome['id']],
+                            ["id"=>$symptome['id'] ?? null],
                             [
                                 'consult_symptome_libelle'=>$symptome['libelle'],
                                 "consult_id"=>$data['consult_id'],
@@ -492,8 +512,12 @@ class AgentController extends Controller
                 MAX(c.consult_id) as consult_id,
                 MAX(c.agent_id) as agent_id,
                 MAX(e.hopital_emplacement_libelle) as hopital_emplacement_libelle,
+                MAX(a.agent_matricule) as agent_matricule,
                 MAX(a.agent_nom) as agent_nom,
-                MAX(p.patient_nom) as patient_nom
+                MAX(a.agent_prenom) as agent_prenom,
+                MAX(p.patient_code) as patient_code,
+                MAX(p.patient_nom) as patient_nom,
+                MAX(p.patient_prenom) as patient_prenom
             FROM consultation_examens AS c
             INNER JOIN consultations AS cs ON c.consult_id = cs.id
             INNER JOIN hopital_emplacements AS e ON c.hopital_emplacement_id = e.id
@@ -525,8 +549,12 @@ class AgentController extends Controller
                 MAX(pe.prescription_posologie) as prescription_posologie,
                 MAX(pe.consult_id) as consult_id,
                 MAX(e.hopital_emplacement_libelle) as hopital_emplacement_libelle,
+                MAX(a.agent_matricule) as agent_matricule,
                 MAX(a.agent_nom) as agent_nom,
-                MAX(pa.patient_nom) as patient_nom
+                MAX(a.agent_prenom) as agent_prenom,
+                MAX(pa.patient_code) as patient_code,
+                MAX(pa.patient_nom) as patient_nom,
+                MAX(pa.patient_prenom) as patient_prenom
             FROM prescriptions AS pe
             INNER JOIN consultations AS cs ON pe.consult_id = cs.id
             INNER JOIN hopital_emplacements AS e ON pe.hopital_emplacement_id = e.id

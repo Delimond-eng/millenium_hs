@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FacturePaiement;
 use App\Models\Hopital;
 use App\Models\HopitalEmplacement;
+use App\Models\TransfertPatient;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
@@ -145,7 +147,7 @@ class HospitalController extends Controller
             'name' => $data['user_name'],
             'email' => $data['user_email'],
             'phone' => $data['user_phone'],
-            'menus'=> "Tableau de bord,Configurations,Agents,Services,Laboratoires,Utilisateurs",
+            'menus'=> "Tableau de bord,Configurations,Agents,Services,Laboratoires,Gestion utilisateurs",
             'password' => bcrypt($data['user_password']),
             'hopital_id'=> $data['hopital_id'],
             'hopital_emplacement_id'=>$data['hopital_emplacement_id'],
@@ -156,4 +158,118 @@ class HospitalController extends Controller
         $admin['role'] = $role;
         return $admin;
     }
+
+    /**
+     * Effectuer un transfert d'un patient dans un X hopital
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function makePatientTransfert(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                "transfert_hopital"=>'required|string',
+                "transfert_motif"=>'required|string',
+                "transfert_date"=>'required|date',
+                "created_by"=>"required|int|exists:users,id",
+                "patient_id"=>"required|int|exists:patients,id",
+                "agent_id"=>"required|int|exists:agents,id",
+                "hopital_emplacement_id"=>"required|int|exists:hopital_emplacements,id",
+            ]);
+            $result = TransfertPatient::create($data);
+            if (isset($result)){
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$result
+                ]);
+            }
+            else{
+                return response()->json([
+                    "errors"=>"Echec du transfert !"
+                ]);
+            }
+        }catch (ValidationException $e){
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+    /**
+     * Voir tous les transfert par emplacements
+     * @return JsonResponse
+    */
+    public function allTransfertsByEmplament(int $emplacementId):JsonResponse
+    {
+        $transferts = TransfertPatient::with('patient')
+            ->with('emplacement')
+            ->with('agent')
+            ->with('user')
+            ->where('hopital_emplacement_id', $emplacementId)
+        ->get();
+        return response()->json([
+            "status"=>"success",
+            "transferts"=>$transferts
+        ]);
+    }
+
+
+
+    /**
+     * Effectuer un transfert d'un patient dans un X hopital
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function makePayFacture(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                "paiement_montant"=>'required|numeric',
+                "paiement_montant_devise"=>'required|string',
+                "created_by"=>"required|int|exists:users,id",
+                "patient_id"=>"required|int|exists:patients,id",
+                "facturation_id"=>"required|int|exists:facturation_configs,id",
+                "hopital_emplacement_id"=>"required|int|exists:hopital_emplacements,id",
+            ]);
+            $result = FacturePaiement::create($data);
+            if (isset($result)){
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$result
+                ]);
+            }
+            else{
+                return response()->json([
+                    "errors"=>"Echec de la facturation !"
+                ]);
+            }
+        }catch (ValidationException $e){
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+    /**
+     * Voir tous les paiements par emplacements
+     * @return JsonResponse
+     */
+    public function allPaiementsByEmplament(int $emplacementId):JsonResponse
+    {
+        $paiements = FacturePaiement::with('patient')
+            ->with('emplacement')
+            ->with('user.agent')
+            ->with('facturation')
+            ->where('hopital_emplacement_id', $emplacementId)
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "paiements"=>$paiements
+        ]);
+    }
+
 }

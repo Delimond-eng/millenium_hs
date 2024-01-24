@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('patient_etat_civil')->nullable();
             $table->text('patient_adresse');
             $table->string('patient_telephone');
+            $table->string('patient_contact_urgence');
             $table->string('patient_num_assurance')->nullable();
             $table->string('patient_gs')->nullable();
             $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();

@@ -282,6 +282,7 @@ class ConfigController extends Controller
     public function allConfigs(int $hostoId) :JsonResponse{
         $grades = Grades::all()->where('hopital_id', $hostoId);
         $fonctions = Fonctions::all()->where('hopital_id', $hostoId);
+        $facturations = FacturationConfig::all()->where('hopital_id', $hostoId);
         $services = Services::with('emplacement')->where('hopital_id', $hostoId)->get();
         $userRoles = UserRole::all();
         $locations = HopitalEmplacement::with('labos')->where('hopital_id', $hostoId)->get();
@@ -296,7 +297,8 @@ class ConfigController extends Controller
                 "services"=>$services,
                 "roles"=> $userRoles,
                 "emplacements"=>$locations,
-                "examens"=>$examens
+                "examens"=>$examens,
+                "facturations"=>$facturations,
             ]
         ]);
     }

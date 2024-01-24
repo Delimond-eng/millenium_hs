@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class TransfertPatient extends Model
+{
+    /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'transfert_patients';
+
+    /**
+     * The primary key for the model.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Attributes that should be mass-assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'transfert_hopital',
+        'transfert_motif',
+        'transfert_date',
+        'patient_id',
+        'created_by',
+        'agent_id',
+        'hopital_emplacement_id'
+    ];
+
+    /**
+     * The attributes excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [
+
+    ];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'transfert_created_At'=>'datetime:d/m/Y H:i'
+    ];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'transfert_created_At'
+    ];
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+     */
+    public function emplacement():BelongsTo{
+        return $this->belongsTo(HopitalEmplacement::class, 'hopital_emplacement_id');
+    }
+
+    /**
+     * Relation Patient
+     * @return BelongsTo
+     */
+    public function patient():BelongsTo{
+        return $this->belongsTo(Patients::class, 'patient_id');
+    }
+
+    /**
+     * Relation Patient
+     * @return BelongsTo
+     */
+    public function agent():BelongsTo{
+        return $this->belongsTo(Agents::class, 'agent_id');
+    }
+
+    /**
+     * Relation User
+     * @return BelongsTo
+     */
+    public function user():BelongsTo{
+        return $this->belongsTo(User::class, 'created_by');
+    }
+}

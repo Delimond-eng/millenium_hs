@@ -60,6 +60,7 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/examen.detail/{consult_id}',[ AgentController::class,'showDemandExamDetails']);
     Route::get('/prescriptions.pending/{locationId}',[ AgentController::class,'allPendingPrescription']);
     Route::post('/premiersoins.create',[AgentController::class, 'administrerPremierSoins']);
+    Route::get('/premiersoins.all/{locationId}',[AgentController::class, 'allPremierSoins']);
 
     Route::get('/code',[PatientController::class,'getCode']);
     Route::post('/patients.create',[ PatientController::class,'create']);
@@ -98,6 +99,15 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
     Route::post('/pharmacie.create.product', [\App\Http\Controllers\PharmacieController::class, 'createProduct']);
     Route::post('/pharmacie.create.category', [\App\Http\Controllers\PharmacieController::class, 'createCategory']);
+
+
+    /**
+     * Facturation & transfert
+    */
+    Route::post('/paiement.create', [\App\Http\Controllers\HospitalController::class, 'makePayFacture']);
+    Route::post('/transfert.create', [\App\Http\Controllers\HospitalController::class, 'makePatientTransfert']);
+    Route::get('/paiements.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allPaiementsByEmplament']);
+    Route::get('/transferts.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allTransfertsByEmplament']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
