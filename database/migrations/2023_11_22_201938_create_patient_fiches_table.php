@@ -15,17 +15,17 @@ return new class extends Migration
     {
         Schema::create('patient_fiches', function (Blueprint $table) {
             $table->id();
-            $table->string('patient_fiche_poids', 5);
+            $table->string('patient_fiche_poids', 5)->nullable();
             $table->string('patient_fiche_poids_unite', 5)->default('kg');
             $table->string('patient_fiche_taille', 5)->nullable();
             $table->string('patient_fiche_taille_unite', 5)->default('cm');
-            $table->string('patient_fiche_temperature', 5);
+            $table->string('patient_fiche_temperature', 5)->nullable();
             $table->string('patient_fiche_temperature_unite', 5)->default('°c');
-            $table->string('patient_fiche_tension_art', 5);
+            $table->string('patient_fiche_tension_art', 5)->nullable();
             $table->string('patient_fiche_tension_art_unite', 5)->default('mmHg');
-            $table->string('patient_fiche_freq_cardio', 5);
+            $table->string('patient_fiche_freq_cardio', 5)->nullable();
             $table->string('patient_fiche_freq_cardio_unite', 5)->default('bpm');
-            $table->string('patient_fiche_saturation', 5);
+            $table->string('patient_fiche_saturation', 5)->nullable();
             $table->string('patient_fiche_saturation_unite', 5)->default('%');
             $table->string('patient_fiche_age', 5);
             $table->unsignedBigInteger('patient_id');

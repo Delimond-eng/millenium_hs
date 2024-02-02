@@ -26,8 +26,8 @@ return new class extends Migration
             $table->timestamp('agent_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('agent_status')->default('actif');
             $table->unsignedBigInteger('grade_id')->nullable();
-            $table->unsignedBigInteger('service_id');
-            $table->unsignedBigInteger('fonction_id');
+            $table->unsignedBigInteger('service_id')->nullable();
+            $table->unsignedBigInteger('fonction_id')->nullable();
             $table->unsignedBigInteger('created_by')->default(0);
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('hopital_id');

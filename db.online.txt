@@ -1,0 +1,3 @@
+DB_DATABASE=fiscosar_millenium_hs
+DB_USERNAME=millenium_hs
+DB_PASSWORD=millenium_hs@2024
