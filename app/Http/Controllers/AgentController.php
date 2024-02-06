@@ -8,6 +8,7 @@ use App\Models\ConsultationExamens;
 use App\Models\Consultations;
 use App\Models\ConsultationSymptomes;
 use App\Models\MedicalSchedule;
+use App\Models\Patients;
 use App\Models\PremierSoin;
 use App\Models\PremierSoinTraitement;
 use App\Models\Prescriptions;
@@ -251,6 +252,7 @@ class AgentController extends Controller
                 ]
             );
             if(isset($consultation)){
+
                 $details = $data['consult_details'];
                 $data['consult_id'] = $consultation->id;
                 if(isset($details)){

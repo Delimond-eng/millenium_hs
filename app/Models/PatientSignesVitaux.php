@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PatientFiche extends Model
+class PatientSignesVitaux extends Model
 {
 
     /**
@@ -14,7 +14,7 @@ class PatientFiche extends Model
      *
      * @var string
      */
-    protected $table = 'patient_fiches';
+    protected $table = 'patient_signes_vitaux';
 
     /**
      * The primary key for the model.
@@ -30,19 +30,19 @@ class PatientFiche extends Model
      */
 
     protected $fillable = [
-        "patient_fiche_poids",
-        "patient_fiche_poids_unite",
-        "patient_fiche_taille",
-        "patient_fiche_taille_unite",
-        "patient_fiche_temperature",
-        "patient_fiche_temperature_unite",
-        "patient_fiche_tension_art",
-        "patient_fiche_tension_art_unite",
-        "patient_fiche_freq_cardio",
-        "patient_fiche_freq_cardio_unite",
-        "patient_fiche_saturation",
-        "patient_fiche_saturation_unite",
-        "patient_fiche_age",
+        "patient_sv_poids",
+        "patient_sv_poids_unite",
+        "patient_sv_taille",
+        "patient_sv_taille_unite",
+        "patient_sv_temperature",
+        "patient_sv_temperature_unite",
+        "patient_sv_tension_art",
+        "patient_sv_tension_art_unite",
+        "patient_sv_freq_cardio",
+        "patient_sv_freq_cardio_unite",
+        "patient_sv_saturation",
+        "patient_sv_saturation_unite",
+        "patient_sv_age",
         "patient_id",
         'hopital_id',
         'hopital_emplacement_id',
@@ -61,7 +61,7 @@ class PatientFiche extends Model
      * @var array
      */
     protected $dates = [
-        'patient_detail_create_At'
+        'patient_sv_created_At'
     ];
 
 
@@ -71,7 +71,7 @@ class PatientFiche extends Model
      * @var $casts
      */
     protected $casts = [
-        'patient_detail_create_At' => 'date:d/m/Y H:i'
+        'patient_sv_created_At' => 'date:d/m/Y H:i'
     ];
 
     /**

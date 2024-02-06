@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\PatientFiche;
+use App\Models\Paiement;
+use App\Models\PatientSignesVitaux;
 use App\Models\Patients;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ class PatientController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param $locationId
      * @return JsonResponse
      */
     public function all($locationId): JsonResponse
@@ -29,6 +31,7 @@ class PatientController extends Controller
     /**
      * Show the form for creating a new resource.
      *
+     * @param Request $request
      * @return JsonResponse
      */
     public function create(Request $request): JsonResponse
@@ -76,20 +79,32 @@ class PatientController extends Controller
                     'created_by'=>$data['created_by'],
                 ]);
                 if(isset($patient)){
-                    $details = PatientFiche::create([
-                        "patient_fiche_poids"=> $patientDetails['poids'],
-                        "patient_fiche_taille"=> $patientDetails['taille'],
-                        "patient_fiche_temperature"=> $patientDetails['temperature'],
-                        "patient_fiche_age"=> $patientDetails['age'],
-                        "patient_fiche_tension_art"=> $patientDetails['tension_art'],
-                        "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
-                        "patient_fiche_saturation"=> $patientDetails['saturation'],
+                    $details = PatientSignesVitaux::create([
+                        "patient_sv_poids"=> $patientDetails['poids'],
+                        "patient_sv_taille"=> $patientDetails['taille'],
+                        "patient_sv_temperature"=> $patientDetails['temperature'],
+                        "patient_sv_age"=> $patientDetails['age'],
+                        "patient_sv_tension_art"=> $patientDetails['tension_art'],
+                        "patient_sv_freq_cardio"=> $patientDetails['freq_cardio'],
+                        "patient_sv_saturation"=> $patientDetails['saturation'],
                         'hopital_emplacement_id'=>$data['emplacement_id'],
                         'hopital_id'=>$data['hopital_id'],
                         "patient_id"=> $patient->id,
                         'created_by'=>$data['created_by'],
                     ]);
                     $patient['details'] = $details;
+
+                    //Enregistrement d'un paiement de la fiche de consultation
+                    $paiementDatas = [
+                        "paiement_montant"=>$request->paiement['montant'],
+                        "paiement_montant_devise"=>$request->paiement['devise'],
+                        "patient_id"=>$patient->id,
+                        'hopital_emplacement_id'=>$data['emplacement_id'],
+                        'hopital_id'=>$data['hopital_id'],
+                        'created_by'=>$data['created_by'],
+                    ];
+                    $paiement = $this->makeFichePaiement($paiementDatas);
+                    $patient['paiement'] = $paiement;
                 }
                 return response()->json([
                     "status"=>"success",
@@ -98,15 +113,15 @@ class PatientController extends Controller
             }
             else{
                 /** @var mixed affiche les infos de l'ancien patient */
-                $oldPatient = Patients::where('id', $request->patient_id)->first();
-                $details = PatientFiche::create([
-                    "patient_fiche_poids"=> $patientDetails['poids'],
-                    "patient_fiche_taille"=> $patientDetails['taille'],
-                    "patient_fiche_temperature"=> $patientDetails['temperature'],
-                    "patient_fiche_age"=> $patientDetails['age'],
-                    "patient_fiche_tension_art"=> $patientDetails['tension_art'],
-                    "patient_fiche_freq_cardio"=> $patientDetails['freq_cardio'],
-                    "patient_fiche_saturation"=> $patientDetails['saturation'],
+                $oldPatient = Patients::find((int)$request->patient_id);
+                $details = PatientSignesVitaux::create([
+                    "patient_sv_poids"=> $patientDetails['poids'],
+                    "patient_sv_taille"=> $patientDetails['taille'],
+                    "patient_sv_temperature"=> $patientDetails['temperature'],
+                    "patient_sv_age"=> $patientDetails['age'],
+                    "patient_sv_tension_art"=> $patientDetails['tension_art'],
+                    "patient_sv_freq_cardio"=> $patientDetails['freq_cardio'],
+                    "patient_sv_saturation"=> $patientDetails['saturation'],
                     'hopital_emplacement_id'=>$request->emplacement_id,
                     "hopital_id"=> $request->hopital_id,
                     "patient_id"=> $request->patient_id,
@@ -115,6 +130,18 @@ class PatientController extends Controller
                 $oldPatient->patient_code_appel= $request->code_appel;
                 $oldPatient->save();
                 $oldPatient["details"] = $details;
+
+                //Enregistrement d'un paiement de la fiche de consultation
+                $paiementDatas = [
+                    "paiement_montant"=>$request->paiement['montant'],
+                    "paiement_montant_devise"=>$request->paiement['devise'],
+                    'hopital_emplacement_id'=>$request->emplacement_id,
+                    "hopital_id"=> $request->hopital_id,
+                    "patient_id"=> $request->patient_id,
+                    'created_by'=> $request->created_by,
+                ];
+                $paiement = $this->makeFichePaiement($paiementDatas);
+                $oldPatient['paiement'] = $paiement;
                 return response()->json([
                     "status"=>"success",
                     "patient"=>$oldPatient,
@@ -138,7 +165,7 @@ class PatientController extends Controller
      * @return boolean
      */
     public function updateStatus($data):bool{
-        $fiche = PatientFiche::where('id', $data['patient_fiche_id'])->firstOrFail();
+        $fiche = PatientSignesVitaux::where('id', $data['patient_sv_id'])->firstOrFail();
         $fiche->patient_fiche_status = $data["status"];
         $result = $fiche->save();
         return $result;
@@ -146,10 +173,10 @@ class PatientController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return JsonResponse
      */
-    public function show($id) : JsonResponse
+    public function show(int $id) : JsonResponse
     {
         $patient = Patients::where('id', $id)->with('details')->first();
         return response()->json([
@@ -164,11 +191,8 @@ class PatientController extends Controller
      * @return JsonResponse
      */
     public function viewAllPendingPatients(int $emplacementId):JsonResponse{
-        /*$patients = Patients::with('details')->where('hopital_emplacement_id', $emplacementId)
-            ->where('patient_fiche_status', 'en attente')
-            ->get();*/
-        $patients = Patients::join('patient_fiches', 'patients.id', '=', 'patient_fiches.patient_id')
-            ->where('patient_fiches.patient_fiche_status', 'en attente')
+        $patients = Patients::join('patient_signes_vitaux', 'patients.id', '=', 'patient_signes_vitaux.patient_id')
+            ->where('patient_signes_vitaux.patient_sv_status', 'en attente')
             ->where('patients.hopital_emplacement_id', $emplacementId)
             ->select('patients.*')
             ->with('details')
@@ -199,6 +223,32 @@ class PatientController extends Controller
             "status"=>"success",
             "result"=>$results
         ]);
+    }
+
+    /**
+     * Paiement de la fiche medical
+     * @author Gaston Delimond
+     * @param $data
+     * @return mixed
+    */
+    private function makeFichePaiement($data):mixed
+    {
+        $result = Paiement::create([
+            "paiement_libelle"=>"Paiement pour la consultation",
+            "paiement_montant"=>$data['paiement_montant'],
+            "paiement_montant_devise"=>$data['paiement_montant_devise'],
+            "patient_id"=>$data['patient_id'],
+            "hopital_id"=>$data['hopital_id'],
+            "hopital_emplacement_id"=>$data['hopital_emplacement_id'],
+            "created_by"=>$data['created_by'],
+        ]);
+
+        if(isset($result)){
+            return $result;
+        }
+        else {
+            return null;
+        }
     }
 
 

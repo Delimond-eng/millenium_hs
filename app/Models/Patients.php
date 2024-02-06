@@ -63,7 +63,8 @@ class Patients extends Model
      * @var array
      */
     protected $casts = [
-        'patient_create_At' => 'date:d/m/Y H:i'
+        'patient_create_At' => 'date:d/m/Y H:i',
+        'patient_datenais' => 'date:d/m/Y',
     ];
 
     /**
@@ -72,7 +73,8 @@ class Patients extends Model
      * @var array
      */
     protected $dates = [
-        'patient_create_At'
+        'patient_create_At',
+        'patient_datenais',
     ];
 
     /**
@@ -111,7 +113,7 @@ class Patients extends Model
      * @return HasMany
     */
     public function details(): HasMany{
-        return $this->hasMany(PatientFiche::class, foreignKey: 'patient_id', localKey: 'id');
+        return $this->hasMany(PatientSignesVitaux::class, foreignKey: 'patient_id', localKey: 'id');
     }
 
 

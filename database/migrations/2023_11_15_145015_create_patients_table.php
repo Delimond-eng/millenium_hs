@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('patient_nom');
             $table->string('patient_prenom');
             $table->char('patient_sexe', 1);
-            $table->string('patient_datenais', 10);
+            $table->string('patient_datenais');
             $table->string('patient_etat_civil')->nullable();
             $table->text('patient_adresse');
             $table->string('patient_telephone');

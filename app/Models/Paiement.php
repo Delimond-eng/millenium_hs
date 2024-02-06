@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Partener extends Model
+class Paiement extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'parteners';
+    protected $table = 'paiements';
 
     /**
      * The primary key for the model.
@@ -29,10 +28,12 @@ class Partener extends Model
      * @var array
      */
     protected $fillable = [
-        'partener_nom',
-        'partener_adresse',
-        'partener_contact',
+        'paiement_libelle',
+        'paiement_montant',
+        'paiement_montant_devise',
+        'patient_id',
         'hopital_id',
+        'hopital_emplacement_id',
         'created_by'
     ];
 
@@ -51,7 +52,7 @@ class Partener extends Model
      * @var array
      */
     protected $casts = [
-        'partener_created_At'=>'datetime:d/m/Y'
+        'paiement_created_At'=>'datetime:d/m/Y'
     ];
 
     /**
@@ -60,7 +61,7 @@ class Partener extends Model
      * @var array
      */
     protected $dates = [
-        'partener_created_At'
+        'paiement_created_At'
     ];
 
     /**
@@ -74,15 +75,34 @@ class Partener extends Model
      * Relation directly to Hospital
      * @return BelongsTo
      */
+    public function patient():BelongsTo{
+        return $this->belongsTo(Patients::class, 'patient_id');
+    }
+
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+     */
+    public function emplacement():BelongsTo{
+        return $this->belongsTo(HopitalEmplacement::class, 'hopital_emplacement_id');
+    }
+
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+     */
     public function hopital():BelongsTo{
         return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 
+
     /**
-     * Relation directly to Parteners agents
-     * @return HasMany
+     * Relation directly to Hospital
+     * @return BelongsTo
      */
-    public function agents():HasMany{
-        return $this->hasMany(PartenerAgent::class,  foreignKey: 'partener_id', localKey: 'id');
+    public function user():BelongsTo{
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

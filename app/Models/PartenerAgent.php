@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Partener extends Model
+class PartenerAgent extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'parteners';
+    protected $table = 'partener_agents';
 
     /**
      * The primary key for the model.
@@ -29,11 +28,16 @@ class Partener extends Model
      * @var array
      */
     protected $fillable = [
-        'partener_nom',
-        'partener_adresse',
-        'partener_contact',
+        'agent_matricule',
+        'agent_num_convention',
+        'agent_nom',
+        'agent_prenom',
+        'agent_sexe',
+        'agent_etat_civil',
+        'agent_nbre_efts',
+        'partener_id',
         'hopital_id',
-        'created_by'
+        'created_by',
     ];
 
     /**
@@ -51,7 +55,7 @@ class Partener extends Model
      * @var array
      */
     protected $casts = [
-        'partener_created_At'=>'datetime:d/m/Y'
+        'agent_created_At'=>'datetime:d/m/Y'
     ];
 
     /**
@@ -60,7 +64,7 @@ class Partener extends Model
      * @var array
      */
     protected $dates = [
-        'partener_created_At'
+        'agent_created_At'
     ];
 
     /**
@@ -78,11 +82,21 @@ class Partener extends Model
         return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 
+
     /**
-     * Relation directly to Parteners agents
-     * @return HasMany
+     * Relation directly Partener
+     * @return BelongsTo
      */
-    public function agents():HasMany{
-        return $this->hasMany(PartenerAgent::class,  foreignKey: 'partener_id', localKey: 'id');
+    public function partener():BelongsTo{
+        return $this->belongsTo(Partener::class, 'partener_id');
+    }
+
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+     */
+    public function user():BelongsTo{
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

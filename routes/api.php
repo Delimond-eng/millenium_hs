@@ -108,6 +108,14 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/transfert.create', [\App\Http\Controllers\HospitalController::class, 'makePatientTransfert']);
     Route::get('/paiements.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allPaiementsByEmplament']);
     Route::get('/transferts.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allTransfertsByEmplament']);
+
+
+    /**
+     * Gestion des partenaires & conventions
+    */
+    Route::post('/partener.create',[\App\Http\Controllers\PartenerController::class, 'createPartener']);
+    Route::post('/partener.agents.import',[\App\Http\Controllers\PartenerController::class, 'importPartenerAgentFromExcel']);
+    Route::get('/parteners.all/{hopitalId}',[\App\Http\Controllers\PartenerController::class, 'viewAllParteners']);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
