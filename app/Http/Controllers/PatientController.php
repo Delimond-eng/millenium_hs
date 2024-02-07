@@ -52,7 +52,7 @@ class PatientController extends Controller
                     'datenais' => 'required|date|date_format:Y-m-d',
                     'groupe_sang' => 'nullable|string',
                     'etat_civil' => 'nullable|string',
-                    'num_assurance' => 'nullable|string',
+                    'num_assurance' => 'nullable|string|exists:partener_agents,agent_num_convention',
                     'telephone' => 'required|string|min:10|unique:patients,patient_telephone',
                     'telephone_urgence' => 'nullable|string',
                     'adresse' => 'required|string',

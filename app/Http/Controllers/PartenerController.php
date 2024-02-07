@@ -95,4 +95,19 @@ class PartenerController extends Controller
             "parteners" => $parteners
         ]);
     }
+
+
+    /**
+     * Search & match partener data
+     * @param Request $request
+     * @return JsonResponse
+     * @author Gaston Delimond
+     * @DateTime 07/2/2024 07:50
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $query = $request->input('query');
+        $results = PartenerAgent::with('partener')->where('agent_num_convention', '=',$query)->get();
+        return response()->json($results);
+    }
 }

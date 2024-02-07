@@ -115,6 +115,7 @@ Route::middleware(['cors'])->group(function () {
     */
     Route::post('/partener.create',[\App\Http\Controllers\PartenerController::class, 'createPartener']);
     Route::post('/partener.agents.import',[\App\Http\Controllers\PartenerController::class, 'importPartenerAgentFromExcel']);
+    Route::get('/partener.agent.search',[\App\Http\Controllers\PartenerController::class, 'search']);
     Route::get('/parteners.all/{hopitalId}',[\App\Http\Controllers\PartenerController::class, 'viewAllParteners']);
 });
 
