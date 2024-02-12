@@ -249,9 +249,7 @@ class HospitalisationController extends Controller
         $dateTimeEnd = Carbon::parse($dateEnd);
         return $dateTimeEnd->gt($dateTimeStart);
     }
-
-
-
+    
 
 
 }

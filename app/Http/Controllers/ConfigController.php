@@ -7,6 +7,7 @@ use App\Models\FacturationConfig;
 use App\Models\Fonctions;
 use App\Models\Grades;
 use App\Models\HopitalEmplacement;
+use App\Models\LitType;
 use App\Models\Services;
 use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
