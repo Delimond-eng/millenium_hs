@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ProduitType extends Model
+class ExamenLaboType extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'produit_types';
+    protected $table = 'examen_labo_types';
 
     /**
      * The primary key for the model.
@@ -27,38 +27,38 @@ class ProduitType extends Model
      *
      * @var array
      */
+
     protected $fillable = [
-        'type_libelle',
-        'type_description',
-        'hopital_id',
-        'created_by'
+        "type_libelle",
+        "type_libelle_medical",
+        "type_description",
+        "examen_categorie_id",
     ];
 
+
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $hidden = [
-
+    protected $dates = [
+        'type_created_At'
     ];
 
     /**
-     * The attributes that should be casted to native types.
+     * Indicates if the model should be timestamped.
      *
-     * @var array
+     * @var boolean
      */
-    protected $casts = [
-        'type_created_At'=>'datetime:d-m-Y H:i:s'
-    ];
+    public $timestamps = false;
 
 
     /**
-     * Relation pour voir la liste des produits appartenants à une categorie
+     * Voir tous les examens par type
      * @return HasMany
-     */
-    public function produits():HasMany
+    */
+    public function examens():HasMany
     {
-        return $this->hasMany(Produit::class, foreignKey: 'type_id', localKey: 'id');
+        return $this->hasMany(ExamenLabo::class, foreignKey: 'type_id');
     }
 }

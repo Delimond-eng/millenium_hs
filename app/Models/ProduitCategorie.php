@@ -31,9 +31,7 @@ class ProduitCategorie extends Model
     protected $fillable = [
         'categorie_libelle',
         'categorie_description',
-        'pharmacie_id',
         'hopital_id',
-        'hopital_emplacement_id',
         'created_by'
     ];
 

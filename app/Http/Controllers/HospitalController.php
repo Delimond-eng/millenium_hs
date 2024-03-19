@@ -147,7 +147,7 @@ class HospitalController extends Controller
             'name' => $data['user_name'],
             'email' => $data['user_email'],
             'phone' => $data['user_phone'],
-            'menus'=> "Tableau de bord,Configurations,Agents,Services,Laboratoires",
+            'menus'=> "Tableau de bord,Configurations,Agents,Services,Laboratoires,Partenaires",
             'password' => bcrypt($data['user_password']),
             'hopital_id'=> $data['hopital_id'],
             'hopital_emplacement_id'=>$data['hopital_emplacement_id'],

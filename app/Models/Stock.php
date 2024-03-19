@@ -28,12 +28,12 @@ class Stock extends Model
      * @var array
      */
     protected $fillable = [
-        'stock_qte_dispo',
-        'stock_qte_min',
-        'medicament_id',
+        'stock_qte',
+        'stock_date_exp',
+        'emplacement',
+        'produit_id',
         'fournisseur_id',
-        'hopital_id',
-        'hopital_emplacement_id',
+        'pharmacie_id',
         'created_by'
     ];
 
@@ -52,8 +52,18 @@ class Stock extends Model
      * @var array
      */
     protected $casts = [
-        'fournisseur_created_At'=>'datetime:d-m-Y H:i:s'
+        'stock_created_At'=>'datetime:d-m-Y H:i:s'
     ];
+
+    /**
+     * Relation pour lier à un fournisseur
+     * @return BelongsTo
+     */
+    public function produit():BelongsTo
+    {
+        return $this->belongsTo(Produit::class, 'produit_id');
+    }
+
 
     /**
      * Relation pour lier à un fournisseur
@@ -62,5 +72,27 @@ class Stock extends Model
     public function fournisseur():BelongsTo
     {
         return $this->belongsTo(Fournisseur::class, 'fournisseur_id');
+    }
+
+
+
+
+    /**
+     * Relation pour lier à une pharmacie
+     * @return BelongsTo
+     */
+    public function pharmacie():BelongsTo
+    {
+        return $this->belongsTo(Pharmacie::class, 'pharmacie_id');
+    }
+
+
+    /**
+     * Relation pour lier à un utilisateur
+     * @return BelongsTo
+     */
+    public function user():BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

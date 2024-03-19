@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Pharmacie;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
+use App\Models\ProduitType;
+use App\Models\ProduitUnite;
+use App\Models\Stock;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -36,6 +39,9 @@ class PharmacieController extends Controller
             "pharmacies"=>$pharmacies
         ]);
     }
+
+
+
 
     /**
      * CREER UNE NOUVELLE PHARMACIE POUR UN EMPLACEMENT
@@ -100,19 +106,17 @@ class PharmacieController extends Controller
 
 
     /**
-     * Creation des produits pharmacetiques
+     * Creation des Categories des produits
      * @param Request $request httpRequest data
      * @return JsonResponse
     */
-    public function createProduct(Request $request):JsonResponse
+    public function createCategory(Request $request):JsonResponse
     {
         try {
             $data = $request->validate([
-                'categorie_libelle'=>'required|string|unique:categorie,produit_libelle',
+                'categorie_libelle'=>'required|string',
                 'categorie_description'=>'nullable|string',
-                'pharmacie_id'=>'required|int|exists:pharmacies,id',
                 'hopital_id'=>'required|int|exists:hopitals,id',
-                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
                 'created_by'=>'required|int|exists:users,id',
             ]);
             //Cree une categorie dans la base de données !
@@ -132,24 +136,87 @@ class PharmacieController extends Controller
     }
 
 
+
+    /**
+     * Creation des Types des produits
+     * @param Request $request httpRequest data
+     * @return JsonResponse
+    */
+    public function createType(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'type_libelle'=>'required|string',
+                'type_description'=>'nullable|string',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            //Cree une categorie dans la base de données !
+            $result = ProduitType::create($data);
+            return response()->json([
+                "status"=>"success",
+                "type"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+
+    /**
+     * Creation des unites des produits
+     * @param Request $request httpRequest data
+     * @return JsonResponse
+    */
+    public function createUnite(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'unite_libelle'=>'required|string',
+                'unite_description'=>'nullable|string',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            //Cree une categorie dans la base de données !
+            $result = ProduitUnite::create($data);
+            return response()->json([
+                "status"=>"success",
+                "type"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
     /**
      * Create new categorie
      * @param Request $request HttpRequest data
      * @return JsonResponse
     */
-    public function createCategory(Request $request):JsonResponse
+    public function createProduct(Request $request):JsonResponse
     {
         try {
             $data = $request->validate([
-                'produit_libelle'=>'required|string|unique:produits,produit_libelle',
+                'produit_libelle'=>'required|string',
                 'produit_code'=>'required|string|unique:produits,produit_code',
                 'produit_prix_unitaire'=>'required|string',
-                'produit_date_exp'=>'required|date_format:Y-m-d',
                 'produit_stock_min'=>'required|int',
                 'categorie_id'=>'required|int|exists:produit_categories,id',
-                'pharmacie_id'=>'required|int|exists:pharmacies,id',
+                'unite_id'=>'required|int|exists:produit_unites,id',
+                'type_id'=>'required|int|exists:produit_types,id',
                 'hopital_id'=>'required|int|exists:hopitals,id',
-                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
                 'created_by'=>'required|int|exists:users,id',
             ]);
             //Cree un produit dans la base de données !
@@ -157,6 +224,40 @@ class PharmacieController extends Controller
             return response()->json([
                 "status"=>"success",
                 "produit"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+    /**
+     * Create new stock
+     * @param Request $request HttpRequest data
+     * @return JsonResponse
+     */
+    public function createStock(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'stock_qte'=>'required|integer|gt:0',
+                'stock_date_exp'=>'required|date|after:now',
+                'emplacement'=>'nullable|string',
+                'produit_id'=>'required|int|exists:produits,id',
+                'fournisseur_id'=>'required|int|exists:fournisseurs,id',
+                'pharmacie_id'=>'required|int|exists:pharmacies,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            //Cree un produit dans la base de données !
+            $result = Stock::create($data);
+            return response()->json([
+                "status"=>"success",
+                "stock"=>$result
             ]);
         }
         catch (ValidationException $e) {

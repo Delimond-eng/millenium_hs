@@ -15,9 +15,10 @@ return new class extends Migration
     {
         Schema::create('produit_types', function (Blueprint $table) {
             $table->id();
-            $table->string('produit_type_libelle');
-            $table->string('produit_type_description')->nullable();
+            $table->string('type_libelle');
+            $table->string('type_description')->nullable();
             $table->unsignedBigInteger('pharmacie_id');
+            $table->unsignedBigInteger('created_by');
             $table->timestamp('type_created_At')->useCurrent();
         });
     }

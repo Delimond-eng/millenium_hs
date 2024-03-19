@@ -20,9 +20,10 @@ return new class extends Migration
             $table->string('examen_labo_prix');
             $table->string('examen_resultat_type')->default('text');
             $table->string('examen_labo_prix_devise')->default('CDF');
-            $table->unsignedBigInteger('labo_id');
-            $table->unsignedBigInteger('hopital_id');
-            $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->unsignedBigInteger('labo_id')->nullable();
+            $table->unsignedBigInteger('type_id')->nullable();
+            $table->unsignedBigInteger('hopital_id')->nullable();
+            $table->unsignedBigInteger('hopital_emplacement_id')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->timestamp('examen_labo_create_At')->useCurrent();
         });

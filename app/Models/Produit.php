@@ -30,12 +30,11 @@ class Produit extends Model
         'produit_libelle',
         'produit_code',
         'produit_prix_unitaire',
-        'produit_date_exp',
         'produit_stock_min',
         'categorie_id',
-        'pharmacie_id',
+        'unite_id',
+        'type_id',
         'hopital_id',
-        'hopital_emplacement_id',
         'created_by'
     ];
 

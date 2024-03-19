@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ExamenLabo extends Model
+class ExamenLaboCategorie extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'examen_labos';
+    protected $table = 'examen_labo_categories';
 
     /**
      * The primary key for the model.
@@ -27,17 +28,11 @@ class ExamenLabo extends Model
      *
      * @var array
      */
+
     protected $fillable = [
-        "examen_labo_libelle",
-        "examen_labo_prix",
-        "examen_labo_prix_devise",
-        "examen_labo_description",
-        "examen_resultat_type",
+        "categorie_libelle",
+        "categorie_description",
         "labo_id",
-        "type_id",
-        "hopital_id",
-        "hopital_emplacement_id",
-        "created_by"
     ];
 
 
@@ -47,7 +42,7 @@ class ExamenLabo extends Model
      * @var array
      */
     protected $dates = [
-        'examen_labo_create_At'
+        'categorie_created_At'
     ];
 
     /**
@@ -57,21 +52,23 @@ class ExamenLabo extends Model
      */
     public $timestamps = false;
 
+    /**
+     * Voir les types pour chaque categorie
+     * @return HasMany
+    */
+    public function types():HasMany
+    {
+        return $this->hasMany(ExamenLaboType::class, foreignKey: 'examen_categorie_id');
+    }
 
     /**
-     * Relation d'appartenance à un emplacement spécifique
+     * Get Category*
      * @return BelongsTo
      */
-    public function emplacement(): BelongsTo{
-        return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
+    public function categorie():BelongsTo
+    {
+        return $this->belongsTo(ExamenLaboCategorie::class, foreignKey: 'examen_categorie_id');
     }
 
-    /**
-     * Relation pour lier à un labo
-     * @return BelongsTo
-    */
-    public function labo():BelongsTo
-    {
-        return $this->belongsTo(Laboratoire::class, foreignKey: 'labo_id');
-    }
+
 }

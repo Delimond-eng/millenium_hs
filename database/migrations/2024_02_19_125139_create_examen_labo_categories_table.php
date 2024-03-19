@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('produit_categories', function (Blueprint $table) {
+        Schema::create('examen_labo_categories', function (Blueprint $table) {
             $table->id();
             $table->string('categorie_libelle');
-            $table->text('categorie_description')->nullable();
-            $table->unsignedBigInteger('hopital_id');
-            $table->unsignedBigInteger('created_by');
+            $table->string('categorie_description')->nullable();
+            $table->unsignedBigInteger('labo_id')->nullable();
             $table->timestamp('categorie_created_At')->useCurrent();
         });
     }
@@ -30,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('produit_categories');
+        Schema::dropIfExists('examen_labo_categories');
     }
 };
