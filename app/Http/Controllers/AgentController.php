@@ -325,14 +325,10 @@ class AgentController extends Controller
             if(isset($prescriptions)){
                 foreach ($prescriptions as $data){
                     $prescription = Prescriptions::create([
-                        "prescription_traitement" => $data['traitement'],
-                        "prescription_traitement_type" => $data['traitement_type'],
-                        "prescription_traitement_duree" => $data['duree'],
-                        "prescription_traitement_duree_unite" => $data['duree_unite'],
-                        "prescription_traitement_freq" => $data['frequence'],
-                        "prescription_traitement_freq_unite" => $data['frequence_unite'],
-                        "prescription_posologie" => $data['dosage'],
-                        "prescription_posologie_unite" => $data['dosage_unite'],
+                        "prescription_traitement_freq" => $data['traitement_freq'],
+                        "prescription_traitement_duree" => $data['traitement_duree'],
+                        "prescription_traitement_posologie" => $data['posologie'],
+                        "produit_id" => $data['produit_id'],
                         "consult_id" => $data['consult_id'],
                         'hopital_emplacement_id' => $data['emplacement_id'],
                         'created_by'=>$data['created_by']

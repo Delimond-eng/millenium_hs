@@ -51,13 +51,7 @@ class Pharmacie extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'int',
-        'pharmacie_nom' => 'string',
-        'pharmacie_adresse' => 'string',
-        'pharmacie_telephone' => 'string',
-        'hopital_id' => 'int',
-        'hopital_emplacement_id' => 'int',
-        'pharmacie_create_At' => 'timestamp'
+        'pharmacie_create_At' => 'datetime:d-m-Y H:i:s'
     ];
 
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fournisseur;
 use App\Models\Pharmacie;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
+use App\Models\ProduitPrice;
 use App\Models\ProduitType;
 use App\Models\ProduitUnite;
 use App\Models\Stock;
@@ -170,6 +172,48 @@ class PharmacieController extends Controller
 
 
     /**
+     * Creation des fournisseurs
+     * @param Request $request httpRequest data
+     * @return JsonResponse
+     */
+    public function createFournisseur(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'nom'=>'required|string',
+                'adresse'=>'required|string',
+                'email'=>'nullable|email',
+                'telephone'=>'nullable|string',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            //Cree une categorie dans la base de données !
+            $result = Fournisseur::create([
+                'fournisseur_nom'=>$data['nom'],
+                'fournisseur_adresse'=>$data['adresse'],
+                'fournisseur_email'=>$data['email'],
+                'fournisseur_telephone'=>$data['telephone'],
+                'hopital_id'=>$data['hopital_id'],
+                'created_by'=>$data['created_by']
+            ]);
+            return response()->json([
+                "status"=>"success",
+                "fournisseur"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+
+
+    /**
      * Creation des unites des produits
      * @param Request $request httpRequest data
      * @return JsonResponse
@@ -211,7 +255,7 @@ class PharmacieController extends Controller
             $data = $request->validate([
                 'produit_libelle'=>'required|string',
                 'produit_code'=>'required|string|unique:produits,produit_code',
-                'produit_prix_unitaire'=>'required|string',
+                'produit_description'=>'nullable|string',
                 'produit_stock_min'=>'required|int',
                 'categorie_id'=>'required|int|exists:produit_categories,id',
                 'unite_id'=>'required|int|exists:produit_unites,id',
@@ -234,6 +278,38 @@ class PharmacieController extends Controller
             return response()->json(['errors' => $e->getMessage() ]);
         }
     }
+
+    /**
+     * Ajoute les prix pour les produits dans la pharmacie
+     * @param Request $request HttpRequest data
+     * @return JsonResponse
+     */
+    public function addProductPrice(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                "produit_prix"=>"required|numeric",
+                "produit_prix_devise"=>"nullable|string",
+                "pharmacie_id"=>"required|int|exits:pharmacies,id",
+                "produit_id"=>"required|int|exits:produits,id",
+            ]);
+            //Cree un produit dans la base de données !
+            $result = ProduitPrice::create($data);
+            return response()->json([
+                "status"=>"success",
+                "produit"=>$result
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
 
 
     /**
@@ -267,5 +343,40 @@ class PharmacieController extends Controller
         catch (\Illuminate\Database\QueryException | \ErrorException $e){
             return response()->json(['errors' => $e->getMessage() ]);
         }
+    }
+
+
+
+
+    /**
+     * View all Configs(categories, types, unites)
+     * @param int $hopitalId
+     * @return JsonResponse
+     */
+    public function allConfig(int $hopitalId):JsonResponse
+    {
+        $categories = ProduitCategorie::with('hopital')->where('hopital_id', $hopitalId)->get();
+        $types = ProduitType::with('hopital')->where('hopital_id', $hopitalId)->get();
+        $unites = ProduitUnite::with('hopital')->where('hopital_id', $hopitalId)->get();
+        $fournisseurs = Fournisseur::with('hopital')->where('hopital_id', $hopitalId)->get();
+        $pharmacies = Pharmacie::with('hopital')
+            ->with('emplacement')
+            ->where('hopital_id', $hopitalId)->get();
+        $produits = Produit::with('hopital')
+            ->with('categorie')
+            ->with('type')
+            ->with('unite')
+            ->where('hopital_id', $hopitalId)->get();
+        return response()->json([
+            "status"=>"success",
+            "datas"=>[
+                "categories"=>$categories,
+                "types"=>$types,
+                "unites"=>$unites,
+                "fournisseurs"=>$fournisseurs,
+                "produits"=>$produits,
+                "pharmacies"=>$pharmacies
+            ]
+        ]);
     }
 }

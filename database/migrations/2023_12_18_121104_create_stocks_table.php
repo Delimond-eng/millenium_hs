@@ -17,6 +17,8 @@ return new class extends Migration
             $table->id();
             $table->integer('stock_qte');
             $table->string('emplacement')->nullable();
+            $table->string('stock_pa')->nullable();
+            $table->string('stock_pa_devise')->default('CDF');
             $table->timestamp('stock_date_exp');
             $table->string('stock_status')->default('actif');
             $table->unsignedBigInteger('fournisseur_id');

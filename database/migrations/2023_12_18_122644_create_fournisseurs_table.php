@@ -17,11 +17,10 @@ return new class extends Migration
             $table->id();
             $table->string('fournisseur_nom');
             $table->string('fournisseur_adresse');
-            $table->string('fournisseur_email');
-            $table->string('fournisseur_telephone');
+            $table->string('fournisseur_email')->nullable();
+            $table->string('fournisseur_telephone')->nullable();
             $table->timestamp('fournisseur_created_At')->useCurrent();
             $table->unsignedBigInteger('hopital_id');
-            $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('created_by');
         });
     }

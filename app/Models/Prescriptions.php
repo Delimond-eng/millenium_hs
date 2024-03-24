@@ -28,14 +28,10 @@ class Prescriptions extends Model
      * @var array
      */
     protected $fillable = [
-        "prescription_traitement" ,
-        "prescription_traitement_type",
-        "prescription_traitement_duree",
-        "prescription_traitement_duree_unite",
         "prescription_traitement_freq",
-        "prescription_traitement_freq_unite" ,
-        "prescription_posologie",
-        "prescription_posologie_unite" ,
+        "prescription_traitement_duree",
+        "prescription_traitement_posologie",
+        "produit_id",
         "consult_id",
         'hopital_emplacement_id',
         'created_by',
@@ -80,6 +76,14 @@ class Prescriptions extends Model
     */
     public function consultation(): BelongsTo{
         return $this->belongsTo(Consultations::class, foreignKey: 'consult_id', relation: 'id');
+    }
+
+    /**
+     * Summary of product
+     * @return BelongsTo
+     */
+    public function produit(): BelongsTo{
+        return $this->belongsTo(Produit::class, foreignKey: 'produit_id', relation: 'id');
     }
 
 }

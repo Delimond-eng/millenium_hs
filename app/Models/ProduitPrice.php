@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class SuiviPostNatale extends Model
+class ProduitPrice extends Model
 {
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'suivi_post_natales';
+    protected $table = 'produit_prices';
 
     /**
      * The primary key for the model.
@@ -28,12 +29,10 @@ class SuiviPostNatale extends Model
      * @var array
      */
     protected $fillable = [
-        'suivi_post_natale_etat_sante',
-        'suivi_post_natale_recommandations',
-        'patient_id',
-        'hopital_id',
-        'hopital_emplacement_id',
-        'created_by'
+        'produit_prix',
+        'produit_prix_devise',
+        'pharmacie_id',
+        'produit_id'
     ];
 
     /**
@@ -46,20 +45,38 @@ class SuiviPostNatale extends Model
     ];
 
     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that should be casted to native types.
      *
      * @var array
      */
     protected $casts = [
-        'suivi_post_natale_created_At'=>'datetime:d-m-Y H:i:s'
+        'produit_prix_create_At'=>'datetime:d-m-Y H:i:s'
     ];
 
+
     /**
-     * Relation pour lier à un patient
+     * Relation pour lier à un hopital
      * @return BelongsTo
-    */
-    public function patient():BelongsTo
+     */
+    public function produit():BelongsTo
     {
-        return $this->belongsTo(Patients::class, 'patient_id');
+        return $this->belongsTo(Produit::class, foreignKey: 'produit_id');
+    }
+
+
+    /**
+     * Relation pour lier à une pharmacie
+     * @return BelongsTo
+     */
+    public function pharmacie():BelongsTo
+    {
+        return $this->belongsTo(Pharmacie::class, foreignKey: 'pharmacie_id');
     }
 }

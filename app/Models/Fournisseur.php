@@ -33,7 +33,6 @@ class Fournisseur extends Model
         'fournisseur_email',
         'fournisseur_telephone',
         'hopital_id',
-        'hopital_emplacement_id',
         'created_by'
     ];
 
@@ -56,11 +55,18 @@ class Fournisseur extends Model
     ];
 
     /**
-     * Relation pour lier à un emplacement
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
+    /**
+     * Relation pour lier à un hopital
      * @return BelongsTo
      */
-    public function emplacement():BelongsTo
+    public function hopital():BelongsTo
     {
-        return $this->belongsTo(HopitalEmplacement::class, 'hopital_emplacement_id');
+        return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 }

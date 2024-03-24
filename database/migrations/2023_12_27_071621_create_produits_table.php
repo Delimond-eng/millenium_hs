@@ -16,10 +16,10 @@ return new class extends Migration
             $table->id();
             $table->string('produit_libelle')->unique();
             $table->string('produit_code')->unique();
-            $table->string('produit_prix_unitaire');
             $table->integer('produit_stock_min')->default(10);
             $table->text('produit_description')->nullable();
             $table->timestamp('produit_created_At')->useCurrent();
+            $table->unsignedBigInteger('produit_id');
             $table->unsignedBigInteger('categorie_id');
             $table->unsignedBigInteger('unite_id');
             $table->unsignedBigInteger('type_id');

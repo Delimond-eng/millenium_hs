@@ -22,7 +22,6 @@ use Carbon\Carbon;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::middleware(['cors'])->group(function () {
     Route::post("/hospitals.create", [\App\Http\Controllers\HospitalController::class, 'createHosto']);
     Route::post("/emplacements.create", [\App\Http\Controllers\HospitalController::class, 'createEmplacement']);
@@ -41,7 +40,7 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
     Route::post('/configs.examens',[ ConfigController::class,'saveExamenLabo']);
     Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
-        Route::post('/configs.facturations', [ConfigController::class, 'configurerFacturation']);
+    Route::post('/configs.facturations', [ConfigController::class, 'configurerFacturation']);
     Route::get('/configs.facturations/{key}/{keyId}', [ConfigController::class, 'viewAllFacturations']);
     Route::get('/examens.all/{emplacementId}', [ConfigController::class, 'viewExamens']);
 
@@ -70,7 +69,7 @@ Route::middleware(['cors'])->group(function () {
     Route::get('/patient.story/{patientId}',[PatientController::class, 'viewMedicalStory']);
     /**
      * Labo module manager
-    */
+     */
     Route::get('/labos.all/{hopitalId}',[\App\Http\Controllers\LaboController::class, 'allLabos']);
     Route::get('/labo.examens/{emplacementId}',[\App\Http\Controllers\LaboController::class, 'viewAllLaboExamens']);
     Route::post('/labo.create',[\App\Http\Controllers\LaboController::class, 'createLabo']);
@@ -78,7 +77,7 @@ Route::middleware(['cors'])->group(function () {
 
     /**
      * Hospitalisation manage routes
-    */
+     */
     Route::get('/hospitalisations.all/{emplacementId}', [\App\Http\Controllers\HospitalisationController::class, 'viewAllDatas']);
     Route::post('/lit.create', [\App\Http\Controllers\HospitalisationController::class, 'createBed']);
     Route::post('/lit.type.config', [\App\Http\Controllers\HospitalisationController::class, 'createBedType']);
@@ -87,23 +86,39 @@ Route::middleware(['cors'])->group(function () {
 
     /**
      * SCHEDULE MANAGEMENT
-    */
+     */
     Route::post('/schedule.create', [AgentController::class, 'createSchedule']);
     Route::get('/schedules.all/{emplacementId}', [AgentController::class, 'viewAllSchedules']);
 
     /**
      * Pharmacie module Routes
-    */
+     */
+    //Route: pour créer une nouvelle pharmacie
     Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
+    //Route: pour voir toutes les pharmacies pour un hopital
     Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
+    //Route: pour voir une pharmacie pour une emplacement
     Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
+
+    //Route: pour créer un fournisseur
+    Route::post('/pharmacie.create.fournisseur', [\App\Http\Controllers\PharmacieController::class, 'createFournisseur']);
+
+    //Route: pour créer un produit pharmaceutique
     Route::post('/pharmacie.create.product', [\App\Http\Controllers\PharmacieController::class, 'createProduct']);
+
+    //Route pour créer une categorie des produits pharmaceutiques
     Route::post('/pharmacie.create.category', [\App\Http\Controllers\PharmacieController::class, 'createCategory']);
+    //Route pour créer un type de produit(ex. injectable, comprimé...)
+    Route::post('/pharmacie.create.type', [\App\Http\Controllers\PharmacieController::class, 'createType']);
+    //Route pour créer une unité des produits pharmaceutique(ex: kg, ml...)
+    Route::post('/pharmacie.create.unite', [\App\Http\Controllers\PharmacieController::class, 'createUnite']);
+    //Route pour voir toutes les configurations(unites, types et categories)
+    Route::get('/pharmacie.config.all/{hopitalId}', [\App\Http\Controllers\PharmacieController::class, 'allConfig']);
 
 
     /**
      * Facturation & transfert
-    */
+     */
     Route::post('/paiement.create', [\App\Http\Controllers\HospitalController::class, 'makePayFacture']);
     Route::post('/transfert.create', [\App\Http\Controllers\HospitalController::class, 'makePatientTransfert']);
     Route::get('/paiements.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allPaiementsByEmplament']);
@@ -112,7 +127,7 @@ Route::middleware(['cors'])->group(function () {
 
     /**
      * Gestion des partenaires & conventions
-    */
+     */
     Route::post('/partener.create',[\App\Http\Controllers\PartenerController::class, 'createPartener']);
     Route::post('/partener.agents.import',[\App\Http\Controllers\PartenerController::class, 'importPartenerAgentFromExcel']);
     Route::get('/partener.agent.search',[\App\Http\Controllers\PartenerController::class, 'search']);

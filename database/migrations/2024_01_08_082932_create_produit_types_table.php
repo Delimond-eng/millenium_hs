@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('type_libelle');
             $table->string('type_description')->nullable();
-            $table->unsignedBigInteger('pharmacie_id');
+            $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('created_by');
             $table->timestamp('type_created_At')->useCurrent();
         });

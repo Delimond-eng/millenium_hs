@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Testing\Fluent\Concerns\Has;
 
@@ -45,6 +46,13 @@ class ProduitCategorie extends Model
     ];
 
     /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
+    /**
      * The attributes that should be casted to native types.
      *
      * @var array
@@ -52,6 +60,15 @@ class ProduitCategorie extends Model
     protected $casts = [
         'categorie_created_At'=>'datetime:d-m-Y H:i:s'
     ];
+
+    /**
+     * Relation pour lier à un hopital
+     * @return BelongsTo
+     */
+    public function hopital():BelongsTo
+    {
+        return $this->belongsTo(Hopital::class, foreignKey: 'hopital_id');
+    }
 
 
     /**

@@ -30,6 +30,8 @@ class Stock extends Model
     protected $fillable = [
         'stock_qte',
         'stock_date_exp',
+        'stock_pa',
+        'stock_pa_devise',
         'emplacement',
         'produit_id',
         'fournisseur_id',

@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('produit_unites', function (Blueprint $table) {
+        Schema::create('produit_prices', function (Blueprint $table) {
             $table->id();
-            $table->string('unite_libelle');
-            $table->string('unite_description')->nullable();
-            $table->unsignedBigInteger('hopital_id');
-            $table->unsignedBigInteger('created_by');
-            $table->timestamp('type_created_At')->useCurrent();
+            $table->decimal('produit_prix');
+            $table->string('produit_prix_devise')->default("CDF");
+            $table->timestamp('produit_prix_create_At')->useCurrent();
+            $table->unsignedBigInteger('pharmacie_id');
+            $table->unsignedBigInteger('produit_id');
         });
     }
 
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('produit_types');
+        Schema::dropIfExists('produit_prices');
     }
 };

@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Produit extends Model
 {
@@ -29,8 +31,8 @@ class Produit extends Model
     protected $fillable = [
         'produit_libelle',
         'produit_code',
-        'produit_prix_unitaire',
         'produit_stock_min',
+        'produit_description',
         'categorie_id',
         'unite_id',
         'type_id',
@@ -47,6 +49,14 @@ class Produit extends Model
 
     ];
 
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
+
     /**
      * The attributes that should be casted to native types.
      *
@@ -55,4 +65,53 @@ class Produit extends Model
     protected $casts = [
         'produit_created_At'=>'datetime:d-m-Y H:i:s'
     ];
+
+
+    /**
+     * hopital
+     * @return BelongsTo
+    */
+    public function hopital():BelongsTo
+    {
+       return $this->belongsTo(Hopital::class, foreignKey: 'hopital_id');
+    }
+
+
+    /**
+     * categorie
+     * @return BelongsTo
+    */
+    public function categorie():BelongsTo
+    {
+       return $this->belongsTo(ProduitCategorie::class, foreignKey: 'categorie_id');
+    }
+
+    /**
+     * unite
+     * @return BelongsTo
+    */
+    public function unite(): BelongsTo
+    {
+        return $this->belongsTo(ProduitUnite::class, foreignKey: 'unite_id');
+    }
+
+    /**
+     * Type
+     * @return BelongsTo
+    */
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(ProduitType::class, foreignKey: 'type_id');
+    }
+
+
+    /**
+     * stocks
+     * @return HasMany
+    */
+    public function stocks():HasMany
+    {
+        return $this->hasMany(Stock::class, foreignKey: 'produit_id', localKey: 'id');
+    }
 }
+
