@@ -32,7 +32,9 @@ class ProduitPrice extends Model
         'produit_prix',
         'produit_prix_devise',
         'pharmacie_id',
-        'produit_id'
+        'produit_id',
+        'hopital_id',
+        'created_by'
     ];
 
     /**

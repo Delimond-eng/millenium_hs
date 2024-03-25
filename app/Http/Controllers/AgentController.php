@@ -216,6 +216,8 @@ class AgentController extends Controller
         ]);
     }
 
+
+
     /**
      * CREATION D'UNE NOUVELLE CONSULTATIONS
      * @param Request $request

@@ -20,6 +20,8 @@ return new class extends Migration
             $table->timestamp('produit_prix_create_At')->useCurrent();
             $table->unsignedBigInteger('pharmacie_id');
             $table->unsignedBigInteger('produit_id');
+            $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('created_by');
         });
     }
 

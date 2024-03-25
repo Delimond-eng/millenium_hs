@@ -16,10 +16,10 @@ return new class extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->integer('stock_qte');
-            $table->string('emplacement')->nullable();
             $table->string('stock_pa')->nullable();
-            $table->string('stock_pa_devise')->default('CDF');
+            $table->string('stock_pa_devise')->nullable()->default('CDF');
             $table->timestamp('stock_date_exp');
+            $table->text('stock_obs');
             $table->string('stock_status')->default('actif');
             $table->unsignedBigInteger('fournisseur_id');
             $table->unsignedBigInteger('produit_id');

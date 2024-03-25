@@ -28,6 +28,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_role_id');
             $table->unsignedBigInteger('hopital_emplacement_id')->nullable();
             $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('pharmacie_id')->nullable();
+            $table->string('pharmacie_role')->nullable();
             $table->unsignedBigInteger('created_by')->default(0)->nullable();
         });
     }

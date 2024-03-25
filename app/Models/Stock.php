@@ -32,7 +32,7 @@ class Stock extends Model
         'stock_date_exp',
         'stock_pa',
         'stock_pa_devise',
-        'emplacement',
+        'stock_obs',
         'produit_id',
         'fournisseur_id',
         'pharmacie_id',
@@ -54,8 +54,16 @@ class Stock extends Model
      * @var array
      */
     protected $casts = [
-        'stock_created_At'=>'datetime:d-m-Y H:i:s'
+        'stock_created_At'=>'datetime:d-m-Y H:i:s',
+        'stock_date_exp'=>'date:d-m-Y'
     ];
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var boolean
+     */
+    public $timestamps = false;
 
     /**
      * Relation pour lier à un fournisseur

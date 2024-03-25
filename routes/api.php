@@ -105,6 +105,7 @@ Route::middleware(['cors'])->group(function () {
 
     //Route: pour créer un produit pharmaceutique
     Route::post('/pharmacie.create.product', [\App\Http\Controllers\PharmacieController::class, 'createProduct']);
+    Route::post('/pharmacie.product.addprices', [\App\Http\Controllers\PharmacieController::class, 'addProductPrice']);
 
     //Route pour créer une categorie des produits pharmaceutiques
     Route::post('/pharmacie.create.category', [\App\Http\Controllers\PharmacieController::class, 'createCategory']);
@@ -114,7 +115,10 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/pharmacie.create.unite', [\App\Http\Controllers\PharmacieController::class, 'createUnite']);
     //Route pour voir toutes les configurations(unites, types et categories)
     Route::get('/pharmacie.config.all/{hopitalId}', [\App\Http\Controllers\PharmacieController::class, 'allConfig']);
-
+    //Route pour créer un nouveau stock des produits
+    Route::post('pharmacie.stock.add', [\App\Http\Controllers\PharmacieController::class, 'createStock']);
+    //Route pour afficher les infos du dernier stock du produit de la pharmacie
+    Route::get('/pharmacie.stock.lastinfos/{produitID}/{pharmacieID}', [\App\Http\Controllers\PharmacieController::class, 'viewProductStockInfos']);
 
     /**
      * Facturation & transfert
@@ -123,7 +127,6 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/transfert.create', [\App\Http\Controllers\HospitalController::class, 'makePatientTransfert']);
     Route::get('/paiements.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allPaiementsByEmplament']);
     Route::get('/transferts.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allTransfertsByEmplament']);
-
 
     /**
      * Gestion des partenaires & conventions

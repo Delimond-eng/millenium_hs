@@ -105,8 +105,6 @@ class PharmacieController extends Controller
         }
     }
 
-
-
     /**
      * Creation des Categories des produits
      * @param Request $request httpRequest data
@@ -256,7 +254,7 @@ class PharmacieController extends Controller
                 'produit_libelle'=>'required|string',
                 'produit_code'=>'required|string|unique:produits,produit_code',
                 'produit_description'=>'nullable|string',
-                'produit_stock_min'=>'required|int',
+                'produit_stock_min'=>'nullable|int',
                 'categorie_id'=>'required|int|exists:produit_categories,id',
                 'unite_id'=>'required|int|exists:produit_unites,id',
                 'type_id'=>'required|int|exists:produit_types,id',
@@ -290,14 +288,19 @@ class PharmacieController extends Controller
             $data = $request->validate([
                 "produit_prix"=>"required|numeric",
                 "produit_prix_devise"=>"nullable|string",
-                "pharmacie_id"=>"required|int|exits:pharmacies,id",
-                "produit_id"=>"required|int|exits:produits,id",
+                "pharmacie_id"=>'required|int|exists:pharmacies,id',
+                "produit_id"=>'required|int|exists:produits,id',
+                "hopital_id"=>'required|int|exists:hopitals,id',
+                "created_by"=>'required|int|exists:users,id',
             ]);
             //Cree un produit dans la base de données !
-            $result = ProduitPrice::create($data);
+            $result = ProduitPrice::updateOrCreate(
+                ['produit_id'=>$data['produit_id']],
+                $data
+            );
             return response()->json([
                 "status"=>"success",
-                "produit"=>$result
+                "result"=>$result
             ]);
         }
         catch (ValidationException $e) {
@@ -323,7 +326,9 @@ class PharmacieController extends Controller
             $data = $request->validate([
                 'stock_qte'=>'required|integer|gt:0',
                 'stock_date_exp'=>'required|date|after:now',
-                'emplacement'=>'nullable|string',
+                'stock_pa'=>'required|string',
+                'stock_pa_devise'=>'nullable|string',
+                'stock_obs'=>'nullable|string',
                 'produit_id'=>'required|int|exists:produits,id',
                 'fournisseur_id'=>'required|int|exists:fournisseurs,id',
                 'pharmacie_id'=>'required|int|exists:pharmacies,id',
@@ -367,6 +372,13 @@ class PharmacieController extends Controller
             ->with('type')
             ->with('unite')
             ->where('hopital_id', $hopitalId)->get();
+
+        $productPrices = ProduitPrice::with('produit.categorie')
+            ->with('produit.type')
+            ->with('produit.unite')
+            ->with('pharmacie')
+            ->where('hopital_id', $hopitalId)
+            ->get();
         return response()->json([
             "status"=>"success",
             "datas"=>[
@@ -375,8 +387,29 @@ class PharmacieController extends Controller
                 "unites"=>$unites,
                 "fournisseurs"=>$fournisseurs,
                 "produits"=>$produits,
+                "productPrices"=>$productPrices,
                 "pharmacies"=>$pharmacies
             ]
+        ]);
+    }
+
+
+    /**
+     * View pharmacie single product stock info
+     * @param int $pharmacieID;
+     * @param int $produitID
+     * @return JsonResponse
+    */
+    public function viewProductStockInfos(int $produitID, int $pharmacieID): JsonResponse
+    {
+        $lastStockInfos = Stock::with("produit")
+                            ->with('pharmacie')
+                            ->where('produit_id', $produitID)
+                            ->where('pharmacie_id', $pharmacieID)
+                            ->orderByDesc("id")->first();
+        return response()->json([
+            "status"=>"success",
+            "info"=>$lastStockInfos
         ]);
     }
 }
