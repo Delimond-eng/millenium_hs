@@ -54,8 +54,8 @@ class Stock extends Model
      * @var array
      */
     protected $casts = [
-        'stock_created_At'=>'datetime:d-m-Y H:i:s',
-        'stock_date_exp'=>'date:d-m-Y'
+        'stock_created_At'=>'datetime:d/m/Y H:i',
+        'stock_date_exp'=>'date:d/m/Y'
     ];
 
     /**

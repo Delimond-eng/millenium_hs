@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Fournisseur;
 use App\Models\Pharmacie;
+use App\Models\PharmacieOperation;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
 use App\Models\ProduitPrice;
@@ -351,7 +352,36 @@ class PharmacieController extends Controller
     }
 
 
-
+    /**
+     * Voir tous les approvisionnements
+     * @param int|null $pharmacieId
+     * @return JsonResponse
+     */
+    public function viewAllStocks(int $pharmacieId=null): JsonResponse
+    {
+        $results = null;
+        if(isset($pharmacieId)){
+            $results = Stock::with('produit')
+                ->with('fournisseur')
+                ->with('pharmacie')
+                ->with('user')
+                ->where('pharmacie_id', $pharmacieId)
+                ->where('stock_status', 'actif')
+                ->get();
+        }
+        else{
+            $results = Stock::with('produit')
+                ->with('fournisseur')
+                ->with('pharmacie')
+                ->with('user')
+                ->where('stock_status', 'actif')
+                ->get();
+        }
+        return response()->json([
+            "status"=>"success",
+            "stocks"=>$results
+        ]);
+    }
 
     /**
      * View all Configs(categories, types, unites)
@@ -402,14 +432,138 @@ class PharmacieController extends Controller
     */
     public function viewProductStockInfos(int $produitID, int $pharmacieID): JsonResponse
     {
-        $lastStockInfos = Stock::with("produit")
+        $stocks = Stock::with("produit")
                             ->with('pharmacie')
                             ->where('produit_id', $produitID)
                             ->where('pharmacie_id', $pharmacieID)
-                            ->orderByDesc("id")->first();
+                            ->get();
+        $avgPa = $this->calculateAvgPrice($stocks);
+        $info = isset($avgPa) ? [
+            'stock_pa'=>$avgPa,
+            'stock_pa_devise'=>'CDF',
+        ] : null;
         return response()->json([
             "status"=>"success",
-            "info"=>$lastStockInfos
+            "info"=> $info
         ]);
+    }
+
+    private function calculateAvgPrice($stocks): float|int|null
+    {
+        $totalPrixAchat = 0;
+        $nombreTotalStocks = count($stocks);
+        foreach ($stocks as $stock) {
+            $totalPrixAchat += (float)$stock->stock_pa;
+        }
+        if($totalPrixAchat !==0 && $nombreTotalStocks !== 0){
+            return $totalPrixAchat / $nombreTotalStocks;
+        }
+        else{
+            return null;
+        }
+    }
+
+    /**
+     * Save operation
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function saveOperation(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'operation_qte'=>'required|integer|gt:0',
+                'operation_libelle'=>'required|string',
+                'operation_obs'=>'nullable|string',
+                'produit_id'=>'required|int|exists:produits,id',
+                'pharmacie_id'=>'required|int|exists:pharmacies,id',
+                'pharmacie_dest_id'=>'nullable|int|exists:pharmacies,id',
+                'fournisseur_id'=>'nullable|int|exists:fournisseurs,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            $stockActif = $this->stockCountQte($data);
+            $restStock = $stockActif - (int)$data['operation_qte'];
+            if($restStock < 0){
+                return response()->json(['errors' => 'Le stock actuel est inférieur à la quantité entrée !']);
+            }
+            $result = PharmacieOperation::create($data);
+            if ($result['operation_libelle']=='transfert'){
+                $stocks = Stock::with("produit")
+                    ->with('pharmacie')
+                    ->where('produit_id', $result['produit_id'])
+                    ->where('pharmacie_id', $result['pharmacie_id'])
+                    ->orderByDesc('id')
+                    ->first();
+                $transfered = Stock::create([
+                    'stock_qte'=>$data['operation_qte'],
+                    'stock_date_exp'=>$stocks['stock_date_exp'],
+                    'stock_pa'=>$stocks['stock_pa'],
+                    'stock_pa_devise'=>$stocks['stock_pa_devise'],
+                    'stock_obs'=>$data['operation_obs'],
+                    'produit_id'=>$stocks['produit_id'],
+                    'fournisseur_id'=>$stocks['fournisseur_id'],
+                    'pharmacie_id'=>$data['pharmacie_dest_id'],
+                    'created_by'=>$data['created_by'],
+                ]);
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$result,
+                    "transfered"=>$transfered
+                ]);
+            }
+            else{
+                return response()->json([
+                    "status"=>"success",
+                    "result"=>$result
+                ]);
+            }
+
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+    /**
+     * all operations by status
+     * @param string $key
+     * @param int $pharmacieID
+     * @return JsonResponse
+     */
+    public function allOperations(int $pharmacieID, string $key):JsonResponse
+    {
+        $datas = PharmacieOperation::with("produit.type")
+            ->with('pharmacie')
+            ->with('pharmacie_destination')
+            ->with('fournisseur')
+            ->with('user')
+            ->where('operation_libelle',$key)
+            ->where('pharmacie_id',$pharmacieID)
+            ->where('operation_status','actif')
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "operations"=>$datas
+        ]);
+    }
+
+    // Situation stock
+    private function stockCountQte($data)
+    {
+        //Compte la somme de toutes les operations quantité sur les stocks des produits
+        $qteOp = PharmacieOperation::with('pharmacie')
+            ->where('produit_id', $data['produit_id'])
+            ->where('pharmacie_id', $data['pharmacie_id'])
+            ->sum('operation_qte');
+        //Compte la somme de stocks quantité du produit de la pharmacie
+        $qteStock = Stock::with('produit')
+            ->where('produit_id',$data['produit_id'] )
+            ->where('pharmacie_id',$data['pharmacie_id'])
+            ->sum('stock_qte');
+        return $qteStock - $qteOp;
     }
 }

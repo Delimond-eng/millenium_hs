@@ -22,120 +22,15 @@ use Carbon\Carbon;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::middleware(['cors'])->group(function () {
-    Route::post("/hospitals.create", [\App\Http\Controllers\HospitalController::class, 'createHosto']);
-    Route::post("/emplacements.create", [\App\Http\Controllers\HospitalController::class, 'createEmplacement']);
-    Route::get( '/emplacements.all/{hostoId}', [\App\Http\Controllers\HospitalController::class, 'viewAllEmplacements']);
-    Route::post("/login",[ UserController::class, 'login']);
-    Route::post("/users.store",[ UserController::class, 'store']);
-    Route::get('/users.active', function () {
-        $interval = Carbon::now()->subMinutes(10); // Les utilisateurs vus dans les 10 dernières minutes
-        $activeUsers = User::where('last_seen', '>=', $interval)->get();
-        return response()->json(['active_users' => $activeUsers]);
-    });
-
-    Route::post('/configs.services',[ ConfigController::class,'saveService']);
-    Route::post('/configs.fonctions',[ ConfigController::class,'saveFonction']);
-    Route::post('/configs.grades',[ ConfigController::class,'saveGrade']);
-    Route::post('/configs.roles',[ ConfigController::class,'saveRole']);
-    Route::post('/configs.examens',[ ConfigController::class,'saveExamenLabo']);
-    Route::get('/configs.all/{hostoId}',[ ConfigController::class,'allConfigs']);
-    Route::post('/configs.facturations', [ConfigController::class, 'configurerFacturation']);
-    Route::get('/configs.facturations/{key}/{keyId}', [ConfigController::class, 'viewAllFacturations']);
-    Route::get('/examens.all/{emplacementId}', [ConfigController::class, 'viewExamens']);
-
-    Route::post('/agents.create',[ AgentController::class,'createAgent']);
-    Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);
-    Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
-    Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
-    Route::post('/prescriptions.add',[ AgentController::class,'addPrescriptions']);
-    Route::post('/examens.add',[ AgentController::class,'addExamens']);
-    Route::get('/consultations.all/{locationId}',[ AgentController::class,'viewAllConsultations']);
-    Route::get('/consultations.patient/{patientId}',[ AgentController::class,'viewLastConsults']);
-    Route::get('/consult.examens/{locationId}',[ AgentController::class,'allExamens']);
-    Route::post('/examen.validate/{consult_id}',[ AgentController::class,'validateExamens']);
-    Route::post('/prescription.validate/{consult_id}',[ AgentController::class,'validatePrescriptions']);
-    Route::get('/prescription.details/{consult_id}',[ AgentController::class,'showPrescriptionDetails']);
-    Route::get('/examen.detail/{consult_id}',[ AgentController::class,'showDemandExamDetails']);
-    Route::get('/prescriptions.pending/{locationId}',[ AgentController::class,'allPendingPrescription']);
-    Route::post('/premiersoins.create',[AgentController::class, 'administrerPremierSoins']);
-    Route::get('/premiersoins.all/{locationId}',[AgentController::class, 'allPremierSoins']);
-
-    Route::get('/code',[PatientController::class,'getCode']);
-    Route::post('/patients.create',[ PatientController::class,'create']);
-    Route::get('/patients.all/{locationId}',[ PatientController::class,'all']);
-    Route::get('/patients.pending/{locationId}',[ PatientController::class,'viewAllPendingPatients']);
-    Route::get('/patient.show/{id}',[ PatientController::class,'show']);
-    Route::get('/patient.story/{patientId}',[PatientController::class, 'viewMedicalStory']);
-    /**
-     * Labo module manager
-     */
-    Route::get('/labos.all/{hopitalId}',[\App\Http\Controllers\LaboController::class, 'allLabos']);
-    Route::get('/labo.examens/{emplacementId}',[\App\Http\Controllers\LaboController::class, 'viewAllLaboExamens']);
-    Route::post('/labo.create',[\App\Http\Controllers\LaboController::class, 'createLabo']);
 
 
-    /**
-     * Hospitalisation manage routes
-     */
-    Route::get('/hospitalisations.all/{emplacementId}', [\App\Http\Controllers\HospitalisationController::class, 'viewAllDatas']);
-    Route::post('/lit.create', [\App\Http\Controllers\HospitalisationController::class, 'createBed']);
-    Route::post('/lit.type.config', [\App\Http\Controllers\HospitalisationController::class, 'createBedType']);
-    Route::post('/hospitalisation.create', [\App\Http\Controllers\HospitalisationController::class, 'createHospitalisation']);
-    Route::post('/hospitalisation.make.transfert', [\App\Http\Controllers\HospitalisationController::class, 'createBedTransfert']);
-
-    /**
-     * SCHEDULE MANAGEMENT
-     */
-    Route::post('/schedule.create', [AgentController::class, 'createSchedule']);
-    Route::get('/schedules.all/{emplacementId}', [AgentController::class, 'viewAllSchedules']);
-
-    /**
-     * Pharmacie module Routes
-     */
-    //Route: pour créer une nouvelle pharmacie
-    Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
-    //Route: pour voir toutes les pharmacies pour un hopital
-    Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
-    //Route: pour voir une pharmacie pour une emplacement
-    Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
-
-    //Route: pour créer un fournisseur
-    Route::post('/pharmacie.create.fournisseur', [\App\Http\Controllers\PharmacieController::class, 'createFournisseur']);
-
-    //Route: pour créer un produit pharmaceutique
-    Route::post('/pharmacie.create.product', [\App\Http\Controllers\PharmacieController::class, 'createProduct']);
-    Route::post('/pharmacie.product.addprices', [\App\Http\Controllers\PharmacieController::class, 'addProductPrice']);
-
-    //Route pour créer une categorie des produits pharmaceutiques
-    Route::post('/pharmacie.create.category', [\App\Http\Controllers\PharmacieController::class, 'createCategory']);
-    //Route pour créer un type de produit(ex. injectable, comprimé...)
-    Route::post('/pharmacie.create.type', [\App\Http\Controllers\PharmacieController::class, 'createType']);
-    //Route pour créer une unité des produits pharmaceutique(ex: kg, ml...)
-    Route::post('/pharmacie.create.unite', [\App\Http\Controllers\PharmacieController::class, 'createUnite']);
-    //Route pour voir toutes les configurations(unites, types et categories)
-    Route::get('/pharmacie.config.all/{hopitalId}', [\App\Http\Controllers\PharmacieController::class, 'allConfig']);
-    //Route pour créer un nouveau stock des produits
-    Route::post('pharmacie.stock.add', [\App\Http\Controllers\PharmacieController::class, 'createStock']);
-    //Route pour afficher les infos du dernier stock du produit de la pharmacie
-    Route::get('/pharmacie.stock.lastinfos/{produitID}/{pharmacieID}', [\App\Http\Controllers\PharmacieController::class, 'viewProductStockInfos']);
-
-    /**
-     * Facturation & transfert
-     */
-    Route::post('/paiement.create', [\App\Http\Controllers\HospitalController::class, 'makePayFacture']);
-    Route::post('/transfert.create', [\App\Http\Controllers\HospitalController::class, 'makePatientTransfert']);
-    Route::get('/paiements.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allPaiementsByEmplament']);
-    Route::get('/transferts.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allTransfertsByEmplament']);
-
-    /**
-     * Gestion des partenaires & conventions
-     */
-    Route::post('/partener.create',[\App\Http\Controllers\PartenerController::class, 'createPartener']);
-    Route::post('/partener.agents.import',[\App\Http\Controllers\PartenerController::class, 'importPartenerAgentFromExcel']);
-    Route::get('/partener.agent.search',[\App\Http\Controllers\PartenerController::class, 'search']);
-    Route::get('/parteners.all/{hopitalId}',[\App\Http\Controllers\PartenerController::class, 'viewAllParteners']);
-});
+/**
+ * Inclure toutes les routes metiers
+*/
+$files = glob(__DIR__.'/api_routes/*.php');
+foreach ($files as $file) {
+    include $file;
+}
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

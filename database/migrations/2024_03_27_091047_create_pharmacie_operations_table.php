@@ -13,19 +13,18 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('stocks', function (Blueprint $table) {
+        Schema::create('pharmacie_operations', function (Blueprint $table) {
             $table->id();
-            $table->integer('stock_qte');
-            $table->string('stock_pa')->nullable();
-            $table->string('stock_pa_devise')->nullable()->default('CDF');
-            $table->timestamp('stock_date_exp');
-            $table->text('stock_obs')->nullable();
-            $table->string('stock_status')->default('actif');
-            $table->unsignedBigInteger('fournisseur_id');
+            $table->integer('operation_qte');
+            $table->string('operation_libelle');
+            $table->string('operation_obs')->nullable();
+            $table->string('operation_status')->default('actif');
             $table->unsignedBigInteger('produit_id');
             $table->unsignedBigInteger('pharmacie_id');
+            $table->unsignedBigInteger('pharmacie_dest_id')->nullable();
+            $table->unsignedBigInteger('fournisseur_id')->nullable();
             $table->unsignedBigInteger('created_by');
-            $table->timestamp('stock_created_At')->useCurrent();
+            $table->timestamp('operation_created_At')->useCurrent();
         });
     }
 
@@ -36,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stocks');
+        Schema::dropIfExists('pharmacie_operations');
     }
 };

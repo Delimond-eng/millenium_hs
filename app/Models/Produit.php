@@ -63,7 +63,7 @@ class Produit extends Model
      * @var array
      */
     protected $casts = [
-        'produit_created_At'=>'datetime:d-m-Y H:i:s'
+        'produit_created_At'=>'datetime:d/m/Y H:i'
     ];
 
 
