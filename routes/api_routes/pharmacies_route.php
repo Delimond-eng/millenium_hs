@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::middleware(['cors'])->group(function(){
+    //Route: pour voir tous les utilisateurs
+    Route::get('/pharmacie.users', [\App\Http\Controllers\PharmacieController::class, 'viewAllUsers']);
     //Route: pour créer une nouvelle pharmacie
     Route::post('/pharmacies.create', [\App\Http\Controllers\PharmacieController::class, 'createPharmacie']);
     //Route: pour voir toutes les pharmacies pour un hopital
@@ -28,7 +30,7 @@ Route::middleware(['cors'])->group(function(){
     //Route pour créer une unité des produits pharmaceutique(ex: kg, ml...)
     Route::post('/pharmacie.create.unite', [\App\Http\Controllers\PharmacieController::class, 'createUnite']);
     //Route pour voir toutes les configurations(unites, types et categories)
-    Route::get('/pharmacie.config.all/{hopitalId}', [\App\Http\Controllers\PharmacieController::class, 'allConfig']);
+    Route::get('/pharmacie.config.all/{hopitalId}/{pharmacieId?}', [\App\Http\Controllers\PharmacieController::class, 'allConfig']);
     //Route pour créer un nouveau stock des produits
     Route::post('/pharmacie.stock.add', [\App\Http\Controllers\PharmacieController::class, 'createStock']);
     //Route pour voir tous les les approvisionnements stock
@@ -39,4 +41,6 @@ Route::middleware(['cors'])->group(function(){
     Route::post('/pharmacie.operation.create', [\App\Http\Controllers\PharmacieController::class, 'saveOperation']);
     //Route pour voir les operations par status et pharmacie
     Route::get('/pharmacie.operations.all/{pharmacieID}/{key}',  [\App\Http\Controllers\PharmacieController::class, 'allOperations']);
+    //Route pour voir le rapport de stock
+    Route::get('/pharmacie.reports/{pharmacieID}',  [\App\Http\Controllers\PharmacieController::class, 'viewStocksReport']);
 });

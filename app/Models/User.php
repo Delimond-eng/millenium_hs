@@ -27,6 +27,8 @@ class User extends Authenticatable
         'menus',
         'agent_id',
         'hopital_id',
+        'pharmacie_id',
+        'pharmacie_role',
         'hopital_emplacement_id',
         'user_role_id',
         'last_seen',
@@ -69,5 +71,11 @@ class User extends Authenticatable
     public function role(): BelongsTo
     {
         return $this->belongsTo(UserRole::class,foreignKey:'user_role_id');
+    }
+
+
+    public function pharmacie():BelongsTo
+    {
+        return $this->belongsTo(Pharmacie::class, foreignKey: 'pharmacie_id');
     }
 }

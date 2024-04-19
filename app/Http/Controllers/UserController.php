@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Hopital;
 use App\Models\HopitalEmplacement;
+use App\Models\Pharmacie;
 use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Http\JsonResponse;
@@ -30,10 +31,17 @@ class UserController extends Controller
             $role = UserRole::where('id', $user->user_role_id)->first();
             $hosto = Hopital::find($user->hopital_id);
             $emplacement = HopitalEmplacement::find($user->hopital_emplacement_id);
-            $hosto['emplacement']= $emplacement;
-            $user['role'] = $role;
+            if(isset($user->pharmacie_id)){
+                $pharmacie = Pharmacie::find($user->pharmacie_id);
+                $user['pharmacie'] = $pharmacie;
+            }
+            if(isset($emplacement)){
+                $hosto['emplacement'] = $emplacement;
+            }
+            if(isset($role)){
+                $user['role'] = $role;
+            }
             $user['hopital'] = $hosto;
-
             return response()->json([
                 'user' => $user,
                 'token' => $token,
@@ -43,7 +51,7 @@ class UserController extends Controller
     }
 
     /**
-     * User regester
+     * User register
      * @param Request $request
      * @return JsonResponse
      */
@@ -54,20 +62,24 @@ class UserController extends Controller
                 'name' => 'required|string',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:6',
-                'agent_id'=>'required|int|exists:agents,id',
+                'agent_id'=>'nullable|int|exists:agents,id',
                 'created_by'=>'required|int|exists:users,id',
                 'pharmacie_id'=>'nullable|int|exists:pharmacies,id',
                 'pharmacie_role'=>'nullable|string',
             ]);
+            $pharma = Pharmacie::find($validatedData['pharmacie_id']);
 
             $user = User::create([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
                 'password' => bcrypt($validatedData['password']),
-                'agent_id'=> $validatedData['agent_id'],
                 'pharmacie_id'=>$validatedData['pharmacie_id'],
                 'pharmacie_role'=>$validatedData['pharmacie_role'],
                 'created_by'=> $validatedData['created_by'],
+                'menus'=> "Tableau de bord,Pharmacies",
+                'hopital_id'=>isset($pharma) ? $pharma->hopital_id : null,
+                'hopital_emplacement_id'=>isset($pharma) ? $pharma->hopital_emplacement_id : null,
+                'user_role_id'=> 7,
             ]);
             return response()->json(['message' => 'Utilisateur créé avec succès', 'user' => $user]);
         }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\StockInfoResource;
 use App\Models\Fournisseur;
 use App\Models\Pharmacie;
 use App\Models\PharmacieOperation;
@@ -11,12 +12,30 @@ use App\Models\ProduitPrice;
 use App\Models\ProduitType;
 use App\Models\ProduitUnite;
 use App\Models\Stock;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Validation\ValidationException;
 
 class PharmacieController extends Controller
 {
+
+    /**
+     * Voir tous les utilisateurs liés à une pharmacie ou à une Gestion
+     * @return JsonResponse
+    */
+    public function viewAllUsers():JsonResponse
+    {
+        $users = User::with('pharmacie')
+            ->whereNot('pharmacie_id', null)
+            ->whereNot('pharmacie_role', null)
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "users"=>$users
+        ]);
+    }
     /**
      * Voir toutes les pharmacies d'un hopital
      * @param int $hostoId
@@ -296,7 +315,10 @@ class PharmacieController extends Controller
             ]);
             //Cree un produit dans la base de données !
             $result = ProduitPrice::updateOrCreate(
-                ['produit_id'=>$data['produit_id']],
+                [
+                    'produit_id'=>$data['produit_id'],
+                    'pharmacie_id'=>$data['pharmacie_id']
+                ],
                 $data
             );
             return response()->json([
@@ -386,9 +408,10 @@ class PharmacieController extends Controller
     /**
      * View all Configs(categories, types, unites)
      * @param int $hopitalId
+     * @param int|null $pharmacieId
      * @return JsonResponse
      */
-    public function allConfig(int $hopitalId):JsonResponse
+    public function allConfig(int $hopitalId, int $pharmacieId = null):JsonResponse
     {
         $categories = ProduitCategorie::with('hopital')->where('hopital_id', $hopitalId)->get();
         $types = ProduitType::with('hopital')->where('hopital_id', $hopitalId)->get();
@@ -407,6 +430,7 @@ class PharmacieController extends Controller
             ->with('produit.type')
             ->with('produit.unite')
             ->with('pharmacie')
+            ->where('pharmacie_id', $pharmacieId)
             ->where('hopital_id', $hopitalId)
             ->get();
         return response()->json([
@@ -448,6 +472,11 @@ class PharmacieController extends Controller
         ]);
     }
 
+    /**
+     * Calcul le prix moyen d'achat de produit en fonction de tous les stocks y afferent
+     * @param $stocks
+     * @return float|int|null
+     */
     private function calculateAvgPrice($stocks): float|int|null
     {
         $totalPrixAchat = 0;
@@ -566,4 +595,41 @@ class PharmacieController extends Controller
             ->sum('stock_qte');
         return $qteStock - $qteOp;
     }
+
+    /**
+     * Voir les rapports des stocks
+    */
+    public function viewStocksReport(int $pharmacieID)
+    {
+        $stocks = Stock::selectRaw('produit_id, SUM(stock_qte) as qte_entree')
+            ->where('pharmacie_id', $pharmacieID)
+            ->groupBy('produit_id')
+            ->get();
+
+        $operations = PharmacieOperation::selectRaw('produit_id, SUM(operation_qte) as qte_sortie')
+            ->where('pharmacie_id', $pharmacieID)
+            ->groupBy('produit_id')
+            ->get();
+
+        $stockInfos = [];
+
+        foreach ($stocks as $stock) {
+            $qteSortie = $operations->where('produit_id', $stock->produit_id)->first()->qte_sortie ?? 0;
+
+            $produit = Produit::find($stock->produit_id);
+
+            $stockInfos[] = [
+                'produit'=>$produit,
+                'categorie'=>$produit->categorie,
+                'qte_entree' => $stock->qte_entree,
+                'qte_sortie' => $qteSortie,
+            ];
+        }
+
+        return response()->json([
+            "status"=>"success",
+            "reports"=>$stockInfos
+        ]);
+    }
+
 }
