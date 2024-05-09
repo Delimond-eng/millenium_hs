@@ -20,9 +20,12 @@ return new class extends Migration
             $table->string('operation_obs')->nullable();
             $table->string('operation_status')->default('actif');
             $table->unsignedBigInteger('produit_id');
+            $table->decimal('produit_prix')->nullable();
+            $table->string('produit_prix_devise')->default('CDF');
             $table->unsignedBigInteger('pharmacie_id');
             $table->unsignedBigInteger('pharmacie_dest_id')->nullable();
             $table->unsignedBigInteger('fournisseur_id')->nullable();
+            $table->unsignedBigInteger('client_id')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->timestamp('operation_created_At')->useCurrent();
         });

@@ -43,4 +43,23 @@ Route::middleware(['cors'])->group(function(){
     Route::get('/pharmacie.operations.all/{pharmacieID}/{key}',  [\App\Http\Controllers\PharmacieController::class, 'allOperations']);
     //Route pour voir le rapport de stock
     Route::get('/pharmacie.reports/{pharmacieID}',  [\App\Http\Controllers\PharmacieController::class, 'viewStocksReport']);
+
+    //Route pour voir les produits
+    Route::get('/pharmacie.produits/{pharmacieID}', [\App\Http\Controllers\PharmacieController::class, 'viewPharmacieProducts']);
+
+    //Route pour voir les produits
+    Route::get('/pharmacie.categories/{hopitalID}', [\App\Http\Controllers\PharmacieController::class, 'viewAllCategories']);
+
+    //Route pour creer un client
+    Route::post('/pharmacie.client.create',  [\App\Http\Controllers\PharmacieController::class, 'createClient']);
+
+    //Route pour verifier un client de la pharmacie
+    Route::get('/pharmacie.client/{pharmacieId}/{clientPhone}',  [\App\Http\Controllers\PharmacieController::class, 'checkClient']);
+
+
+    //Route pour creer une vente
+    Route::post('/pharmacie.sell',  [\App\Http\Controllers\PharmacieController::class, 'sellProduct']);
+
+    //Route:: pour afficher les rapports de ventes journaliers par pharmacien
+    Route::get('/pharmacie.seller.reports/{pharmacieID}/{userID}',  [\App\Http\Controllers\PharmacieController::class, 'viewSellingReport']);
 });

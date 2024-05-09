@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\StockInfoResource;
 use App\Models\Fournisseur;
 use App\Models\Pharmacie;
+use App\Models\PharmacieClient;
 use App\Models\PharmacieOperation;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
@@ -13,9 +14,11 @@ use App\Models\ProduitType;
 use App\Models\ProduitUnite;
 use App\Models\Stock;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class PharmacieController extends Controller
@@ -524,8 +527,8 @@ class PharmacieController extends Controller
                     ->orderByDesc('id')
                     ->first();
                 $transfered = Stock::create([
-                    'stock_qte'=>$data['operation_qte'],
-                    'stock_date_exp'=>$stocks['stock_date_exp'],
+                    'stock_qte'=> $data['operation_qte'],
+                    'stock_date_exp'=> $stocks['stock_date_exp'],
                     'stock_pa'=>$stocks['stock_pa'],
                     'stock_pa_devise'=>$stocks['stock_pa_devise'],
                     'stock_obs'=>$data['operation_obs'],
@@ -567,6 +570,7 @@ class PharmacieController extends Controller
     {
         $datas = PharmacieOperation::with("produit.type")
             ->with('pharmacie')
+            ->with('client')
             ->with('pharmacie_destination')
             ->with('fournisseur')
             ->with('user')
@@ -598,8 +602,10 @@ class PharmacieController extends Controller
 
     /**
      * Voir les rapports des stocks
-    */
-    public function viewStocksReport(int $pharmacieID)
+     * @param int $pharmacieID
+     * @return JsonResponse
+     */
+    public function viewStocksReport(int $pharmacieID): JsonResponse
     {
         $stocks = Stock::selectRaw('produit_id, SUM(stock_qte) as qte_entree')
             ->where('pharmacie_id', $pharmacieID)
@@ -632,4 +638,162 @@ class PharmacieController extends Controller
         ]);
     }
 
+    /**
+     * Verification de la disponibilité du client
+     * @param int $pharmacieId
+     * @param int $clientPhone
+     * @return JsonResponse
+     */
+    public function checkClient(int $pharmacieId ,int $clientPhone):JsonResponse
+    {
+        $client = PharmacieClient::where('client_phone', 'LIKE', '%'.$clientPhone.'%')
+            ->where('pharmacie_id', $pharmacieId)
+            ->first();
+        if(isset($client)){
+            return response()->json([
+                "status"=>"success",
+                "client"=>$client
+            ]);
+        }else{
+            return response()->json([
+                "client"=>null
+            ]);
+        }
+    }
+
+    /**
+     * Créer un client
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function createClient(Request $request): JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'client_nom'=>'required|string',
+                'client_phone'=>'required|string|min:10',
+                'pharmacie_id'=>'required|int|exists:pharmacies,id',
+                'created_by'=>'required|int|exists:users,id',
+            ]);
+            $client = PharmacieClient::updateOrCreate(
+                ["client_phone"=>$data['client_phone']],
+                $data
+            );
+            return  response()->json([
+                "status"=>"success",
+                "client"=>$client
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+    /**
+     * Permet de voir les produit
+     * @param int $pharmacieID
+     * @return JsonResponse
+    */
+    public function viewPharmacieProducts(int $pharmacieID): JsonResponse
+    {
+        $products = ProduitPrice::with('produit.categorie')
+                    ->with('produit.type')
+                    ->where('pharmacie_id', $pharmacieID)
+                    ->get();
+
+        foreach ($products as $product){
+            $data = [
+                "produit_id"=>$product->produit_id,
+                "pharmacie_id" => $product->pharmacie_id
+            ];
+            $product->stock = $this->stockCountQte($data);
+        }
+        return response()->json([
+            "status"=>"success",
+            "produits"=>$products
+        ]);
+    }
+
+
+    /**
+     * Permet de voir toutes les categories
+     * @param int $hopitalID
+     * @return JsonResponse
+    */
+    public function viewAllCategories(int $hopitalID):JsonResponse
+    {
+        $categories = ProduitCategorie::where('hopital_id', $hopitalID)->get();
+        return response()->json([
+            "status"=>"success",
+            "categories"=>$categories
+        ]);
+    }
+
+    /**
+     * Vendre le produit pharmaceutique
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function sellProduct(Request $request): JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'cart_datas' => 'required|array',
+            ]);
+            $cartDatas = $data['cart_datas'];
+            DB::beginTransaction();
+            foreach ($cartDatas as $item){
+                $res = PharmacieOperation::create([
+                    "operation_libelle"=>"vente",
+                    "operation_qte"=>$item["operation_qte"],
+                    "produit_id"=>$item["produit_id"],
+                    "produit_prix"=>$item["produit_prix"],
+                    "produit_prix_devise"=>$item["produit_devise"],
+                    "pharmacie_id"=>$item["pharmacie_id"],
+                    "client_id"=>$item["client_id"] ?? null,
+                    "created_by"=>$item["created_by"]
+                ]);
+            }
+            DB::commit();
+            return response()->json([
+                "status"=>"success",
+                "message"=>"la vente effectuée avec succès !"
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+    /**
+     * VOIR LES VENTES JOURNALIERES PAR PHARMACIEN
+     * @param int $pharmacieID
+     * @param int $userID
+     * @return JsonResponse
+     */
+    public function viewSellingReport(int $pharmacieID, int $userID): JsonResponse
+    {
+        $now = Carbon::now();
+        $reports = PharmacieOperation::with('user')
+                                    ->with('client')
+                                    ->with('produit.categorie')
+                                    ->with('pharmacie')
+                                    ->where('pharmacie_id', $pharmacieID)
+                                    ->where('created_by', $userID)
+                                    ->whereDate('operation_created_At', $now)
+                                    ->whereDate('operation_libelle', 'vente')
+                                    ->get();
+        return response()->json([
+            "reports"=>$reports
+        ]);
+    }
 }

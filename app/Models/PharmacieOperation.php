@@ -35,7 +35,10 @@ class PharmacieOperation extends Model
         'pharmacie_id',
         'pharmacie_dest_id',
         'fournisseur_id',
+        'client_id',
         'produit_id',
+        'produit_prix',
+        'produit_prix_devise',
         'created_by'
     ];
 
@@ -80,6 +83,14 @@ class PharmacieOperation extends Model
      */
     public  function produit():BelongsTo{
         return $this->belongsTo(Produit::class, foreignKey: 'produit_id');
+    }
+
+    /**
+     * Relation pour relier à un client
+     * @return BelongsTo
+     */
+    public  function client():BelongsTo{
+        return $this->belongsTo(PharmacieClient::class, foreignKey: 'client_id');
     }
 
     /**

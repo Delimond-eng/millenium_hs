@@ -116,11 +116,20 @@ class HospitalController extends Controller
      * VIEW ALL LOCATIONS
     */
     public function viewAllEmplacements($hostoId):JsonResponse{
-        $hosto = Hopital::find($hostoId);
-        return response()->json([
-            "status"=>"success",
-            "emplacements"=> $hosto->emplacements ?? [],
-        ]);
+
+        try {
+            $hosto = Hopital::find($hostoId);
+            return response()->json([
+                "status"=>"success",
+                "emplacements"=> $hosto->emplacements ?? [],
+            ]);
+        }
+        catch (\Symfony\Component\Routing\Exception\RouteNotFoundException $e){
+            return response()->json([
+                "errors"=>$e->getMessage()
+            ]);
+        }
+
     }
 
     /**
