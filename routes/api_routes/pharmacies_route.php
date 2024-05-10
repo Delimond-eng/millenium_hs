@@ -56,10 +56,18 @@ Route::middleware(['cors'])->group(function(){
     //Route pour verifier un client de la pharmacie
     Route::get('/pharmacie.client/{pharmacieId}/{clientPhone}',  [\App\Http\Controllers\PharmacieController::class, 'checkClient']);
 
-
     //Route pour creer une vente
     Route::post('/pharmacie.sell',  [\App\Http\Controllers\PharmacieController::class, 'sellProduct']);
 
     //Route:: pour afficher les rapports de ventes journaliers par pharmacien
-    Route::get('/pharmacie.seller.reports/{pharmacieID}/{userID}',  [\App\Http\Controllers\PharmacieController::class, 'viewSellingReport']);
+    Route::get('/pharmacie.seller.reports/{pharmacieID}/{userID}/{role?}',  [\App\Http\Controllers\PharmacieController::class, 'viewSellingReport']);
+
+    //Route:: pour supprimer ou annuler une vente
+    Route::get('/pharmacie.sell.delete/{operationID}',  [\App\Http\Controllers\PharmacieController::class, 'deleteSelling']);
+
+    //Route: pour commencer une session de vente pharmaceutique de la journée
+    Route::post('/pharmacist.session.start',  [\App\Http\Controllers\PharmacieController::class, 'startPharmacistSession']);
+
+    //Route: pour terminer une session de vente pharmaceutique de la journée
+    Route::post('/pharmacist.session.end',  [\App\Http\Controllers\PharmacieController::class, 'sendPharmacistSession']);
 });

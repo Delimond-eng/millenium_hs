@@ -7,6 +7,7 @@ use App\Models\Fournisseur;
 use App\Models\Pharmacie;
 use App\Models\PharmacieClient;
 use App\Models\PharmacieOperation;
+use App\Models\PharmacistSession;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
 use App\Models\ProduitPrice;
@@ -591,11 +592,13 @@ class PharmacieController extends Controller
         $qteOp = PharmacieOperation::with('pharmacie')
             ->where('produit_id', $data['produit_id'])
             ->where('pharmacie_id', $data['pharmacie_id'])
+            ->whereNot('operation_status', 'deleted')
             ->sum('operation_qte');
         //Compte la somme de stocks quantité du produit de la pharmacie
         $qteStock = Stock::with('produit')
             ->where('produit_id',$data['produit_id'] )
             ->where('pharmacie_id',$data['pharmacie_id'])
+            ->whereNot('stock_status', 'deleted')
             ->sum('stock_qte');
         return $qteStock - $qteOp;
     }
@@ -614,13 +617,14 @@ class PharmacieController extends Controller
 
         $operations = PharmacieOperation::selectRaw('produit_id, SUM(operation_qte) as qte_sortie')
             ->where('pharmacie_id', $pharmacieID)
+            ->whereNot('operation_status', 'deleted')
             ->groupBy('produit_id')
             ->get();
 
         $stockInfos = [];
 
         foreach ($stocks as $stock) {
-            $qteSortie = $operations->where('produit_id', $stock->produit_id)->first()->qte_sortie ?? 0;
+            $qteSortie = $operations->where('produit_id', $stock->produit_id)->sum("qte_sortie") ?? 0;
 
             $produit = Produit::find($stock->produit_id);
 
@@ -743,9 +747,21 @@ class PharmacieController extends Controller
         try {
             $data = $request->validate([
                 'cart_datas' => 'required|array',
+                'client_id'=> 'nullable|int',
+                'pharmacie_id'=>'required|int|exists:pharmacies,id',
+                'created_by'=>'required|int|exists:users,id'
             ]);
             $cartDatas = $data['cart_datas'];
             DB::beginTransaction();
+            if(!isset($data['client_id'])){
+                $client = PharmacieClient::create([
+                    'client_nom'=>'unknown',
+                    'client_phone'=>'unknown',
+                    'pharmacie_id'=>$data['pharmacie_id'],
+                    'created_by'=>$data['created_by'],
+                ]);
+                $data['client_id']=$client->id;
+            }
             foreach ($cartDatas as $item){
                 $res = PharmacieOperation::create([
                     "operation_libelle"=>"vente",
@@ -754,7 +770,7 @@ class PharmacieController extends Controller
                     "produit_prix"=>$item["produit_prix"],
                     "produit_prix_devise"=>$item["produit_devise"],
                     "pharmacie_id"=>$item["pharmacie_id"],
-                    "client_id"=>$item["client_id"] ?? null,
+                    "client_id"=>$data['client_id'],
                     "created_by"=>$item["created_by"]
                 ]);
             }
@@ -780,20 +796,178 @@ class PharmacieController extends Controller
      * @param int $userID
      * @return JsonResponse
      */
-    public function viewSellingReport(int $pharmacieID, int $userID): JsonResponse
+    public function viewSellingReport(int $pharmacieID, int $userID, string $role = null): JsonResponse
     {
         $now = Carbon::now();
-        $reports = PharmacieOperation::with('user')
-                                    ->with('client')
-                                    ->with('produit.categorie')
-                                    ->with('pharmacie')
-                                    ->where('pharmacie_id', $pharmacieID)
-                                    ->where('created_by', $userID)
-                                    ->whereDate('operation_created_At', $now)
-                                    ->whereDate('operation_libelle', 'vente')
-                                    ->get();
+        if(!isset($role)){
+            // Retrieve all relevant data in one database query
+            $reports = PharmacieOperation::with('user', 'client', 'produit.categorie', 'produit.type', 'pharmacie')
+                ->where('pharmacie_id', $pharmacieID)
+                ->where('created_by', $userID)
+                ->whereDate('operation_created_At', $now)
+                ->where('operation_libelle', 'vente')
+                ->where('operation_status', '!=', 'deleted')
+                ->get();
+
+            // Get client count
+            $clientCount = PharmacieClient::whereDate('client_created_At', $now)
+                ->where('pharmacie_id', $pharmacieID)
+                ->where('created_by', $userID)
+                ->count();
+
+            // Calculate quantity sells and day balance
+            $qtySells = 0;
+            $dayBalance = 0;
+            $abortSells = PharmacieOperation::where('pharmacie_id', $pharmacieID)
+                ->where('created_by',$userID)
+                ->whereDate('operation_created_At', $now)->where('operation_status', 'deleted')->count();
+            foreach ($reports as $report) {
+                $qtySells += $report->operation_qte;
+                $dayBalance += $report->produit_prix * $report->operation_qte;
+            }
+
+            return response()->json([
+                "grids" => $reports,
+                "counts" => [
+                    "clients" => $clientCount,
+                    "qty_sells" => $qtySells,
+                    "abort_sells" => $abortSells,
+                    "balance" => $dayBalance,
+                    "tickets" => 0
+                ]
+            ]);
+        }
+        else{
+            // Retrieve all relevant data in one database query
+            $reports = PharmacieOperation::with('user', 'client', 'produit.categorie', 'produit.type', 'pharmacie')
+                ->where('pharmacie_id', $pharmacieID)
+                ->whereDate('operation_created_At', $now)
+                ->where('operation_libelle', 'vente')
+                ->where('operation_status', '!=', 'deleted')
+                ->get();
+
+            // Get client count
+            $clientCount = PharmacieClient::whereDate('client_created_At', $now)
+                ->where('pharmacie_id', $pharmacieID)
+                ->count();
+
+            // Calculate quantity sells and day balance
+            $qtySells = 0;
+            $dayBalance = 0;
+            $abortSells = PharmacieOperation::where('pharmacie_id', $pharmacieID)
+                ->whereDate('operation_created_At', $now)->where('operation_status', 'deleted')->count();
+            foreach ($reports as $report) {
+                $qtySells += $report->operation_qte;
+                $dayBalance += $report->produit_prix * $report->operation_qte;
+            }
+            // Count aborted sells
+
+            return response()->json([
+                "grids" => $reports,
+                "counts" => [
+                    "clients" => $clientCount,
+                    "qty_sells" => $qtySells,
+                    "abort_sells" => $abortSells,
+                    "balance" => $dayBalance,
+                    "tickets" => 0
+                ]
+            ]);
+        }
+
+
+
+    }
+
+
+
+    /**
+     * Delete or abort operation
+     * @param int $operationID
+     * @return JsonResponse
+     */
+    public function deleteSelling(int $operationID):JsonResponse
+    {
+        $result = PharmacieOperation::find($operationID);
+        $result->operation_status = 'deleted';
+        $result->save();
         return response()->json([
-            "reports"=>$reports
+            "status"=>"success",
+            "result"=>$result
         ]);
     }
+
+    /**
+     * Start day session
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function startPharmacistSession(Request $request):JsonResponse
+    {
+        $now = Carbon::now()->format('H:i:s');
+        try {
+            $data = $request->validate([
+                'initial_balance'=>'required|numeric',
+                'user_id'=>'required|int|exists:users,id',
+                'pharmacie_id'=>'required|int|exists:pharmacies,id',
+            ]);
+
+            $session = PharmacistSession::create([
+                "initial_balance"=>$data["initial_balance"],
+                "user_id"=>$data["user_id"],
+                "pharmacie_id"=>$data["pharmacie_id"],
+                "started_at"=>$now,
+            ]);
+
+            return response()->json([
+                "status"=>"success",
+                "task"=>"start",
+                "session"=>$session
+            ]);
+
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
+    /**
+     * Start day session
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function sendPharmacistSession(Request $request):JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'id'=>'required|int|exists:pharmacist_sessions,id',
+                'closing_balance'=>'required|numeric',
+                'nbre_ticket'=>'required|int',
+            ]);
+            $now = Carbon::now()->format('H:i:s');
+            $lastSession = PharmacistSession::find($data['id']);
+            $lastSession->nbre_ticket = $data['nbre_ticket'];
+            $lastSession->closing_balance = $data['closing_balance'];
+            $lastSession->end_at = $now;
+            $lastSession->save();
+            return response()->json([
+                "status"=>"success",
+                "task"=>"end",
+                "session"=>$lastSession
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException | \ErrorException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+
 }
