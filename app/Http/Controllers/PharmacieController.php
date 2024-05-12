@@ -7,6 +7,7 @@ use App\Models\Fournisseur;
 use App\Models\Pharmacie;
 use App\Models\PharmacieClient;
 use App\Models\PharmacieOperation;
+use App\Models\PharmacieTicket;
 use App\Models\PharmacistSession;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
@@ -751,7 +752,9 @@ class PharmacieController extends Controller
                 'pharmacie_id'=>'required|int|exists:pharmacies,id',
                 'created_by'=>'required|int|exists:users,id'
             ]);
+
             $cartDatas = $data['cart_datas'];
+
             DB::beginTransaction();
             if(!isset($data['client_id'])){
                 $client = PharmacieClient::create([
@@ -762,23 +765,56 @@ class PharmacieController extends Controller
                 ]);
                 $data['client_id']=$client->id;
             }
+            //Calculate sum of tickets
+            $ticketTotal =0;
+
+            //Get Random ticket code
+            $ticketCode = $this->generateRandomCode();
             foreach ($cartDatas as $item){
-                $res = PharmacieOperation::create([
-                    "operation_libelle"=>"vente",
-                    "operation_qte"=>$item["operation_qte"],
-                    "produit_id"=>$item["produit_id"],
-                    "produit_prix"=>$item["produit_prix"],
-                    "produit_prix_devise"=>$item["produit_devise"],
-                    "pharmacie_id"=>$item["pharmacie_id"],
-                    "client_id"=>$data['client_id'],
-                    "created_by"=>$item["created_by"]
+                $ticketTotal += (((float)$item['produit_prix']) * ((int)$item['operation_qte']));
+            }
+            //Create ticket before adding items
+            $ticket = PharmacieTicket::create([
+                "ticket_code"=>$ticketCode,
+                "ticket_nb_items"=>count($cartDatas),
+                "ticket_paiement"=>$ticketTotal,
+                "client_id"=>$data['client_id'],
+                "pharmacie_id"=>$data['pharmacie_id'],
+                "user_id"=>$data['created_by'],
+            ]);
+
+            if(isset($ticket)){
+                foreach ($cartDatas as $item){
+                    $res = PharmacieOperation::create([
+                        "operation_libelle"=>"Vente",
+                        "operation_qte"=>$item["operation_qte"],
+                        "produit_id"=>$item["produit_id"],
+                        "produit_prix"=>$item["produit_prix"],
+                        "produit_prix_devise"=>$item["produit_devise"],
+                        "pharmacie_id"=>$item["pharmacie_id"],
+                        "client_id"=>$data['client_id'],
+                        "ticket_id"=>$ticket->id,
+                        "created_by"=>$item["created_by"]
+                    ]);
+                }
+                $invoice = PharmacieTicket::with(["items"=> function ($query){
+                    return $query->whereNot("operation_status", "deleted");
+                },"items.produit.categorie","items.produit.type","items.pharmacie", "items.client", "items.user"])
+                    ->with('user')
+                    ->with('client')
+                    ->with('pharmacie')
+                    ->whereNot('ticket_status', 'deleted')
+                    ->where('id', $ticket->id)->first();
+                DB::commit();
+                return response()->json([
+                    "status"=>"success",
+                    "invoice"=>$invoice,
+                    "message"=>"la vente effectuée avec succès !"
                 ]);
             }
-            DB::commit();
-            return response()->json([
-                "status"=>"success",
-                "message"=>"la vente effectuée avec succès !"
-            ]);
+            else{
+                return response()->json(['errors' => "Echec du traitement des informations" ]);
+            }
         }
         catch (ValidationException $e) {
             $errors = $e->validator->errors()->all();
@@ -789,24 +825,41 @@ class PharmacieController extends Controller
         }
     }
 
+    /**
+     * Generate Random alphanumeric code
+     * @return string
+    */
+    private function generateRandomCode(): string
+    {
+        $lettreAleatoire = chr(rand(65, 90));
+        $chiffresAleatoires = str_pad(rand(0, 9999), 5, '0', STR_PAD_LEFT);
+        return $lettreAleatoire . $chiffresAleatoires;
+    }
+
 
     /**
      * VOIR LES VENTES JOURNALIERES PAR PHARMACIEN
+     * @param Request $request
      * @param int $pharmacieID
      * @param int $userID
      * @return JsonResponse
      */
-    public function viewSellingReport(int $pharmacieID, int $userID, string $role = null): JsonResponse
+    public function viewSellingReport(Request $request, int $pharmacieID, int $userID): JsonResponse
     {
         $now = Carbon::now();
+        $role = $request->query('role');
         if(!isset($role)){
             // Retrieve all relevant data in one database query
-            $reports = PharmacieOperation::with('user', 'client', 'produit.categorie', 'produit.type', 'pharmacie')
+            $reports = PharmacieTicket::with(["items"=> function ($query){
+                return $query->whereNot("operation_status", "deleted");
+            },"items.produit.categorie","items.produit.type","items.pharmacie", "items.client", "items.user"])
+                ->with('user')
+                ->with('client')
+                ->with('pharmacie')
+                ->whereDate('created_at', $now)
                 ->where('pharmacie_id', $pharmacieID)
-                ->where('created_by', $userID)
-                ->whereDate('operation_created_At', $now)
-                ->where('operation_libelle', 'vente')
-                ->where('operation_status', '!=', 'deleted')
+                ->where('user_id', $userID)
+                ->whereNot('ticket_status', 'deleted')
                 ->get();
 
             // Get client count
@@ -815,35 +868,36 @@ class PharmacieController extends Controller
                 ->where('created_by', $userID)
                 ->count();
 
-            // Calculate quantity sells and day balance
-            $qtySells = 0;
-            $dayBalance = 0;
-            $abortSells = PharmacieOperation::where('pharmacie_id', $pharmacieID)
-                ->where('created_by',$userID)
-                ->whereDate('operation_created_At', $now)->where('operation_status', 'deleted')->count();
-            foreach ($reports as $report) {
-                $qtySells += $report->operation_qte;
-                $dayBalance += $report->produit_prix * $report->operation_qte;
-            }
+            $ticketCount = PharmacieTicket::whereDate('created_at', $now)
+                ->where('pharmacie_id', $pharmacieID)
+                ->where('user_id', $userID)
+                ->whereNot('ticket_status','deleted')
+                ->count();
 
-            return response()->json([
-                "grids" => $reports,
-                "counts" => [
-                    "clients" => $clientCount,
-                    "qty_sells" => $qtySells,
-                    "abort_sells" => $abortSells,
-                    "balance" => $dayBalance,
-                    "tickets" => 0
-                ]
-            ]);
+            // Calculate quantity sells and day balance
+            $qtySells = PharmacieOperation::where('pharmacie_id', $pharmacieID)
+                ->where('created_by', $userID)
+                ->whereDate('operation_created_At', $now)
+                ->whereNot('operation_status', 'deleted')
+                ->sum('operation_qte');
+
+
+            $dayBalance = 0;
+            $abortSells = PharmacieTicket::where('pharmacie_id', $pharmacieID)
+                ->where('user_id', $userID)
+                ->whereDate('created_at', $now)->where('ticket_status', 'deleted')->count();
         }
         else{
-            // Retrieve all relevant data in one database query
-            $reports = PharmacieOperation::with('user', 'client', 'produit.categorie', 'produit.type', 'pharmacie')
+
+            $reports = PharmacieTicket::with(["items"=> function ($query){
+                return $query->whereNot("operation_status", "deleted");
+            },"items.produit.categorie","items.produit.type","items.pharmacie", "items.client", "items.user"])
+                ->with('user')
+                ->with('client')
+                ->with('pharmacie')
+                ->whereDate('created_at', $now)
                 ->where('pharmacie_id', $pharmacieID)
-                ->whereDate('operation_created_At', $now)
-                ->where('operation_libelle', 'vente')
-                ->where('operation_status', '!=', 'deleted')
+                ->whereNot('ticket_status', 'deleted')
                 ->get();
 
             // Get client count
@@ -851,49 +905,71 @@ class PharmacieController extends Controller
                 ->where('pharmacie_id', $pharmacieID)
                 ->count();
 
+            $ticketCount = PharmacieTicket::whereDate('created_at', $now)
+                ->where('pharmacie_id', $pharmacieID)
+                ->whereNot('ticket_status', 'deleted')
+                ->count();
+
             // Calculate quantity sells and day balance
-            $qtySells = 0;
+            $qtySells = PharmacieOperation::where('pharmacie_id', $pharmacieID)
+                    ->whereDate('operation_created_At', $now)
+                    ->whereNot('operation_status', 'deleted')
+                    ->sum('operation_qte');
             $dayBalance = 0;
-            $abortSells = PharmacieOperation::where('pharmacie_id', $pharmacieID)
-                ->whereDate('operation_created_At', $now)->where('operation_status', 'deleted')->count();
-            foreach ($reports as $report) {
-                $qtySells += $report->operation_qte;
-                $dayBalance += $report->produit_prix * $report->operation_qte;
-            }
+            $abortSells = PharmacieTicket::where('pharmacie_id', $pharmacieID)
+                ->whereDate('created_at', $now)->where('ticket_status', 'deleted')->count();
             // Count aborted sells
 
-            return response()->json([
-                "grids" => $reports,
-                "counts" => [
-                    "clients" => $clientCount,
-                    "qty_sells" => $qtySells,
-                    "abort_sells" => $abortSells,
-                    "balance" => $dayBalance,
-                    "tickets" => 0
-                ]
-            ]);
-        }
 
+        }
+        foreach ($reports as $report) {
+            $dayBalance += (float)$report->ticket_paiement;
+        }
+        return response()->json([
+            "grids" => $reports,
+            "counts" => [
+                "clients" => $clientCount,
+                "qty_sells" => $qtySells,
+                "abort_sells" => $abortSells,
+                "balance" => $dayBalance,
+                "tickets" => $ticketCount
+            ]
+        ]);
 
 
     }
 
 
-
     /**
      * Delete or abort operation
-     * @param int $operationID
+     * @param int $id
+     * @param string|null $table
      * @return JsonResponse
      */
-    public function deleteSelling(int $operationID):JsonResponse
+    public function deleteSelling(int $id, string $table=null):JsonResponse
     {
-        $result = PharmacieOperation::find($operationID);
-        $result->operation_status = 'deleted';
-        $result->save();
-        return response()->json([
-            "status"=>"success",
-            "result"=>$result
-        ]);
+        if(!isset($table)){
+            $result = PharmacieTicket::find($id);
+            $result->ticket_status = 'deleted';
+            $result->save();
+            PharmacieOperation::where('ticket_id',$result->id)->update(["operation_status"=>"deleted"]);
+            return response()->json([
+                "status"=>"success",
+                "result"=>$result
+            ]);
+        }
+        else{
+            $operation = PharmacieOperation::find($id);
+            $operation->operation_status = "deleted";
+            $operation->save();
+            $result = PharmacieTicket::find($operation->ticket_id);
+            $result->ticket_nb_items = $result->ticket_nb_items - 1;
+            $result->save();
+            return response()->json([
+                "status"=>"success",
+                "result"=>$operation
+            ]);
+        }
     }
 
     /**

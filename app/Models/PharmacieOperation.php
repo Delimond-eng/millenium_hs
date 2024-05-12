@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
@@ -36,6 +37,7 @@ class PharmacieOperation extends Model
         'pharmacie_dest_id',
         'fournisseur_id',
         'client_id',
+        'ticket_id',
         'produit_id',
         'produit_prix',
         'produit_prix_devise',
@@ -99,6 +101,14 @@ class PharmacieOperation extends Model
      */
     public  function pharmacie():BelongsTo{
         return $this->belongsTo(Pharmacie::class, foreignKey: 'pharmacie_id');
+    }
+
+    /**
+     * Relation pour relier à un ticket
+     * @return BelongsTo
+     */
+    public  function ticket():BelongsTo{
+        return $this->belongsTo(PharmacieTicket::class, foreignKey: 'ticket_id');
     }
 
 

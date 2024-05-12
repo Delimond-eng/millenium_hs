@@ -26,6 +26,7 @@ return new class extends Migration
             $table->unsignedBigInteger('pharmacie_dest_id')->nullable();
             $table->unsignedBigInteger('fournisseur_id')->nullable();
             $table->unsignedBigInteger('client_id')->nullable();
+            $table->unsignedBigInteger('ticket_id')->nullable();
             $table->unsignedBigInteger('created_by');
             $table->timestamp('operation_created_At')->useCurrent();
         });

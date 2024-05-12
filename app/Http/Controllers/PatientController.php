@@ -260,7 +260,7 @@ class PatientController extends Controller
      * @return JsonResponse
      */
     public function getCode() :JsonResponse{
-        $lettreAleatoire = chr(rand(65, 90)); // 65 représente le code ASCII de 'A' et 90 celui de 'Z'
+        $lettreAleatoire = chr(rand(65, 90));
         $chiffresAleatoires = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
         $codeGenerer = $lettreAleatoire . $chiffresAleatoires;
         return response()->json([
