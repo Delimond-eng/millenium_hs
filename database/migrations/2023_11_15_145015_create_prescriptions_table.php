@@ -15,9 +15,15 @@ return new class extends Migration
     {
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->id();
+            $table->string('prescription_code');
             $table->string('prescription_traitement_freq');
-            $table->string('prescription_traitement_posologie');
+            $table->string('prescription_traitement_freq_unite');
+            $table->string('prescription_traitement_dosage');
+            $table->string('prescription_traitement_dosage_unite');
             $table->string('prescription_traitement_duree');
+            $table->string('prescription_traitement_duree_unite');
+            $table->integer('prescription_traitement_qte');
+            $table->string('prescription_traitement_qte_unite');
             $table->timestamp('prescription_create_At')->useCurrent();
             $table->string('prescription_status', 10)->default('actif');
             $table->unsignedBigInteger('produit_id');

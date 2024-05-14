@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Models;
 
@@ -28,9 +29,15 @@ class Prescriptions extends Model
      * @var array
      */
     protected $fillable = [
-        "prescription_traitement_freq",
+        "prescription_code",
         "prescription_traitement_duree",
-        "prescription_traitement_posologie",
+        "prescription_traitement_duree_unite",
+        "prescription_traitement_dosage",
+        "prescription_traitement_dosage_unite",
+        "prescription_traitement_freq",
+        "prescription_traitement_freq_unite",
+        "prescription_traitement_qte",
+        "prescription_traitement_qte_unite",
         "produit_id",
         "consult_id",
         'hopital_emplacement_id',
@@ -75,7 +82,7 @@ class Prescriptions extends Model
      * @return BelongsTo
     */
     public function consultation(): BelongsTo{
-        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id', relation: 'id');
+        return $this->belongsTo(Consultations::class, foreignKey: 'consult_id');
     }
 
     /**
@@ -83,7 +90,16 @@ class Prescriptions extends Model
      * @return BelongsTo
      */
     public function produit(): BelongsTo{
-        return $this->belongsTo(Produit::class, foreignKey: 'produit_id', relation: 'id');
+        return $this->belongsTo(Produit::class, foreignKey: 'produit_id');
+    }
+
+
+    /**
+     * Summary of product
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo{
+        return $this->belongsTo(User::class, foreignKey:'created_by');
     }
 
 }

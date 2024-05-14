@@ -323,22 +323,33 @@ class AgentController extends Controller
             $validateDatas = $request->validate([
                 'prescriptions'=>'required|array'
             ]);
+            $code = $this->getRandomCode(length: 5);
             $prescriptions = $request->prescriptions;
             if(isset($prescriptions)){
                 foreach ($prescriptions as $data){
                     $prescription = Prescriptions::create([
-                        "prescription_traitement_freq" => $data['traitement_freq'],
-                        "prescription_traitement_duree" => $data['traitement_duree'],
-                        "prescription_traitement_posologie" => $data['posologie'],
+                        "prescription_code" => $code,
+                        "prescription_traitement_duree" => $data['duree'],
+                        "prescription_traitement_duree_unite" => $data['duree_unite'],
+                        "prescription_traitement_dosage" => $data['dosage'],
+                        "prescription_traitement_dosage_unite" => $data['dosage_unite'],
+                        "prescription_traitement_freq" => $data['frequence'],
+                        "prescription_traitement_freq_unite" => $data['frequence_unite'],
+                        "prescription_traitement_qte" => $data['qte'],
+                        "prescription_traitement_qte_unite" => $data['dosage_unite'],
                         "produit_id" => $data['produit_id'],
                         "consult_id" => $data['consult_id'],
                         'hopital_emplacement_id' => $data['emplacement_id'],
                         'created_by'=>$data['created_by']
                     ]);
                 }
+                $prescription = Prescriptions::with('produit')
+                    ->with('user')
+                    ->where('prescription_code', $code)
+                    ->get();
                 return response()->json([
                     "status"=>"success",
-                    "message"=>"Prescriptions ajoutées avec succès !"
+                    "result"=>$prescription
                 ]);
             }
             else{
@@ -646,6 +657,15 @@ class AgentController extends Controller
             "status"=>"success",
             "schedules"=>$schedules
         ]);
+    }
+
+
+    private function getRandomCode(int $length=null)
+    {
+        $lettreAleatoire = chr(rand(65, 90));
+        $chiffresAleatoires = str_pad(rand(0, 9999), $length ?? 4, '0', STR_PAD_LEFT);
+        $codeGenerer = $lettreAleatoire . $chiffresAleatoires;
+        return $codeGenerer;
     }
 
 }
