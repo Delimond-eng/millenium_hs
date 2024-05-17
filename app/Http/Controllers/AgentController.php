@@ -9,6 +9,7 @@ use App\Models\Consultations;
 use App\Models\ConsultationSymptomes;
 use App\Models\MedicalSchedule;
 use App\Models\Patients;
+use App\Models\PatientSignesVitaux;
 use App\Models\PremierSoin;
 use App\Models\PremierSoinTraitement;
 use App\Models\Prescriptions;
@@ -254,7 +255,15 @@ class AgentController extends Controller
                 ]
             );
             if(isset($consultation)){
-
+                //update signes vitaux
+                $latestSigne = PatientSignesVitaux::where('patient_id', $data['patient_id'])
+                    ->orderByDesc('id')
+                    ->first();
+                if(isset($latestSigne)){
+                    $latestSigne
+                        ->update(['consult_id'=>$consultation->id]);
+                }
+                //Details
                 $details = $data['consult_details'];
                 $data['consult_id'] = $consultation->id;
                 if(isset($details)){
@@ -459,6 +468,11 @@ class AgentController extends Controller
         ]);
     }
 
+
+    /**
+     * Affiche les details pour un examen
+     * @return JsonResponse
+    */
     public function showDemandExamDetails($consultId){
         $detail = ConsultationExamens::with('examen')
             ->where('consult_id', $consultId)->get();
@@ -468,7 +482,11 @@ class AgentController extends Controller
         ]);
     }
 
-    public function showPrescriptionDetails($consultId){
+    /**
+     * Affiche les details pour une prescriptions
+     * @return JsonResponse
+    */
+    public function showPrescriptionDetails($consultId) :JsonResponse{
         $detail = Prescriptions::where('consult_id', $consultId)->get();
         return response()->json([
             "status"=>"success",
@@ -477,13 +495,17 @@ class AgentController extends Controller
     }
 
 
-
+    /**
+     * Affiche la liste de toutes les consultations avec leur details
+     * @return JsonResponse
+    */
     public function viewAllConsultations( int $locationId):JsonResponse
     {
         $consultations = Consultations::with('agent')
                 ->with('patient')
-                ->with('prescriptions')
-                ->with('details')
+                ->with('signe')
+                ->with('prescriptions.produit.type')
+                ->with('antecedents')
                 ->with('symptomes')
                 ->orderByDesc('id')
                 ->where('hopital_emplacement_id', $locationId)
@@ -584,21 +606,28 @@ class AgentController extends Controller
     /**
      * Voir les consultations passées du patient
      * @param int $patientId
+     * @param int $hopitalId
      * @return JsonResponse
      */
-    public function viewLastConsults(int $patientId): JsonResponse
+    public function viewMedicalDocs(int $patientId, int $hopitalId): JsonResponse
     {
-        $consultations = Consultations::with('agent')
-            ->with('patient')
-            ->with('prescriptions')
-            ->with('details')
+        $dossiers = Consultations::with('agent')
+            ->with('patient.details', function ($query){
+                return $query->orderByDesc('id');
+            })
+            ->with('signe')
+            ->with('prescriptions.produit.categorie')
+            ->with('prescriptions.produit.type')
+            ->with('antecedents')
             ->with('symptomes')
-            ->orderByDesc('id')
+            ->with('examens.examen')
             ->where('patient_id', $patientId)
+            ->where('hopital_id', $hopitalId)
+            ->orderByDesc('consult_create_At')
             ->get();
         return response()->json([
             "status"=>"success",
-            "consultations"=>$consultations
+            "dossiers"=>$dossiers
         ]);
     }
 

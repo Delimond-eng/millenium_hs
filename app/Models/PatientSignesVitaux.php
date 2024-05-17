@@ -44,6 +44,7 @@ class PatientSignesVitaux extends Model
         "patient_sv_saturation_unite",
         "patient_sv_age",
         "patient_id",
+        "consult_id",
         'hopital_id',
         'hopital_emplacement_id',
         'created_by'

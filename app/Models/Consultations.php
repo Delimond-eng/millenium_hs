@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Consultations extends Model
 {
@@ -54,7 +55,7 @@ class Consultations extends Model
      * @var array
      */
     protected $casts = [
-        'consult_create_At' => 'date:d/m/Y H:i',
+        'consult_create_At' => 'date:d/m/Y',
     ];
 
     /**
@@ -95,6 +96,15 @@ class Consultations extends Model
         return $this->belongsTo(Patients::class, foreignKey: 'patient_id');
     }
 
+    /**
+     * Voir les signes vitaux
+     * @return HasOne
+    */
+    public function signe():HasOne
+    {
+        return $this->hasOne(PatientSignesVitaux::class, foreignKey: 'consult_id', localKey: 'id');
+    }
+
     public function prescriptions(): HasMany{
         return $this->hasMany(Prescriptions::class, foreignKey: 'consult_id', localKey: 'id');
     }
@@ -103,7 +113,7 @@ class Consultations extends Model
      * Relation pour voir tous les détails d'une consultation
      * @return HasMany
     */
-    public function details():HasMany {
+    public function antecedents():HasMany {
         return  $this->hasMany(ConsultationDetails::class, foreignKey: 'consult_id', localKey: 'id');
     }
 

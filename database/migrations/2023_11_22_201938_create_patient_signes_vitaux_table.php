@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('patient_sv_saturation_unite', 5)->default('%');
             $table->string('patient_sv_age', 5);
             $table->unsignedBigInteger('patient_id');
+            $table->unsignedBigInteger('consult_id')->nullable();
             $table->string('patient_sv_status')->default('en attente');
             $table->timestamp('patient_sv_created_At')->useCurrentOnUpdate()->useCurrent();
             $table->unsignedBigInteger('hopital_emplacement_id');

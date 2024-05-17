@@ -114,6 +114,12 @@ class PatientController extends Controller
             else{
                 /** @var mixed affiche les infos de l'ancien patient */
                 $oldPatient = Patients::find((int)$request->patient_id);
+
+                //Verification si le patient est a deja un status en cours
+                $sv = PatientSignesVitaux::where('patient_id', $oldPatient->id)->whereNull("consult_id")->first();
+                if(isset($sv)){
+                    return response()->json(['errors' => 'Ce patient a déjà une consultation en cours !']);
+                }
                 $details = PatientSignesVitaux::create([
                     "patient_sv_poids"=> $patientDetails['poids'],
                     "patient_sv_taille"=> $patientDetails['taille'],
@@ -127,10 +133,9 @@ class PatientController extends Controller
                     "patient_id"=> $request->patient_id,
                     'created_by'=> $request->created_by,
                 ]);
-                $oldPatient->patient_code_appel= $request->code_appel;
+                $oldPatient->patient_code_appel = $request->code_appel;
                 $oldPatient->save();
                 $oldPatient["details"] = $details;
-
                 //Enregistrement d'un paiement de la fiche de consultation
                 $paiementDatas = [
                     "paiement_montant"=>$request->paiement['montant'],
@@ -192,7 +197,7 @@ class PatientController extends Controller
      */
     public function viewAllPendingPatients(int $emplacementId):JsonResponse{
         $patients = Patients::join('patient_signes_vitaux', 'patients.id', '=', 'patient_signes_vitaux.patient_id')
-            ->where('patient_signes_vitaux.patient_sv_status', 'en attente')
+            ->whereNull('patient_signes_vitaux.consult_id')
             ->where('patients.hopital_emplacement_id', $emplacementId)
             ->select('patients.*')
             ->with('details')
@@ -213,9 +218,12 @@ class PatientController extends Controller
     public function viewMedicalStory(int $patientId):JsonResponse
     {
         $results = Patients::with('consultations.prescriptions')
-                        ->with('consultations.details')
+                        ->with('consultations.antecedents')
                         ->with('consultations.symptomes')
                         ->with('consultations.examens')
+                        ->with('consultations', function($query){
+                            return $query->orderByDesc('consult_create_At');
+                        })
                         ->where('id', $patientId)
                         ->first();
 
