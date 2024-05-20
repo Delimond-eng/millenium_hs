@@ -10,6 +10,8 @@ use App\Models\ConsultationSymptomes;
 use App\Models\MedicalSchedule;
 use App\Models\Patients;
 use App\Models\PatientSignesVitaux;
+use App\Models\PatientSuivi;
+use App\Models\PatientTraitement;
 use App\Models\PremierSoin;
 use App\Models\PremierSoinTraitement;
 use App\Models\Prescriptions;
@@ -688,6 +690,104 @@ class AgentController extends Controller
         ]);
     }
 
+    /**
+     * Voir le traitement pour un patient
+     * @param int $patientId
+     * @return JsonResponse
+     */
+    public function showPatientTraitments(int $patientId)
+    {
+        $consultation = Consultations::where('patient_id', $patientId)->orderByDesc('id')
+            ->first();
+        $prescriptions = [];
+        if(isset($consultation)){
+            $prescriptions = Prescriptions::with('produit')
+                ->with('user.agent')
+                ->with('consultation')
+                ->where('consult_id', $consultation->id)
+                ->get();
+        }
+        return response()->json([
+            "status"=>"success",
+            "prescriptions"=>$prescriptions
+        ]);
+    }
+
+    /**
+     * Effectuer un traitement à un patient
+     * @param Request $request
+     * @return JsonResponse
+    */
+    public function makeTraitement(Request $request):JsonResponse
+    {
+        try{
+            $data = $request->validate([
+                'traitements'=>"required|array",
+                'patient_id'=>'required|int|exists:patients,id',
+                'hopital_id'=>'required|int|exists:hopitals,id',
+                'hopital_emplacement_id'=>'required|int|exists:hopital_emplacements,id',
+                'created_by'=>'required|int|exists:users,id',
+                'agent_id'=>'required|int|exists:agents,id',
+                "suivi_etat"=>"required|string",
+                "suivi_obs"=>"nullable|string",
+                "suivi_recommandations"=>"nullable|string",
+            ]);
+            $traitements =$data['traitements'];
+            $suivi = PatientSuivi::create([
+                "suivi_etat"=>$data["suivi_etat"],
+                "suivi_obs"=>$data["suivi_obs"],
+                "suivi_recommandations"=>$data["suivi_recommandations"],
+                'patient_id'=> $data['patient_id'],
+                'created_by'=> $data['created_by'],
+                'agent_id'=> $data['agent_id'],
+                'hopital_id'=> $data['hopital_id'],
+                'hopital_emplacement_id'=> $data['hopital_emplacement_id'],
+            ]);
+            foreach ($traitements as $item){
+                $item['patient_id']= $data['patient_id'];
+                $item['created_by']= $data['created_by'];
+                $item['agent_id']= $data['agent_id'];
+                $item['hopital_id']= $data['hopital_id'];
+                $item['hopital_emplacement_id']= $data['hopital_emplacement_id'];
+                $item['suivi_id']= $suivi->id;
+                PatientTraitement::create($item);
+            }
+
+            return response()->json([
+                "status"=>"success",
+                "message"=>"Traitement et suivi effectué avec succès !"
+            ]);
+        }
+        catch (ValidationException $e) {
+            $errors = $e->validator->errors()->all();
+            return response()->json(['errors' => $errors ]);
+        }
+        catch (\Illuminate\Database\QueryException $e){
+            return response()->json(['errors' => $e->getMessage() ]);
+        }
+    }
+
+    /**
+     * Voir les traitements effectués aux patients
+     * @param int $userId
+     * @param int $emplacementId
+     * @return JsonResponse
+     */
+    public function viewAllSuivis(int $emplacementId):JsonResponse
+    {
+        $suivis = PatientSuivi::with(['traitements.prescription','traitements.prescription.produit.type','traitements.prescription.produit.categorie', 'traitements.prescription.user'])
+            ->with('patient')
+            ->with('agent')
+            ->with('user')
+            ->with('emplacement')
+            ->with('hopital')
+            ->where('hopital_emplacement_id', $emplacementId)
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "suivis"=>$suivis
+        ]);
+    }
 
     private function getRandomCode(int $length=null)
     {

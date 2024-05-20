@@ -241,6 +241,7 @@ class HospitalController extends Controller
                 "patient_id"=>"required|int|exists:patients,id",
                 "facturation_id"=>"required|int|exists:facturation_configs,id",
                 "hopital_emplacement_id"=>"required|int|exists:hopital_emplacements,id",
+                "hopital_id"=>"required|int|exists:hopitals,id",
             ]);
             $result = FacturePaiement::create($data);
             if (isset($result)){
@@ -265,6 +266,7 @@ class HospitalController extends Controller
 
     /**
      * Voir tous les paiements par emplacements
+     * @param int $emplacementId
      * @return JsonResponse
      */
     public function allPaiementsByEmplament(int $emplacementId):JsonResponse

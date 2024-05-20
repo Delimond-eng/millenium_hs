@@ -33,6 +33,7 @@ class FacturePaiement extends Model
         'patient_id',
         'facturation_id',
         'created_by',
+        'hopital_id',
         'hopital_emplacement_id'
     ];
 
@@ -71,11 +72,19 @@ class FacturePaiement extends Model
     public $timestamps = false;
 
     /**
-     * Relation directly to Hospital
+     * Relation directly to Hospital emplacement
      * @return BelongsTo
      */
     public function emplacement():BelongsTo{
         return $this->belongsTo(HopitalEmplacement::class, 'hopital_emplacement_id');
+    }
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+     */
+    public function hopital():BelongsTo{
+        return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 
     /**

@@ -13,16 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('paiements', function (Blueprint $table) {
+        Schema::create('patient_suivis', function (Blueprint $table) {
             $table->id();
-            $table->string('paiement_libelle');
-            $table->decimal('paiement_montant');
-            $table->string('paiement_montant_devise');
+            $table->string('suivi_etat')->default('stable');
+            $table->string('suivi_obs')->nullable();
+            $table->string('suivi_recommandations')->nullable();
             $table->unsignedBigInteger('patient_id');
-            $table->unsignedBigInteger('hopital_emplacement_id');
-            $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('agent_id');
             $table->unsignedBigInteger('created_by');
-            $table->timestamp('paiement_created_At')->useCurrent();
+            $table->unsignedBigInteger('hopital_id');
+            $table->unsignedBigInteger('hopital_emplacement_id');
+            $table->timestamps();
         });
     }
 
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('paiements');
+        Schema::dropIfExists('patient_suivis');
     }
 };

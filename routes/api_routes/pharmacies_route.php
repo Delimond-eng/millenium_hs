@@ -36,7 +36,7 @@ Route::middleware(['cors'])->group(function(){
     //Route pour voir tous les les approvisionnements stock
     Route::get('/pharmacie.stocks/{pharmacieId?}', [\App\Http\Controllers\PharmacieController::class, 'viewAllStocks']);
     //Route pour afficher les infos du dernier stock du produit de la pharmacie
-    Route::get('/pharmacie.stock.infos/{produitID}/{pharmacieID}', [\App\Http\Controllers\PharmacieController::class, 'viewProductStockInfos']);
+    //Route::get('/pharmacie.stock.infos/{produitID}/{pharmacieID}', [\App\Http\Controllers\PharmacieController::class, 'viewProductStockInfos']);
     //Route pour créer une opération pharmaceutique
     Route::post('/pharmacie.operation.create', [\App\Http\Controllers\PharmacieController::class, 'saveOperation']);
     //Route pour voir les operations par status et pharmacie

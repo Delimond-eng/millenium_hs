@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\FacturePaiement;
 use App\Models\Paiement;
 use App\Models\PatientSignesVitaux;
 use App\Models\Patients;
@@ -78,6 +79,7 @@ class PatientController extends Controller
                     'hopital_id'=>$data['hopital_id'],
                     'created_by'=>$data['created_by'],
                 ]);
+
                 if(isset($patient)){
                     $details = PatientSignesVitaux::create([
                         "patient_sv_poids"=> $patientDetails['poids'],
@@ -92,18 +94,18 @@ class PatientController extends Controller
                         "patient_id"=> $patient->id,
                         'created_by'=>$data['created_by'],
                     ]);
-                    $patient['details'] = $details;
-
                     //Enregistrement d'un paiement de la fiche de consultation
                     $paiementDatas = [
                         "paiement_montant"=>$request->paiement['montant'],
                         "paiement_montant_devise"=>$request->paiement['devise'],
+                        "facturation_id"=>$request->paiement['facturation_id'],
                         "patient_id"=>$patient->id,
                         'hopital_emplacement_id'=>$data['emplacement_id'],
                         'hopital_id'=>$data['hopital_id'],
                         'created_by'=>$data['created_by'],
                     ];
                     $paiement = $this->makeFichePaiement($paiementDatas);
+                    $patient['details'] = $details;
                     $patient['paiement'] = $paiement;
                 }
                 return response()->json([
@@ -140,6 +142,7 @@ class PatientController extends Controller
                 $paiementDatas = [
                     "paiement_montant"=>$request->paiement['montant'],
                     "paiement_montant_devise"=>$request->paiement['devise'],
+                    "facturation_id"=>$request->paiement['facturation_id'],
                     'hopital_emplacement_id'=>$request->emplacement_id,
                     "hopital_id"=> $request->hopital_id,
                     "patient_id"=> $request->patient_id,
@@ -241,16 +244,15 @@ class PatientController extends Controller
     */
     private function makeFichePaiement($data):mixed
     {
-        $result = Paiement::create([
-            "paiement_libelle"=>"Paiement pour la consultation",
+        $result = FacturePaiement::create([
             "paiement_montant"=>$data['paiement_montant'],
             "paiement_montant_devise"=>$data['paiement_montant_devise'],
+            "facturation_id"=>$data['facturation_id'],
             "patient_id"=>$data['patient_id'],
             "hopital_id"=>$data['hopital_id'],
             "hopital_emplacement_id"=>$data['hopital_emplacement_id'],
             "created_by"=>$data['created_by'],
         ]);
-
         if(isset($result)){
             return $result;
         }

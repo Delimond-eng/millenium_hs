@@ -344,7 +344,7 @@ class PharmacieController extends Controller
 
 
     /**
-     * Create new stock
+     * Create new stock & compute selling price
      * @param Request $request HttpRequest data
      * @return JsonResponse
      */
@@ -354,8 +354,9 @@ class PharmacieController extends Controller
             $data = $request->validate([
                 'stock_qte'=>'required|integer|gt:0',
                 'stock_date_exp'=>'required|date|after:now',
-                'stock_pa'=>'required|string',
+                'stock_pa'=>'required|numeric',
                 'stock_pa_devise'=>'nullable|string',
+                'marge'=>'required|numeric',
                 'stock_obs'=>'nullable|string',
                 'produit_id'=>'required|int|exists:produits,id',
                 'fournisseur_id'=>'required|int|exists:fournisseurs,id',
@@ -364,6 +365,28 @@ class PharmacieController extends Controller
             ]);
             //Cree un produit dans la base de données !
             $result = Stock::create($data);
+
+            //voir la moyen pondered des prix d'achat
+            $stockInfo = $this->viewProductStockInfos((int)$data['produit_id'], (int)$data['pharmacie_id']);
+            //manage & calculate pu
+            $pComputed = ((float)$stockInfo['stock_pa'])*(((float)$data["marge"])/100);
+            $pu = (float)$stockInfo['stock_pa'] + $pComputed;
+            $price_datas = [
+                "produit_prix"=> $pu,
+                "pharmacie_id"=>$data['pharmacie_id'],
+                "produit_id"=>$data['produit_id'],
+                "hopital_id"=>$data['pharmacie_id'],
+                "created_by"=>$data['created_by'],
+            ];
+            //Cree un produit dans la base de données !
+            $priceInfos = ProduitPrice::updateOrCreate(
+                [
+                    'produit_id'=>$data['produit_id'],
+                    'pharmacie_id'=>$data['pharmacie_id']
+                ],
+                $price_datas
+            );
+            $result['price_infos']=$priceInfos;
             return response()->json([
                 "status"=>"success",
                 "stock"=>$result
@@ -455,11 +478,11 @@ class PharmacieController extends Controller
 
     /**
      * View pharmacie single product stock info
-     * @param int $pharmacieID;
      * @param int $produitID
-     * @return JsonResponse
-    */
-    public function viewProductStockInfos(int $produitID, int $pharmacieID): JsonResponse
+     * @param int $pharmacieID ;
+     * @return array|null
+     */
+    private function viewProductStockInfos(int $produitID, int $pharmacieID): ?array
     {
         $stocks = Stock::with("produit")
                             ->with('pharmacie')
@@ -471,10 +494,7 @@ class PharmacieController extends Controller
             'stock_pa'=>$avgPa,
             'stock_pa_devise'=>'CDF',
         ] : null;
-        return response()->json([
-            "status"=>"success",
-            "info"=> $info
-        ]);
+        return $info;
     }
 
     /**

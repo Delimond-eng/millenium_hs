@@ -5,15 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Paiement extends Model
+class PatientSuivi extends Model
 {
+    use HasFactory;
+
     /**
      * The database table used by the model.
      *
      * @var string
      */
-    protected $table = 'paiements';
+    protected $table = 'patient_suivis';
 
     /**
      * The primary key for the model.
@@ -28,10 +31,11 @@ class Paiement extends Model
      * @var array
      */
     protected $fillable = [
-        'paiement_libelle',
-        'paiement_montant',
-        'paiement_montant_devise',
+        'suivi_etat',
+        'suivi_obs',
+        'suivi_recommandations',
         'patient_id',
+        'agent_id',
         'hopital_id',
         'hopital_emplacement_id',
         'created_by'
@@ -52,7 +56,8 @@ class Paiement extends Model
      * @var array
      */
     protected $casts = [
-        'paiement_created_At'=>'datetime:d/m/Y'
+        'created_at' => 'datetime:d/m/Y H:i',
+        'updated_at' => 'datetime:d/m/Y H:i'
     ];
 
     /**
@@ -61,42 +66,34 @@ class Paiement extends Model
      * @var array
      */
     protected $dates = [
-        'paiement_created_At'
+        'created_at',
+        'updated_at',
     ];
 
     /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var boolean
+     * Relation to traitements
+     * @return HasMany
      */
-    public $timestamps = false;
+    public function traitements():HasMany{
+        return $this->hasMany(PatientTraitement::class, foreignKey: 'suivi_id', localKey: 'id');
+    }
 
     /**
-     * Relation directly to Hospital
+     * Relation to patient
      * @return BelongsTo
      */
-    public function patient():BelongsTo{
-        return $this->belongsTo(Patients::class, 'patient_id');
+    public  function patient():BelongsTo{
+        return $this->belongsTo(Patients::class, foreignKey: 'patient_id');
     }
 
 
     /**
-     * Relation directly to Hospital
+     * Relation to agent
      * @return BelongsTo
      */
-    public function emplacement():BelongsTo{
-        return $this->belongsTo(HopitalEmplacement::class, 'hopital_emplacement_id');
+    public  function agent():BelongsTo{
+        return $this->belongsTo(Agents::class, foreignKey: 'agent_id');
     }
-
-
-    /**
-     * Relation directly to Hospital
-     * @return BelongsTo
-     */
-    public function hopital():BelongsTo{
-        return $this->belongsTo(Hopital::class, 'hopital_id');
-    }
-
 
     /**
      * Relation directly to Hospital
@@ -104,5 +101,22 @@ class Paiement extends Model
      */
     public function user():BelongsTo{
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Relation to emplacement
+     * @return BelongsTo
+     */
+
+    public  function emplacement():BelongsTo{
+        return $this->belongsTo(HopitalEmplacement::class, foreignKey: 'hopital_emplacement_id');
+    }
+
+    /**
+     * Relation directly to Hospital
+     * @return BelongsTo
+     */
+    public function hopital():BelongsTo{
+        return $this->belongsTo(Hopital::class, 'hopital_id');
     }
 }

@@ -47,6 +47,13 @@ Route::middleware(['cors'])->group(function (){
     //Voir tous les premiers soins
     Route::get('/premiersoins.all/{locationId}',[AgentController::class, 'allPremierSoins']);
 
+    //traitement d'un patient en fonction de la prescription
+    Route::post('/traitements.make', [AgentController::class, 'makeTraitement']);
+    Route::get('/traitements.show/{patientId}', [AgentController::class, 'showPatientTraitments']);
+
+    //Voir la liste des traitements effectués
+    Route::get('/suivis.all/{emplacementId}', [AgentController::class, 'viewAllSuivis']);
+
     //Renvoyer le code aleatoires
     Route::get('/code',[PatientController::class,'getCode']);
     //Creation d'un patient
@@ -69,7 +76,7 @@ Route::middleware(['cors'])->group(function (){
     //Transferer un patient
     Route::post('/transfert.create', [\App\Http\Controllers\HospitalController::class, 'makePatientTransfert']);
     //Voir tous les paiements pour un emplacement
-    Route::get('/paiements.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allPaiementsByEmplament']);
+    Route::get('/paiements.all/{id}/{key?}', [\App\Http\Controllers\FacturationPaiementController::class, 'viewAllPaiement']);
     //Voir tous les transferts pour un emplacement
     Route::get('/transferts.all/{emplacementId}', [\App\Http\Controllers\HospitalController::class, 'allTransfertsByEmplament']);
 
