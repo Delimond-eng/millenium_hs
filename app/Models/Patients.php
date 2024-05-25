@@ -119,9 +119,19 @@ class Patients extends Model
 
     /**
      * Relation pour voir les consultations du patient
+     * @return HasMany
     */
     public function consultations():HasMany
     {
         return $this->hasMany(Consultations::class, foreignKey: 'patient_id', localKey: 'id');
+    }
+
+    /**
+     * Voir les suivis pour un patient
+     * @return HasMany
+    */
+    public function suivis():HasMany
+    {
+        return $this->hasMany(PatientSuivi::class, foreignKey: 'patient_id', localKey: 'id');
     }
 }

@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('patient_gs')->nullable();
             $table->timestamp('patient_create_At')->useCurrentOnUpdate()->useCurrent();
             $table->string('patient_status', 10)->default('actif');
+            $table->string('patient_traitement_status')->nullable();
             $table->unsignedBigInteger('hopital_emplacement_id');
             $table->unsignedBigInteger('hopital_id');
             $table->unsignedBigInteger('created_by');

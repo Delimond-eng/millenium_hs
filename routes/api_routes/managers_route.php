@@ -54,6 +54,9 @@ Route::middleware(['cors'])->group(function (){
     //Voir la liste des traitements effectués
     Route::get('/suivis.all/{emplacementId}', [AgentController::class, 'viewAllSuivis']);
 
+    //Route pour cloturer la session du traitement du patient patient
+    Route::get('/traitement.session.close/{patientID}', [AgentController::class, 'closeTraitementSession']);
+
     //Renvoyer le code aleatoires
     Route::get('/code',[PatientController::class,'getCode']);
     //Creation d'un patient
@@ -62,6 +65,9 @@ Route::middleware(['cors'])->group(function (){
     Route::get('/patients.all/{locationId}',[ PatientController::class,'all']);
     //Voir les patients en cours
     Route::get('/patients.pending/{locationId}',[ PatientController::class,'viewAllPendingPatients']);
+
+    //voir la liste des patients sous traitements
+    Route::get('/patients.sous_traitement/{locationId}',[ PatientController::class,'viewPatientsSousTraitement']);
     //Afficher un patient
     Route::get('/patient.show/{id}',[ PatientController::class,'show']);
     //Voir le dossier medical d'un patient

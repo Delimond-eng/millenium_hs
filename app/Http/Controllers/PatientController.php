@@ -117,7 +117,12 @@ class PatientController extends Controller
                 /** @var mixed affiche les infos de l'ancien patient */
                 $oldPatient = Patients::find((int)$request->patient_id);
 
-                //Verification si le patient est a deja un status en cours
+                $currentStatus = $oldPatient->patient_traitement_status;
+                if($currentStatus !== null){
+                    return response()->json(['errors' => 'Patient sous traitement déjà, veuillez changer son status dans le sous menu `patients sous traitement` pour créer une nouvelle visite ! !']);
+                }
+
+                //Verification si le patient a deja un status en cours
                 $sv = PatientSignesVitaux::where('patient_id', $oldPatient->id)->whereNull("consult_id")->first();
                 if(isset($sv)){
                     return response()->json(['errors' => 'Ce patient a déjà une consultation en cours !']);
@@ -201,10 +206,29 @@ class PatientController extends Controller
     public function viewAllPendingPatients(int $emplacementId):JsonResponse{
         $patients = Patients::join('patient_signes_vitaux', 'patients.id', '=', 'patient_signes_vitaux.patient_id')
             ->whereNull('patient_signes_vitaux.consult_id')
+            ->whereNull('patient_traitement_status')
             ->where('patients.hopital_emplacement_id', $emplacementId)
             ->select('patients.*')
             ->with('details')
             ->orderBy('patients.id', 'asc')
+            ->get();
+        return response()->json([
+            "status"=>"success",
+            "patients"=>$patients
+        ]);
+    }
+
+
+    /**
+     * Voir la liste de tous les patients dont leur status est en attente
+     * @param int $emplacementId
+     * @return JsonResponse
+     */
+    public function viewPatientsSousTraitement(int $emplacementId):JsonResponse{
+        $patients = Patients::with('details')
+            ->whereNot('patient_traitement_status', null)
+            ->where('patients.hopital_emplacement_id', $emplacementId)
+            ->orderBy('id', 'desc')
             ->get();
         return response()->json([
             "status"=>"success",

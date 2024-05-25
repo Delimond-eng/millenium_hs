@@ -257,6 +257,11 @@ class AgentController extends Controller
                 ]
             );
             if(isset($consultation)){
+                //update patient status
+                $patient = Patients::find($data['patient_id']);
+                $patient->patient_traitement_status = 'sous traitement';
+                $patient->save();
+
                 //update signes vitaux
                 $latestSigne = PatientSignesVitaux::where('patient_id', $data['patient_id'])
                     ->orderByDesc('id')
@@ -358,6 +363,11 @@ class AgentController extends Controller
                     ->with('user')
                     ->where('prescription_code', $code)
                     ->get();
+                //Trouver la consultation pour mettre le patient sous traitement
+                $consultationId = $prescriptions[0]['consult_id'];
+                $consultation = Consultations::find($consultationId);
+                //mettre à jour le status du patient
+                $patient = $this->updatePatientTraitementStatus($consultation->patient_id);
                 return response()->json([
                     "status"=>"success",
                     "result"=>$prescription
@@ -448,6 +458,22 @@ class AgentController extends Controller
 
 
     /**
+     * update patient traitement status
+     * @param int $patientID
+    */
+    public function updatePatientTraitementStatus(int $patientID)
+    {
+        $patient = Patients::find($patientID);
+        if (isset($patientID)){
+            $patient->patient_traitement_status = "sous traitement";
+            $patient->save();
+            return $patient;
+        }
+        return null;
+    }
+
+
+    /**
      * Valide une prescription des examens en attente de validation
      * @param Request $request
      * @return JsonResponse
@@ -509,6 +535,7 @@ class AgentController extends Controller
                 ->with('prescriptions.produit.type')
                 ->with('antecedents')
                 ->with('symptomes')
+                ->with('examens.examen')
                 ->orderByDesc('id')
                 ->where('hopital_emplacement_id', $locationId)
                 ->get();
@@ -767,6 +794,24 @@ class AgentController extends Controller
         }
     }
 
+
+
+    /**
+     * Clôturer la session du traitement du patient
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function closeTraitementSession($patientID)
+    {
+        $patient = Patients::find($patientID);
+        $patient->patient_traitement_status = null;
+        $patient->save();
+        return response()->json([
+            "status"=>"success",
+            "patient"=>$patient
+        ]);
+    }
+
     /**
      * Voir les traitements effectués aux patients
      * @param int $userId
@@ -775,12 +820,7 @@ class AgentController extends Controller
      */
     public function viewAllSuivis(int $emplacementId):JsonResponse
     {
-        $suivis = PatientSuivi::with(['traitements.prescription','traitements.prescription.produit.type','traitements.prescription.produit.categorie', 'traitements.prescription.user'])
-            ->with('patient')
-            ->with('agent')
-            ->with('user')
-            ->with('emplacement')
-            ->with('hopital')
+        $suivis = Patients::with(['suivis.traitements.prescription','suivis.traitements.prescription.produit.type','suivis.traitements.prescription.produit.categorie', 'suivis.traitements.prescription.user.agent', 'suivis.agent'])
             ->where('hopital_emplacement_id', $emplacementId)
             ->get();
         return response()->json([
