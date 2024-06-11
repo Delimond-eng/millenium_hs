@@ -400,10 +400,12 @@ class AgentController extends Controller
             $data = $request->validate([
                 'examens'=>'required|array'
             ]);
+            $code = $this->getRandomCode(length: 6);
             $examens = $request->examens;
             if(isset($examens)){
                 foreach ($examens as $data){
                     $prescription = ConsultationExamens::create([
+                        "code"=> $code,
                         "examen_id" => $data['examen_id'],
                         "agent_id" => $data['agent_id'],
                         "consult_id" => $data['consult_id'],
@@ -413,8 +415,13 @@ class AgentController extends Controller
                         'created_by'=>$data['created_by']
                     ]);
                 }
+                 $prescription = ConsultationExamens::with('examen')
+                    ->with('agent')
+                    ->where('code', $code)
+                    ->get();
                 return response()->json([
                     "status"=>"success",
+                    "result"=> $prescription,
                     "message"=>"Prescription examens effectuées avec succès !"
                 ]);
             }
@@ -820,9 +827,15 @@ class AgentController extends Controller
      */
     public function viewAllSuivis(int $emplacementId):JsonResponse
     {
-        $suivis = Patients::with(['suivis.traitements.prescription','suivis.traitements.prescription.produit.type','suivis.traitements.prescription.produit.categorie', 'suivis.traitements.prescription.user.agent', 'suivis.agent'])
+        $suivis = [];
+        $results = Patients::with(['suivis.traitements.prescription','suivis.traitements.prescription.produit.type','suivis.traitements.prescription.produit.categorie', 'suivis.traitements.prescription.user.agent', 'suivis.agent'])
             ->where('hopital_emplacement_id', $emplacementId)
             ->get();
+        foreach ($results as $value) {
+            if(count($value->suivis) >0){
+                $suivis[] = $value;
+            }
+        }
         return response()->json([
             "status"=>"success",
             "suivis"=>$suivis

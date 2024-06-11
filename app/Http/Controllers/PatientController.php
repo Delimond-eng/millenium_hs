@@ -46,6 +46,7 @@ class PatientController extends Controller
             if(!isset($request->patient_id)){
                 /** @var mixed check validate datas */
                 $data = $request->validate([
+                    'code'=>'required|string|unique:patients,patient_code',
                     'nom' => 'required|string',
                     'code_appel' => 'required|string',
                     'prenom' => 'required|string',
@@ -55,11 +56,13 @@ class PatientController extends Controller
                     'etat_civil' => 'nullable|string',
                     'num_assurance' => 'nullable|string|exists:partener_agents,agent_num_convention',
                     'telephone' => 'required|string|min:10|unique:patients,patient_telephone',
-                    'telephone_urgence' => 'nullable|string',
+                    'telephone_urgence' => 'nullable|string|min:10',
                     'adresse' => 'required|string',
                     'created_by'=> 'required|int',
                     'emplacement_id'=>'required|int|exists:hopital_emplacements,id',
                     'hopital_id'=>'required|int|exists:hopitals,id',
+                    'paiement'=>'required|array',
+                    'paiement.montant'=>'required|numeric'
                 ]);
                 /** @var mixed create agent */
                 $patient = Patients::create([
@@ -114,6 +117,10 @@ class PatientController extends Controller
                 ]);
             }
             else{
+                $data = $request->validate([
+                    'paiement'=>'required|array',
+                    'paiement.montant'=>'required|numeric'
+                ]);
                 /** @var mixed affiche les infos de l'ancien patient */
                 $oldPatient = Patients::find((int)$request->patient_id);
 
@@ -140,6 +147,7 @@ class PatientController extends Controller
                     "patient_id"=> $request->patient_id,
                     'created_by'=> $request->created_by,
                 ]);
+
                 $oldPatient->patient_code_appel = $request->code_appel;
                 $oldPatient->save();
                 $oldPatient["details"] = $details;

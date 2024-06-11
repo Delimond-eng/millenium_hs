@@ -16,13 +16,11 @@ Route::middleware(['cors'])->group(function(){
     Route::get('/pharmacies.all/{hostoId}', [\App\Http\Controllers\PharmacieController::class, 'allPharmacies']);
     //Route: pour voir une pharmacie pour une emplacement
     Route::get('/pharmacies.emplacement/{emplacementId}', [\App\Http\Controllers\PharmacieController::class, 'viewEmplacementPharmacies']);
-
     //Route: pour créer un fournisseur
     Route::post('/pharmacie.create.fournisseur', [\App\Http\Controllers\PharmacieController::class, 'createFournisseur']);
     //Route: pour créer un produit pharmaceutique
     Route::post('/pharmacie.create.product', [\App\Http\Controllers\PharmacieController::class, 'createProduct']);
     Route::post('/pharmacie.product.addprices', [\App\Http\Controllers\PharmacieController::class, 'addProductPrice']);
-
     //Route pour créer une categorie des produits pharmaceutiques
     Route::post('/pharmacie.create.category', [\App\Http\Controllers\PharmacieController::class, 'createCategory']);
     //Route pour créer un type de produit(ex. injectable, comprimé...)
@@ -41,6 +39,10 @@ Route::middleware(['cors'])->group(function(){
     Route::post('/pharmacie.operation.create', [\App\Http\Controllers\PharmacieController::class, 'saveOperation']);
     //Route pour voir les operations par status et pharmacie
     Route::get('/pharmacie.operations.all/{pharmacieID}/{key}',  [\App\Http\Controllers\PharmacieController::class, 'allOperations']);
+
+    //WRoute pour voir toutes les operations de chaque produit /pharmacie.produit.operations/{pharmacieID}?key=entre&id=id
+    Route::get('/pharmacie.produit.operations/{pharmacieID}', [\App\Http\Controllers\PharmacieController::class,'allOperationByProduct']);
+
     //Route pour voir le rapport de stock
     Route::get('/pharmacie.reports/{pharmacieID}',  [\App\Http\Controllers\PharmacieController::class, 'viewStocksReport']);
     //Route pour voir les produits
@@ -69,4 +71,5 @@ Route::middleware(['cors'])->group(function(){
 
     //Route: pour terminer une session de vente pharmaceutique de la journée
     Route::post('/pharmacist.session.end',  [\App\Http\Controllers\PharmacieController::class, 'sendPharmacistSession']);
+    Route::get('/pharmacist.receive.prescription/{code}',  [\App\Http\Controllers\PharmacieController::class, 'receivePrescription']);
 });

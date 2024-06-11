@@ -9,6 +9,7 @@ use App\Models\PharmacieClient;
 use App\Models\PharmacieOperation;
 use App\Models\PharmacieTicket;
 use App\Models\PharmacistSession;
+use App\Models\Prescriptions;
 use App\Models\Produit;
 use App\Models\ProduitCategorie;
 use App\Models\ProduitPrice;
@@ -356,7 +357,8 @@ class PharmacieController extends Controller
                 'stock_date_exp'=>'required|date|after:now',
                 'stock_pa'=>'required|numeric',
                 'stock_pa_devise'=>'nullable|string',
-                'marge'=>'required|numeric',
+                'marge'=>'nullable|numeric',
+                'stock_pv'=>'nullable|numeric',
                 'stock_obs'=>'nullable|string',
                 'produit_id'=>'required|int|exists:produits,id',
                 'fournisseur_id'=>'required|int|exists:fournisseurs,id',
@@ -368,9 +370,28 @@ class PharmacieController extends Controller
 
             //voir la moyen pondered des prix d'achat
             $stockInfo = $this->viewProductStockInfos((int)$data['produit_id'], (int)$data['pharmacie_id']);
+            $pu = 0;
+            if (isset($data['marge']) || isset($data['stock_pv'])) {
+                if (isset($data['marge'])) {
+                    $pComputed = ((float)$stockInfo['stock_pa'])*(((float)$data["marge"])/100);
+                     $pu = (float)$stockInfo['stock_pa'] + $pComputed;
+                }
+                else{
+                    $pu = (float)$data["stock_pv"];
+                }
+
+            }
+            else{
+                    $lastProduitPrix = $priceInfos = ProduitPrice::where('produit_id',$data['produit_id'])
+                        ->where('pharmacie_id',$data['pharmacie_id'])
+                        ->first();
+                    if (isset($lastProduitPrix)) {
+                        $pu = (float)$lastProduitPrix->produit_prix;
+                    }else{
+                        return response()->json(['errors' => 'Vous devez entrez soit la marge bénéficiaire soit le prix de vente' ]);
+                    }
+                }
             //manage & calculate pu
-            $pComputed = ((float)$stockInfo['stock_pa'])*(((float)$data["marge"])/100);
-            $pu = (float)$stockInfo['stock_pa'] + $pComputed;
             $price_datas = [
                 "produit_prix"=> $pu,
                 "pharmacie_id"=>$data['pharmacie_id'],
@@ -606,6 +627,45 @@ class PharmacieController extends Controller
         ]);
     }
 
+    /**
+     * all operations by products
+     * @param int $pharmacieID
+     * @param string $key
+    */
+    public function allOperationByProduct(int $pharmacieID, Request $request):JsonResponse{
+        $key = $request->query("key");
+        $produitID = $request->query("id");
+
+        $datas = [];
+
+        if($key =='approv'){
+            $datas = Stock::with('produit')
+                ->with('fournisseur')
+                ->with('pharmacie')
+                ->with('user')
+                ->where('pharmacie_id', $pharmacieID)
+                ->where('produit_id', $produitID)
+                ->where('stock_status', 'actif')
+                ->get();
+        } else {
+           $datas = PharmacieOperation::with("produit.type")
+            ->with('pharmacie')
+            ->with('client')
+            ->with('pharmacie_destination')
+            ->with('fournisseur')
+            ->with('user')
+            ->where('operation_libelle',$key)
+            ->where('pharmacie_id',$pharmacieID)
+            ->where('operation_status','actif')
+            ->where('produit_id',$produitID)
+            ->get();
+        }
+        return response()->json([
+            "status"=>"success",
+            "operations"=>$datas
+        ]);
+    }
+
     // Situation stock
     private function stockCountQte($data)
     {
@@ -647,11 +707,12 @@ class PharmacieController extends Controller
         foreach ($stocks as $stock) {
             $qteSortie = $operations->where('produit_id', $stock->produit_id)->sum("qte_sortie") ?? 0;
 
-            $produit = Produit::find($stock->produit_id);
+            $produit = Produit::with('categorie')
+                ->with('type')
+                ->where('id',$stock->produit_id)->first();
 
             $stockInfos[] = [
                 'produit'=>$produit,
-                'categorie'=>$produit->categorie,
                 'qte_entree' => $stock->qte_entree,
                 'qte_sortie' => $qteSortie,
             ];
@@ -1063,6 +1124,18 @@ class PharmacieController extends Controller
         catch (\Illuminate\Database\QueryException | \ErrorException $e){
             return response()->json(['errors' => $e->getMessage() ]);
         }
+    }
+
+    /**
+     * receive medical prescription
+     * @param string $code
+    */
+    public function receivePrescription(string $code): JsonResponse{
+        $prescription = Prescriptions::with('produit.type')->with('produit.categorie')->where('prescription_code', $code)->get();
+        return response()->json([
+            "status"=>"success",
+            "prescriptions"=>$prescription
+        ]);
     }
 
 

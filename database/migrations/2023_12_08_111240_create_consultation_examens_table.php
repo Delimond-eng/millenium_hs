@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('consultation_examens', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
             $table->unsignedBigInteger('examen_id');
             $table->unsignedBigInteger('agent_id');
             $table->unsignedBigInteger('consult_id');

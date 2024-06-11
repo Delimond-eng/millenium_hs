@@ -28,6 +28,7 @@ class ConsultationExamens extends Model
      * @var array
      */
     protected $fillable = [
+        "code",
         "examen_id",
         "agent_id",
         "consult_id",

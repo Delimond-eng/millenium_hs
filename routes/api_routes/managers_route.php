@@ -18,7 +18,6 @@ Route::middleware(['cors'])->group(function (){
     Route::get('/agents.all/{hostoId}',[ AgentController::class,'all']);
     //Assigner un compte à un agent
     Route::post('/agents.assignaccount',[ AgentController::class,'assignAccount']);
-
     //Creation nouvelle consultation
     Route::post('/consultations.create',[ AgentController::class,'createConsultations']);
     //Ajouter les prescriptions pour une consultation
@@ -27,7 +26,6 @@ Route::middleware(['cors'])->group(function (){
     Route::post('/examens.add',[ AgentController::class,'addExamens']);
     //Voir toutes les consultations
     Route::get('/consultations.all/{locationId}',[ AgentController::class,'viewAllConsultations']);
-
     //Voir le dossier medical d'un patient
     Route::get('/medical.docs/{patientId}/{hopitalId}',[ AgentController::class,'viewMedicalDocs']);
     //Voir les examens pour chaque consultation
