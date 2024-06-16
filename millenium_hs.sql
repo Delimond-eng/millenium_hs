@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Hôte : 127.0.0.1
--- Généré le : lun. 10 juin 2024 à 21:42
+-- Hôte : localhost
+-- Généré le : dim. 16 juin 2024 à 17:55
 -- Version du serveur : 10.4.28-MariaDB
--- Version de PHP : 8.0.28
+-- Version de PHP : 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -78,7 +78,10 @@ CREATE TABLE `consultations` (
 --
 
 INSERT INTO `consultations` (`id`, `consult_libelle`, `consult_diagnostic`, `consult_create_At`, `consult_status`, `patient_id`, `agent_id`, `hopital_id`, `hopital_emplacement_id`, `created_by`) VALUES
-(1, 'Lorem ipsum doloret', 'Lorem ipsum doloret', '2024-05-22 12:15:35', 'actif', 1, 1, 1, 1, 4);
+(1, 'Lorem ipsum doloret', 'Lorem ipsum doloret', '2024-05-22 12:15:35', 'actif', 1, 1, 1, 1, 4),
+(2, 'Lorem ipsum doloret', 'Lorem ipsum doloret', '2024-06-11 02:33:39', 'actif', 2, 1, 1, 1, 4),
+(3, 'Lorem ipsum doloret', 'Lorem ipsul kdodoko', '2024-06-11 03:02:16', 'actif', 3, 1, 1, 1, 4),
+(4, 'lleoeoeeieoeeioi', 'jdfjdjfgodgfefgeofgoeifg', '2024-06-11 13:32:17', 'actif', 4, 1, 1, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -106,6 +109,7 @@ CREATE TABLE `consultation_details` (
 
 CREATE TABLE `consultation_examens` (
   `id` bigint(20) UNSIGNED NOT NULL,
+  `code` varchar(10) NOT NULL,
   `examen_id` bigint(20) UNSIGNED NOT NULL,
   `agent_id` bigint(20) UNSIGNED NOT NULL,
   `consult_id` bigint(20) UNSIGNED NOT NULL,
@@ -121,9 +125,15 @@ CREATE TABLE `consultation_examens` (
 -- Déchargement des données de la table `consultation_examens`
 --
 
-INSERT INTO `consultation_examens` (`id`, `examen_id`, `agent_id`, `consult_id`, `patient_id`, `hopital_id`, `hopital_emplacement_id`, `created_by`, `consult_examen_create_At`, `consult_examen_status`) VALUES
-(1, 1, 1, 1, 1, 1, 1, 4, '2024-05-22 12:29:11', 'en attente'),
-(2, 2, 1, 1, 1, 1, 1, 4, '2024-05-22 12:29:11', 'en attente');
+INSERT INTO `consultation_examens` (`id`, `code`, `examen_id`, `agent_id`, `consult_id`, `patient_id`, `hopital_id`, `hopital_emplacement_id`, `created_by`, `consult_examen_create_At`, `consult_examen_status`) VALUES
+(1, '', 1, 1, 1, 1, 1, 1, 4, '2024-05-22 12:29:11', 'validé'),
+(2, '', 2, 1, 1, 1, 1, 1, 4, '2024-05-22 12:29:11', 'validé'),
+(3, 'B008622', 1, 1, 2, 2, 1, 1, 4, '2024-06-11 02:35:04', 'validé'),
+(4, 'B008622', 2, 1, 2, 2, 1, 1, 4, '2024-06-11 02:35:04', 'validé'),
+(5, 'L000598', 1, 1, 3, 3, 1, 1, 4, '2024-06-11 03:03:32', 'validé'),
+(6, 'L000598', 2, 1, 3, 3, 1, 1, 4, '2024-06-11 03:03:32', 'validé'),
+(7, 'R003104', 1, 1, 4, 4, 1, 1, 4, '2024-06-11 13:35:56', 'en attente'),
+(8, 'R003104', 2, 1, 4, 4, 1, 1, 4, '2024-06-11 13:35:56', 'en attente');
 
 -- --------------------------------------------------------
 
@@ -146,7 +156,15 @@ CREATE TABLE `consultation_symptomes` (
 INSERT INTO `consultation_symptomes` (`id`, `consult_symptome_libelle`, `consult_id`, `consult_symptome_create_At`, `created_by`) VALUES
 (1, 'Fièvre', 1, '2024-05-22 12:15:35', 4),
 (2, 'Fatigue', 1, '2024-05-22 12:15:36', 4),
-(3, 'Vomissements', 1, '2024-05-22 12:15:36', 4);
+(3, 'Vomissements', 1, '2024-05-22 12:15:36', 4),
+(4, 'Fatigue', 2, '2024-06-11 02:33:39', 4),
+(5, 'Nausées', 2, '2024-06-11 02:33:39', 4),
+(6, 'Rougeurs cutanées', 2, '2024-06-11 02:33:39', 4),
+(7, 'Diarrhée', 3, '2024-06-11 03:02:16', 4),
+(8, 'Écoulement de lait des mamelons', 3, '2024-06-11 03:02:16', 4),
+(9, 'Envies fréquentes d\'uriner', 3, '2024-06-11 03:02:16', 4),
+(10, 'Toux sèche', 4, '2024-06-11 13:32:17', 4),
+(11, 'Diarrhée', 4, '2024-06-11 13:32:17', 4);
 
 -- --------------------------------------------------------
 
@@ -268,7 +286,8 @@ CREATE TABLE `facturation_configs` (
 --
 
 INSERT INTO `facturation_configs` (`id`, `facturation_config_libelle`, `facturation_config_montant`, `facturation_config_montant_devise`, `created_by`, `hopital_id`, `hopital_emplacement_id`, `facturation_config_created_At`) VALUES
-(1, 'Fiche médicale & consultation', 50000.00, 'CDF', 4, 1, 1, '2024-05-17 19:38:31');
+(1, 'Fiche médicale & consultation', 50000.00, 'CDF', 4, 1, 1, '2024-05-17 19:38:31'),
+(2, 'Consultation postnatale', 50000.00, 'CDF', 1, 1, 1, '2024-06-11 12:16:23');
 
 -- --------------------------------------------------------
 
@@ -293,7 +312,11 @@ CREATE TABLE `facture_paiements` (
 --
 
 INSERT INTO `facture_paiements` (`id`, `paiement_montant`, `paiement_montant_devise`, `patient_id`, `facturation_id`, `created_by`, `hopital_id`, `hopital_emplacement_id`, `paiement_created_At`) VALUES
-(1, 50000.00, 'CDF', 1, 1, 4, 1, 1, '2024-05-22 12:13:43');
+(1, 50000.00, 'CDF', 1, 1, 4, 1, 1, '2024-05-22 12:13:43'),
+(2, 50000.00, 'CDF', 2, 1, 4, 1, 1, '2024-06-11 01:51:51'),
+(3, 50000.00, 'CDF', 3, 1, 4, 1, 1, '2024-06-11 03:01:09'),
+(4, 50000.00, 'CDF', 4, 1, 4, 1, 1, '2024-06-11 13:25:38'),
+(5, 50000.00, 'CDF', 1, 1, 4, 1, 1, '2024-06-11 13:39:39');
 
 -- --------------------------------------------------------
 
@@ -728,7 +751,10 @@ CREATE TABLE `patients` (
 --
 
 INSERT INTO `patients` (`id`, `patient_code`, `patient_code_appel`, `patient_nom`, `patient_prenom`, `patient_sexe`, `patient_datenais`, `patient_etat_civil`, `patient_adresse`, `patient_telephone`, `patient_contact_urgence`, `patient_num_assurance`, `patient_gs`, `patient_create_At`, `patient_status`, `patient_traitement_status`, `hopital_emplacement_id`, `hopital_id`, `created_by`) VALUES
-(1, 'U8790', '039492', 'Bukasa', 'Laurent', 'M', '1993-12-20 00:00:00', 'Célibataire', '04, Kinshasa', '0849348844', '0845854499', NULL, 'Rh positif (+)', '2024-05-22 13:43:46', 'actif', NULL, 1, 1, 4);
+(1, 'U8790', '002', 'Bukasa', 'Laurent', 'M', '1993-12-20 00:00:00', 'Célibataire', '04, Kinshasa', '0849348844', '0845854499', NULL, 'Rh positif (+)', '2024-06-11 13:39:39', 'actif', NULL, 1, 1, 4),
+(2, 'K8445', '930', 'LUANGO', 'Enoch', 'M', '2026-11-02 00:00:00', 'Célibataire', 'Loem', '0998389283', '0996767722', NULL, 'Rh positif (+)', '2024-06-11 03:06:55', 'actif', NULL, 1, 1, 4),
+(3, 'I2348', '031', 'Lusakueno', 'Brandit', 'M', '1993-02-02 00:00:00', 'Célibataire', 'Lorem', '0983883322', '0988833388', NULL, 'Rh positif (+)', '2024-06-11 03:02:16', 'actif', 'sous traitement', 1, 1, 4),
+(4, 'K6246', '9393', 'KIEIEIE', 'UDDHDHD', 'M', '1993-02-03 00:00:00', 'Célibataire', 'kdfkjdkjfjd', '99993993939', '00393939393', NULL, 'Rh positif (+)', '2024-06-11 13:32:17', 'actif', 'sous traitement', 1, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -765,7 +791,11 @@ CREATE TABLE `patient_signes_vitaux` (
 --
 
 INSERT INTO `patient_signes_vitaux` (`id`, `patient_sv_poids`, `patient_sv_poids_unite`, `patient_sv_taille`, `patient_sv_taille_unite`, `patient_sv_temperature`, `patient_sv_temperature_unite`, `patient_sv_tension_art`, `patient_sv_tension_art_unite`, `patient_sv_freq_cardio`, `patient_sv_freq_cardio_unite`, `patient_sv_saturation`, `patient_sv_saturation_unite`, `patient_sv_age`, `patient_id`, `consult_id`, `patient_sv_status`, `patient_sv_created_At`, `hopital_emplacement_id`, `hopital_id`, `created_by`) VALUES
-(1, '80', 'kg', '170', 'cm', '33', '°c', '88', 'mmHg', '88', 'bpm', '88', '%', '30', 1, 1, 'en attente', '2024-05-22 12:15:35', 1, 1, 4);
+(1, '80', 'kg', '170', 'cm', '33', '°c', '88', 'mmHg', '88', 'bpm', '88', '%', '30', 1, 1, 'en attente', '2024-05-22 12:15:35', 1, 1, 4),
+(2, '70', 'kg', '170', 'cm', '33', '°c', '88', 'mmHg', '88', 'bpm', '88', '%', '-3', 2, 2, 'en attente', '2024-06-11 02:33:39', 1, 1, 4),
+(3, '88', 'kg', '170', 'cm', '33', '°c', '88', 'mmHg', '88', 'bpm', '88', '%', '31', 3, 3, 'en attente', '2024-06-11 03:02:16', 1, 1, 4),
+(4, '88', 'kg', '170', 'cm', '32', '°c', '88', 'mmHg', NULL, 'bpm', NULL, '%', '31', 4, 4, 'en attente', '2024-06-11 13:32:17', 1, 1, 4),
+(5, '80', 'kg', '170', 'cm', '30', '°c', '88', 'mmHg', '88', 'bpm', '88', '%', '30', 1, NULL, 'en attente', '2024-06-11 13:39:39', 1, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -792,8 +822,9 @@ CREATE TABLE `patient_suivis` (
 --
 
 INSERT INTO `patient_suivis` (`id`, `suivi_etat`, `suivi_obs`, `suivi_recommandations`, `patient_id`, `agent_id`, `created_by`, `hopital_id`, `hopital_emplacement_id`, `created_at`, `updated_at`) VALUES
-(1, 'stable', 'Lorem ipsum doloret', 'Lorem ipsum doloret', 1, 1, 4, 1, 1, '2024-05-22 11:52:40', '2024-05-22 11:52:40'),
-(2, 'critique', 'Lorem ipsum doloret', 'Lorem ipsum', 1, 1, 4, 1, 1, '2024-05-22 11:56:48', '2024-05-22 11:56:48');
+(1, 'instable', 'Lorem', 'Lorem', 2, 1, 4, 1, 1, '2024-06-11 02:58:59', '2024-06-11 02:58:59'),
+(2, 'mobilité', 'lorem', 'lorem', 3, 1, 4, 1, 1, '2024-06-11 03:04:37', '2024-06-11 03:04:37'),
+(3, 'stable', 'le patukejkrfjefjekjfkej', 'eofekfeofeofeifoefoefio', 4, 1, 4, 1, 1, '2024-06-11 13:46:39', '2024-06-11 13:46:39');
 
 -- --------------------------------------------------------
 
@@ -821,10 +852,12 @@ CREATE TABLE `patient_traitements` (
 --
 
 INSERT INTO `patient_traitements` (`id`, `traitement_obs`, `traitement_status`, `prescription_id`, `suivi_id`, `patient_id`, `agent_id`, `created_by`, `hopital_id`, `hopital_emplacement_id`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'actif', 1, 1, 1, 1, 4, 1, 1, '2024-05-22 11:52:40', '2024-05-22 11:52:40'),
-(2, NULL, 'actif', 2, 1, 1, 1, 4, 1, 1, '2024-05-22 11:52:40', '2024-05-22 11:52:40'),
-(3, NULL, 'actif', 3, 1, 1, 1, 4, 1, 1, '2024-05-22 11:52:40', '2024-05-22 11:52:40'),
-(4, NULL, 'actif', 1, 2, 1, 1, 4, 1, 1, '2024-05-22 11:56:48', '2024-05-22 11:56:48');
+(1, NULL, 'actif', 4, 1, 2, 1, 4, 1, 1, '2024-06-11 02:58:59', '2024-06-11 02:58:59'),
+(2, NULL, 'actif', 5, 1, 2, 1, 4, 1, 1, '2024-06-11 02:58:59', '2024-06-11 02:58:59'),
+(3, NULL, 'actif', 6, 2, 3, 1, 4, 1, 1, '2024-06-11 03:04:37', '2024-06-11 03:04:37'),
+(4, NULL, 'actif', 7, 2, 3, 1, 4, 1, 1, '2024-06-11 03:04:37', '2024-06-11 03:04:37'),
+(5, NULL, 'actif', 8, 3, 4, 1, 4, 1, 1, '2024-06-11 13:46:39', '2024-06-11 13:46:39'),
+(6, NULL, 'actif', 9, 3, 4, 1, 4, 1, 1, '2024-06-11 13:46:39', '2024-06-11 13:46:39');
 
 -- --------------------------------------------------------
 
@@ -878,7 +911,37 @@ INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `n
 (26, 'App\\Models\\User', 4, 'user-token', 'b83a96acee182dd83236589fa0be462317dfaa1e245b1717fb24e0607d6b91ad', '[\"*\"]', NULL, NULL, '2024-05-24 00:41:10', '2024-05-24 00:41:10'),
 (27, 'App\\Models\\User', 4, 'user-token', '6217a1b6ed87c7072f846314133a78fd1f8d9ae92ab954845cd598bd1385159f', '[\"*\"]', NULL, NULL, '2024-05-24 16:34:35', '2024-05-24 16:34:35'),
 (28, 'App\\Models\\User', 4, 'user-token', '6b865b33a7c2035f9f0d2f4986a682c9e603bfeecf09f9edf44ee821963c9265', '[\"*\"]', NULL, NULL, '2024-05-24 19:45:07', '2024-05-24 19:45:07'),
-(29, 'App\\Models\\User', 1, 'user-token', 'b883ff43453f053d41cd2f2deccf11f87ea4e38ff6b6fe9596ea6a8a8b945395', '[\"*\"]', NULL, NULL, '2024-05-28 12:05:26', '2024-05-28 12:05:26');
+(29, 'App\\Models\\User', 1, 'user-token', 'b883ff43453f053d41cd2f2deccf11f87ea4e38ff6b6fe9596ea6a8a8b945395', '[\"*\"]', NULL, NULL, '2024-05-28 12:05:26', '2024-05-28 12:05:26'),
+(30, 'App\\Models\\User', 1, 'user-token', '852c94bab497ab69ebf8b2ec7b5c29e0796c8a1e2463c07ecb46d79507acf099', '[\"*\"]', NULL, NULL, '2024-06-10 20:49:31', '2024-06-10 20:49:31'),
+(31, 'App\\Models\\User', 4, 'user-token', '07932ef11819a9e7bd9ac004c0ee0f51ef5ef770b399ecb7e4c967aa1baaa6c2', '[\"*\"]', NULL, NULL, '2024-06-10 20:58:38', '2024-06-10 20:58:38'),
+(32, 'App\\Models\\User', 4, 'user-token', 'b7ce396483cd89ec5152f567bb24c80024edf73a759f9b919f807bf81c4c56a2', '[\"*\"]', NULL, NULL, '2024-06-10 22:11:13', '2024-06-10 22:11:13'),
+(33, 'App\\Models\\User', 4, 'user-token', '136ab44c442ab12c8102d9d5800f61f2327d5d86ea7795ab8909b86ecd82ad85', '[\"*\"]', NULL, NULL, '2024-06-10 22:19:14', '2024-06-10 22:19:14'),
+(34, 'App\\Models\\User', 4, 'user-token', '2a556a929d3939bf39943240dff87d9aa1fea71033d77d71de57e1719eee569a', '[\"*\"]', NULL, NULL, '2024-06-10 22:21:58', '2024-06-10 22:21:58'),
+(35, 'App\\Models\\User', 4, 'user-token', 'b9b63996764ad7f40510735e4196636330e3a416c4d9c4080e068b22dfba863c', '[\"*\"]', NULL, NULL, '2024-06-10 22:23:32', '2024-06-10 22:23:32'),
+(36, 'App\\Models\\User', 1, 'user-token', 'a917a0ce4e716abe764716b7087b3534dee82db903af8adc176c89039bb4660a', '[\"*\"]', NULL, NULL, '2024-06-10 22:27:33', '2024-06-10 22:27:33'),
+(37, 'App\\Models\\User', 2, 'user-token', '07b34f3fcc5e0e2da30d4aba6748ab43dfc834779455d2f4fe768735a4e7640e', '[\"*\"]', NULL, NULL, '2024-06-10 22:28:43', '2024-06-10 22:28:43'),
+(38, 'App\\Models\\User', 2, 'user-token', 'dc49280dcfbfa873961382e01998c117859008e782be2ee60ff07e661f78c477', '[\"*\"]', NULL, NULL, '2024-06-11 01:06:44', '2024-06-11 01:06:44'),
+(39, 'App\\Models\\User', 4, 'user-token', '52506e48d038d4a91fcd8bc704e1fb3c9dd05033b1758d5dfe77e363430414e7', '[\"*\"]', NULL, NULL, '2024-06-11 01:48:18', '2024-06-11 01:48:18'),
+(40, 'App\\Models\\User', 1, 'user-token', '2bc8a9894906e1057eae4b847b13d3792270bad376efb0b92cd123618c9701a3', '[\"*\"]', NULL, NULL, '2024-06-11 03:08:41', '2024-06-11 03:08:41'),
+(41, 'App\\Models\\User', 3, 'user-token', '85301304390c13851acbcac0b85c532d350c4bf9ef17e756ee3a9fd1bc14bed1', '[\"*\"]', NULL, NULL, '2024-06-11 03:09:33', '2024-06-11 03:09:33'),
+(42, 'App\\Models\\User', 1, 'user-token', '96d486d62284fef75de26301a42417401a0c732ceea983ff976f9e226f96297b', '[\"*\"]', NULL, NULL, '2024-06-11 10:52:15', '2024-06-11 10:52:15'),
+(43, 'App\\Models\\User', 3, 'user-token', '736bc206596c5c16c062b465e72658efd10e0b09870d2e90d3e042c1bb45f1c5', '[\"*\"]', NULL, NULL, '2024-06-11 10:53:13', '2024-06-11 10:53:13'),
+(44, 'App\\Models\\User', 4, 'user-token', '5dfbb319a5f8305816f4195c5cc4563884cd7c218913eade432aded8cd34e5f2', '[\"*\"]', NULL, NULL, '2024-06-11 11:14:05', '2024-06-11 11:14:05'),
+(45, 'App\\Models\\User', 4, 'user-token', '5f346396438059783f0566037178326e6d13da94aee2d2ef02485f8c1f6ef4d6', '[\"*\"]', NULL, NULL, '2024-06-11 13:16:40', '2024-06-11 13:16:40'),
+(46, 'App\\Models\\User', 1, 'user-token', 'd2c53d0fa50d03b636cdcc1d73f29c880d3ff1057b0f2f96393a7da92871bf81', '[\"*\"]', NULL, NULL, '2024-06-11 13:48:07', '2024-06-11 13:48:07'),
+(47, 'App\\Models\\User', 2, 'user-token', '8a8389790649cd4f44dde96d69923abb0a26a150aab3361ed7f5985994dea7d2', '[\"*\"]', NULL, NULL, '2024-06-11 13:51:09', '2024-06-11 13:51:09'),
+(48, 'App\\Models\\User', 3, 'user-token', '6aac5bd6fd18d979443156664c8ca85b38383e6a6b1fe62d2501c8f247e95daa', '[\"*\"]', NULL, NULL, '2024-06-11 14:00:41', '2024-06-11 14:00:41'),
+(49, 'App\\Models\\User', 2, 'user-token', '704ba2ccf174b696ff7ec28bdfb93aa7e5db02787f3da5481a3fd2ecbfabbd7c', '[\"*\"]', NULL, NULL, '2024-06-11 14:23:11', '2024-06-11 14:23:11'),
+(50, 'App\\Models\\User', 1, 'user-token', '8d43d3be73268f3f946e5b9063ed1b0a8ddf413514ad895d4e2eb865b15994a3', '[\"*\"]', NULL, NULL, '2024-06-16 15:24:10', '2024-06-16 15:24:10'),
+(51, 'App\\Models\\User', 1, 'user-token', 'a1a5ad33047ee6da431bbf168b49ab5e6ba40da3373ea6af5758ea2f34b492b1', '[\"*\"]', NULL, NULL, '2024-06-16 15:26:20', '2024-06-16 15:26:20'),
+(52, 'App\\Models\\User', 1, 'user-token', 'a97510666f7f8278b31867b96edccead194ead71cb3b3e92b21545b9d246118b', '[\"*\"]', NULL, NULL, '2024-06-16 15:26:25', '2024-06-16 15:26:25'),
+(53, 'App\\Models\\User', 1, 'user-token', 'f6bcf28b2cababf1faa4b16a57c7f288eb369b38c5006fe4edc4f4ec94128a14', '[\"*\"]', NULL, NULL, '2024-06-16 15:26:30', '2024-06-16 15:26:30'),
+(54, 'App\\Models\\User', 1, 'user-token', '81acf614b903d71a273ca6129f57a4748bcbe0d7dd5d0a09dc7cc7d71b354770', '[\"*\"]', NULL, NULL, '2024-06-16 15:26:38', '2024-06-16 15:26:38'),
+(55, 'App\\Models\\User', 2, 'user-token', 'ed25f7b5020ea0cbc6461e79658ed14daf69b376ffbd8ad23125ee01cee77fb8', '[\"*\"]', NULL, NULL, '2024-06-16 15:26:57', '2024-06-16 15:26:57'),
+(56, 'App\\Models\\User', 2, 'user-token', '01a5872a7b8a99a8fe5b23a5c90b3b649d30467b017983566bb1ff660319432a', '[\"*\"]', NULL, NULL, '2024-06-16 15:36:31', '2024-06-16 15:36:31'),
+(57, 'App\\Models\\User', 1, 'user-token', '8dc355c67934cc527830a39653fa58cc0c798dd79ddfe60a35083c635dcdd54b', '[\"*\"]', NULL, NULL, '2024-06-16 15:36:37', '2024-06-16 15:36:37'),
+(58, 'App\\Models\\User', 2, 'user-token', '0f97723c2d83f1bcbdd19f4a4fb6a60201f46d283e5b8eefa504a16ca2e411a8', '[\"*\"]', NULL, NULL, '2024-06-16 15:37:06', '2024-06-16 15:37:06'),
+(59, 'App\\Models\\User', 1, 'user-token', '8f41765429eeeee37ba449997f1d0b264a3d06087e5f34d1299827e56a7ac6fe', '[\"*\"]', NULL, NULL, '2024-06-16 15:42:12', '2024-06-16 15:42:12');
 
 -- --------------------------------------------------------
 
@@ -925,7 +988,9 @@ CREATE TABLE `pharmacie_clients` (
 
 INSERT INTO `pharmacie_clients` (`id`, `client_nom`, `client_phone`, `pharmacie_id`, `created_by`, `client_created_At`) VALUES
 (1, 'Balu mukeba', '0813718833', 1, 3, '2024-05-13 21:55:11'),
-(2, 'unknown', 'unknown', 1, 3, '2024-05-14 00:11:39');
+(2, 'unknown', 'unknown', 1, 3, '2024-05-14 00:11:39'),
+(3, 'unknown', 'unknown', 1, 3, '2024-06-11 14:27:19'),
+(4, 'unknown', 'unknown', 1, 3, '2024-06-11 14:28:40');
 
 -- --------------------------------------------------------
 
@@ -960,7 +1025,9 @@ INSERT INTO `pharmacie_operations` (`id`, `operation_qte`, `operation_libelle`, 
 (2, 2, 'Vente', NULL, 'actif', 2, 260.00, 'CDF', 1, NULL, NULL, 1, 1, 3, '2024-05-13 21:55:16'),
 (3, 2, 'Vente', NULL, 'actif', 3, 1300.00, 'CDF', 1, NULL, NULL, 1, 1, 3, '2024-05-13 21:55:16'),
 (4, 1, 'Vente', NULL, 'actif', 1, 280.00, 'CDF', 1, NULL, NULL, 2, 2, 3, '2024-05-14 00:11:40'),
-(5, 1, 'Vente', NULL, 'actif', 2, 260.00, 'CDF', 1, NULL, NULL, 2, 2, 3, '2024-05-14 00:11:40');
+(5, 1, 'Vente', NULL, 'actif', 2, 260.00, 'CDF', 1, NULL, NULL, 2, 2, 3, '2024-05-14 00:11:40'),
+(6, 3, 'Vente', NULL, 'actif', 1, 372.00, 'CDF', 1, NULL, NULL, 3, 3, 3, '2024-06-11 14:27:19'),
+(7, 10, 'Vente', NULL, 'actif', 1, 372.00, 'CDF', 1, NULL, NULL, 4, 4, 3, '2024-06-11 14:28:40');
 
 -- --------------------------------------------------------
 
@@ -988,7 +1055,9 @@ CREATE TABLE `pharmacie_tickets` (
 
 INSERT INTO `pharmacie_tickets` (`id`, `ticket_code`, `ticket_nb_items`, `ticket_paiement`, `ticket_devise`, `ticket_status`, `client_id`, `user_id`, `pharmacie_id`, `created_at`, `updated_at`) VALUES
 (1, 'W00180', 3, 3960.00, 'CDF', 'actif', 1, 3, 1, '2024-05-13 20:55:16', '2024-05-13 20:55:16'),
-(2, 'A09839', 2, 540.00, 'CDF', 'actif', 2, 3, 1, '2024-05-13 23:11:39', '2024-05-13 23:11:39');
+(2, 'A09839', 2, 540.00, 'CDF', 'actif', 2, 3, 1, '2024-05-13 23:11:39', '2024-05-13 23:11:39'),
+(3, 'M04841', 1, 1116.00, 'CDF', 'actif', 3, 3, 1, '2024-06-11 14:27:19', '2024-06-11 14:27:19'),
+(4, 'I05950', 1, 3720.00, 'CDF', 'actif', 4, 3, 1, '2024-06-11 14:28:40', '2024-06-11 14:28:40');
 
 -- --------------------------------------------------------
 
@@ -1014,7 +1083,9 @@ CREATE TABLE `pharmacist_sessions` (
 --
 
 INSERT INTO `pharmacist_sessions` (`id`, `initial_balance`, `closing_balance`, `nbre_ticket`, `user_id`, `pharmacie_id`, `started_at`, `end_at`, `created_at`, `updated_at`) VALUES
-(1, 45000.00, 0.00, 0, 3, 1, '22:54:23', NULL, '2024-05-13 20:54:23', '2024-05-13 20:54:23');
+(1, 45000.00, 0.00, 0, 3, 1, '22:54:23', NULL, '2024-05-13 20:54:23', '2024-05-13 20:54:23'),
+(2, 3000.00, 0.00, 0, 3, 1, '04:09:43', NULL, '2024-06-11 03:09:43', '2024-06-11 03:09:43'),
+(3, 10000.00, 0.00, 0, 3, 1, '15:08:45', NULL, '2024-06-11 14:08:45', '2024-06-11 14:08:45');
 
 -- --------------------------------------------------------
 
@@ -1082,7 +1153,13 @@ CREATE TABLE `prescriptions` (
 INSERT INTO `prescriptions` (`id`, `prescription_code`, `prescription_traitement_freq`, `prescription_traitement_freq_unite`, `prescription_traitement_dosage`, `prescription_traitement_dosage_unite`, `prescription_traitement_duree`, `prescription_traitement_duree_unite`, `prescription_traitement_qte`, `prescription_traitement_qte_unite`, `prescription_create_At`, `prescription_status`, `produit_id`, `consult_id`, `hopital_emplacement_id`, `created_by`) VALUES
 (1, 'T02892', '3', 'Jour', '1000', 'mg', '3', 'Jours', 1, 'mg', '2024-05-22 12:27:07', 'actif', 1, 1, 1, 4),
 (2, 'T02892', '3', 'Jour', '1000', 'mg', '3', 'Jours', 2, 'mg', '2024-05-22 12:27:08', 'actif', 2, 1, 1, 4),
-(3, 'T02892', '3', 'Jour', '400', 'mg', '3', 'Jours', 2, 'mg', '2024-05-22 12:27:08', 'actif', 3, 1, 1, 4);
+(3, 'T02892', '3', 'Jour', '400', 'mg', '3', 'Jours', 2, 'mg', '2024-05-22 12:27:08', 'actif', 3, 1, 1, 4),
+(4, 'M05647', '3', 'Jour', '2', 'patch', '4', 'Jours', 20, 'patch', '2024-06-11 02:34:29', 'actif', 1, 2, 1, 4),
+(5, 'M05647', '2', 'Jour', '4', 'ml', '2', 'Jours', 30, 'ml', '2024-06-11 02:34:29', 'actif', 4, 2, 1, 4),
+(6, 'F03470', '2', 'Jour', '2', 'ml', '2', 'Jours', 20, 'ml', '2024-06-11 03:03:05', 'actif', 4, 3, 1, 4),
+(7, 'F03470', '1', 'Jour', '1', 'patch', '2', 'Jours', 2, 'patch', '2024-06-11 03:03:05', 'actif', 3, 3, 1, 4),
+(8, 'L01693', '2', 'Jour', '2', 'patch', '1', 'Semaines', 10, 'patch', '2024-06-11 13:33:43', 'actif', 1, 4, 1, 4),
+(9, 'L01693', '3', 'Jour', '1', 'patch', '2', 'Semaines', 12, 'patch', '2024-06-11 13:33:43', 'actif', 3, 4, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -1112,7 +1189,8 @@ INSERT INTO `produits` (`id`, `produit_libelle`, `produit_code`, `produit_stock_
 (1, 'Paracetamol', '02493000', NULL, NULL, '2024-05-13 21:46:35', 1, 1, 1, 1, 2),
 (2, 'Amoxy', '0394232', NULL, NULL, '2024-05-13 21:47:01', 2, 1, 1, 1, 2),
 (3, 'Mephtal forte', '03949303', NULL, NULL, '2024-05-13 21:47:25', 1, 1, 1, 1, 2),
-(4, 'Anti-touxif', '0394833', NULL, NULL, '2024-05-13 21:47:53', 1, 2, 5, 1, 2);
+(4, 'Anti-touxif', '0394833', NULL, NULL, '2024-05-13 21:47:53', 1, 2, 5, 1, 2),
+(5, 'Diclofenac', '823828992', 10, 'dlfkdeklfke', '2024-06-11 13:52:38', 1, 1, 1, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -1159,10 +1237,11 @@ CREATE TABLE `produit_prices` (
 --
 
 INSERT INTO `produit_prices` (`id`, `produit_prix`, `produit_prix_devise`, `produit_prix_create_At`, `pharmacie_id`, `produit_id`, `hopital_id`, `created_by`) VALUES
-(1, 420.00, 'CDF', '2024-05-13 21:51:31', 1, 1, 1, 2),
+(1, 372.00, 'CDF', '2024-05-13 21:51:31', 1, 1, 1, 2),
 (2, 260.00, 'CDF', '2024-05-13 21:51:39', 1, 2, 1, 2),
 (3, 1300.00, 'CDF', '2024-05-13 21:51:49', 1, 3, 1, 2),
-(4, 1680.00, 'CDF', '2024-05-13 21:52:01', 1, 4, 1, 2);
+(4, 1680.00, 'CDF', '2024-05-13 21:52:01', 1, 4, 1, 2),
+(5, 120.00, 'CDF', '2024-06-11 13:55:26', 1, 5, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -1211,7 +1290,8 @@ CREATE TABLE `produit_unites` (
 
 INSERT INTO `produit_unites` (`id`, `unite_libelle`, `unite_description`, `hopital_id`, `created_by`, `type_created_At`) VALUES
 (1, 'mg', NULL, 1, 2, '2024-05-13 21:44:55'),
-(2, 'ml', NULL, 1, 2, '2024-05-13 21:44:57');
+(2, 'ml', NULL, 1, 2, '2024-05-13 21:44:57'),
+(3, 'mcg', NULL, 1, 1, '2024-06-11 12:13:04');
 
 -- --------------------------------------------------------
 
@@ -1261,7 +1341,12 @@ INSERT INTO `stocks` (`id`, `stock_qte`, `stock_pa`, `stock_pa_devise`, `stock_d
 (3, 60, '1000', 'CDF', '2025-02-10 22:00:00', NULL, 'actif', 1, 3, 1, 2, '2024-05-13 21:50:46'),
 (4, 200, '1200', 'CDF', '2025-01-02 22:00:00', NULL, 'actif', 1, 4, 1, 2, '2024-05-13 21:51:18'),
 (5, 200, '400', 'CDF', '2025-12-11 22:00:00', 'Lorem ipsum doloret', 'actif', 1, 1, 1, 2, '2024-05-19 12:55:39'),
-(6, 30, '450', 'CDF', '2025-12-11 22:00:00', 'Lorem ipsum doloret', 'actif', 1, 1, 1, 2, '2024-05-19 12:57:58');
+(6, 30, '450', 'CDF', '2025-12-11 22:00:00', 'Lorem ipsum doloret', 'actif', 1, 1, 1, 2, '2024-05-19 12:57:58'),
+(7, 20, '200', 'CDF', '2026-02-09 23:00:00', 'Lorem ipsum', 'actif', 1, 1, 1, 2, '2024-06-10 23:24:03'),
+(8, 10, '300', 'CDF', '2025-12-31 23:00:00', 'Lorem ipsum doloret', 'actif', 1, 1, 1, 2, '2024-06-10 23:27:40'),
+(9, 5, '250', 'CDF', '2026-09-30 23:00:00', 'lorem', 'actif', 1, 1, 1, 2, '2024-06-10 23:29:19'),
+(10, 300, '100', 'CDF', '2026-12-09 23:00:00', 'lezzkfjekfjekf', 'actif', 1, 5, 1, 2, '2024-06-11 13:55:26'),
+(11, 20, '100', 'CDF', '2026-10-09 23:00:00', 'leolefieofi', 'actif', 1, 5, 1, 2, '2024-06-11 13:57:10');
 
 -- --------------------------------------------------------
 
@@ -1313,10 +1398,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `email_verified_at`, `last_seen`, `password`, `menus`, `remember_token`, `created_at`, `updated_at`, `agent_id`, `user_role_id`, `hopital_emplacement_id`, `hopital_id`, `pharmacie_id`, `pharmacie_role`, `created_by`) VALUES
-(1, 'Gaston delimond', 'gastondelimond@gmail.com', '0814703300', NULL, '2024-05-28 12:05:26', '$2y$10$gelf9Gob8UM0.C6GgI5.lO5QUcUcz1Fa4i6JjfmLVRxDuB.Kl5ADy', 'Tableau de bord,Configurations,Agents,Services,Laboratoires,Partenaires,Pharmacies', NULL, '2024-05-13 20:32:13', '2024-05-28 12:05:26', 0, 1, 1, 1, NULL, NULL, 0),
-(2, 'Miriam TP', 'miriam@gmail.com', NULL, NULL, '2024-05-19 11:20:02', '$2y$10$6ZMiSCQcm/WGrhA0R4s7FeSoCJkiyjc0Mq6AabH3C4QtpZxTRMRWq', 'Tableau de bord,Pharmacies', NULL, '2024-05-13 20:40:56', '2024-05-19 11:20:02', NULL, 7, 1, 1, 1, 'Gérant', 1),
-(3, 'Johanna ndaya', 'johanna@gmail.com', NULL, NULL, '2024-05-14 21:58:55', '$2y$10$/pzVzJpmTz71KWto4aD5w.JuNS5NQYNRNHdM7WbBb/MF2Pl8MNEHm', 'Tableau de bord,Pharmacies', NULL, '2024-05-13 20:53:36', '2024-05-14 21:58:55', NULL, 7, 1, 1, 1, 'Vendeur', 1),
-(4, 'Lionnel', 'lionnelnawej@gmail.com', '0978328800', NULL, '2024-05-24 19:45:07', '$2y$10$OcR9LqrPb8uXhxUs3J8efuHoImCXY48Kx3PKEPTOt5tEv4eckU9jS', 'Tableau de bord,Patients,Consultations,Suivis,Premiers soins', NULL, '2024-05-13 21:04:58', '2024-05-24 19:45:07', 1, 3, 1, 1, NULL, NULL, 0);
+(1, 'Gaston delimond', 'gastondelimond@gmail.com', '0814703300', NULL, '2024-06-16 15:42:12', '$2y$10$gelf9Gob8UM0.C6GgI5.lO5QUcUcz1Fa4i6JjfmLVRxDuB.Kl5ADy', 'Tableau de bord,Configurations,Agents,Services,Laboratoires,Partenaires,Pharmacies', NULL, '2024-05-13 20:32:13', '2024-06-16 15:42:12', 0, 1, 1, 1, NULL, NULL, 0),
+(2, 'Miriam TP', 'miriam@gmail.com', NULL, NULL, '2024-06-16 15:37:06', '$2y$10$6ZMiSCQcm/WGrhA0R4s7FeSoCJkiyjc0Mq6AabH3C4QtpZxTRMRWq', 'Tableau de bord,Pharmacies', NULL, '2024-05-13 20:40:56', '2024-06-16 15:37:06', NULL, 7, 1, 1, 1, 'Gérant', 1),
+(3, 'Johanna ndaya', 'johanna@gmail.com', NULL, NULL, '2024-06-11 14:00:41', '$2y$10$/pzVzJpmTz71KWto4aD5w.JuNS5NQYNRNHdM7WbBb/MF2Pl8MNEHm', 'Tableau de bord,Pharmacies', NULL, '2024-05-13 20:53:36', '2024-06-11 14:00:41', NULL, 7, 1, 1, 1, 'Vendeur', 1),
+(4, 'Lionnel', 'lionnelnawej@gmail.com', '0978328800', NULL, '2024-06-11 13:16:40', '$2y$10$OcR9LqrPb8uXhxUs3J8efuHoImCXY48Kx3PKEPTOt5tEv4eckU9jS', 'Tableau de bord,Patients,Consultations,Suivis,Premiers soins', NULL, '2024-05-13 21:04:58', '2024-06-11 13:16:40', 1, 3, 1, 1, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -1697,7 +1782,7 @@ ALTER TABLE `agents`
 -- AUTO_INCREMENT pour la table `consultations`
 --
 ALTER TABLE `consultations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `consultation_details`
@@ -1709,13 +1794,13 @@ ALTER TABLE `consultation_details`
 -- AUTO_INCREMENT pour la table `consultation_examens`
 --
 ALTER TABLE `consultation_examens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `consultation_symptomes`
 --
 ALTER TABLE `consultation_symptomes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT pour la table `examen_echantillons`
@@ -1751,13 +1836,13 @@ ALTER TABLE `examen_resultats`
 -- AUTO_INCREMENT pour la table `facturation_configs`
 --
 ALTER TABLE `facturation_configs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `facture_paiements`
 --
 ALTER TABLE `facture_paiements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `failed_jobs`
@@ -1871,31 +1956,31 @@ ALTER TABLE `partener_agents`
 -- AUTO_INCREMENT pour la table `patients`
 --
 ALTER TABLE `patients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `patient_signes_vitaux`
 --
 ALTER TABLE `patient_signes_vitaux`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `patient_suivis`
 --
 ALTER TABLE `patient_suivis`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `patient_traitements`
 --
 ALTER TABLE `patient_traitements`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT pour la table `pharmacies`
@@ -1907,25 +1992,25 @@ ALTER TABLE `pharmacies`
 -- AUTO_INCREMENT pour la table `pharmacie_clients`
 --
 ALTER TABLE `pharmacie_clients`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `pharmacie_operations`
 --
 ALTER TABLE `pharmacie_operations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT pour la table `pharmacie_tickets`
 --
 ALTER TABLE `pharmacie_tickets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `pharmacist_sessions`
 --
 ALTER TABLE `pharmacist_sessions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `premier_soins`
@@ -1943,13 +2028,13 @@ ALTER TABLE `premier_soin_traitements`
 -- AUTO_INCREMENT pour la table `prescriptions`
 --
 ALTER TABLE `prescriptions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT pour la table `produits`
 --
 ALTER TABLE `produits`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `produit_categories`
@@ -1961,7 +2046,7 @@ ALTER TABLE `produit_categories`
 -- AUTO_INCREMENT pour la table `produit_prices`
 --
 ALTER TABLE `produit_prices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT pour la table `produit_types`
@@ -1973,7 +2058,7 @@ ALTER TABLE `produit_types`
 -- AUTO_INCREMENT pour la table `produit_unites`
 --
 ALTER TABLE `produit_unites`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `services`
@@ -1985,7 +2070,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT pour la table `stocks`
 --
 ALTER TABLE `stocks`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT pour la table `transfert_patients`
