@@ -23,7 +23,7 @@ class HospitalController extends Controller
             $data = $request->validate([
                 'nom' => 'required|string|unique:hopitals,hopital_nom',
                 'adresse' => 'required|string',
-                'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+                'logo' => 'nullable|file',
                 'user_name'=>'required|string',
                 'user_phone'=>'required|string|unique:users,phone',
                 'user_email'=>'required|email|unique:users,email',

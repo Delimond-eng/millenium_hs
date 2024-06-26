@@ -206,13 +206,13 @@ class HospitalisationController extends Controller
             $startAt = $hospitalisation->hospitalisation_start_At;
             $endAt = $hospitalisation->hospitalisation_end_At;
             $differenceInHours = $startAt->diffInDays($endAt);
-            $hospitalisation->count = $differenceInHours;
+            $hospitalisation['count'] = $differenceInHours;
             if ($endAt->isFuture()) {
                 $difference = $endAt->diff(Carbon::now());
                 $daysRemaining = $difference->days;
-                $hospitalisation->count_rest = $daysRemaining;
+                $hospitalisation['count_rest'] = $daysRemaining;
             } else {
-                $hospitalisation->count_rest = 0;
+                $hospitalisation['count_rest'] = 0;
             }
         }
         return response()->json([
